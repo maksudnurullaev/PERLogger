@@ -1,0 +1,8 @@
+% layout 'default';
+% title 'PERLogger';
+<h2><%= $msg %></h2>
+<p>
+  PERLogger,
+  <%= link_to 'click here' => url_for %> to reload the page or
+  <%= link_to 'here' => '/index.html' %> to move forward to a static page.
+</p>
