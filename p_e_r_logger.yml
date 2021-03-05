@@ -2,5 +2,4 @@
 secrets:
   - 73ed67a5518ed756f4ec629aad544fba8a095a9c
 
-version:
-  - 0.0.1a
+version: 0.0.1a
