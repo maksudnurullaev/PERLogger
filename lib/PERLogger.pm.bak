@@ -42,14 +42,12 @@ sub startup ($self) {
 
         if ( !-e $path2db ) {
             my @SQLITE_INIT_SQLs = (
-"CREATE TABLE IF NOT EXIST logs (server varchar(32), logfile varchar(255), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, log TEXT );",
-"CREATE INDEX IF NOT EXIST i_logs ON logs (server, logfile, ltime);",
-            );
-            for my $sql (@SQLITE_INIT_SQLs) {
+                "CREATE TABLE IF NOT EXIST logs (server varchar(32), logfile varchar(255), ltime  TIMESTAMP DEFAULT CURRENT_TIMESTAMP, log TEXT );",
+                "CREATE INDEX IF NOT EXIST i_logs ON logs (server, logfile, ltime);",);     
+                for my $sql (@SQLITE_INIT_SQLs){
                 my $stmt = $connection->prepare($sql);
-                $stmt->execute
-                  || die "Error:Db: Could not init database with: $sql";
-            }
+                $stmt->execute || die "Error:Db: Could not init database with: $sql";
+            }       
             $dbh->do('');
             die "Failed to create db file, path: " . $path2db;
         }
