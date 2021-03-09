@@ -1,0 +1,3 @@
+  <b-navbar toggleable="lg" type="dark" variant="info">
+    <b-navbar-brand href="#">PERLogger v<%= config->{version} %></b-navbar-brand>
+  </b-navbar>

@@ -9,13 +9,15 @@
   </head>
   <body>
     <div id="app">
-     <div class="container-fluid">
-      %= include 'layouts/_nav_bar' 
-     <div class="row flex-xl-nowrap2">
-       %= include 'layouts/_left_menu'
-       %= include 'layouts/_context'
+      <div class="container-fluid px-0">
+       %= include 'layouts/_page_head' 
+        <div class="row flex-xl-nowrap2 mx-0">
+          %= include 'layouts/_page_left_menu'
+          <div class="bd-content col-md-9 col-12" style="background: #28a7451f;">
+            <%= content %>
+          </div>
+        </div>
       </div>
-     </div>
     </div>
     
 %= javascript begin

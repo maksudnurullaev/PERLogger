@@ -11,6 +11,9 @@ use Mojo::Home;
 # This method will run once at server start
 sub startup ($self) {
 
+    $self->helper(
+        'cache_control.no_caching' => sub ($c) { $c->res->headers->cache_control('private, max-age=0, no-cache') }
+    );
     # Load configuration from config file
     my $config = $self->plugin('NotYAMLConfig');
 

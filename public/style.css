@@ -1,6 +1,13 @@
 .navbar {
-    margin-top: 5px;
+    margin-top: 0px;
 }
 
 .left-menu {
+    max-height: fit-content;
+    background: lightgray;  
 }
+
+.main-context {
+    background: darkgray;   
+}
+
