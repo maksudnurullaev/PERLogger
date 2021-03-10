@@ -14,11 +14,7 @@
           <div class="-h-1 col-12 border"><h3>PERLogger v<%= config->{version} %></h3></div>
       </div>
       <div class="row flex-shrink-0">
-        <div class="col-2">Servers: 
-          <b-link v-on:click="refreshServers">
-            <b-icon icon="arrow-counterclockwise" animation="spin-reverse-pulse" font-scale="1"></b-icon>
-          </b-link>
-        </div>
+        <div class="col-2"><b-link v-on:click="refreshServers">Servers</b-link>:</div>
         <div class="col-4">Log files:</div>
         <div class="col-6">Log messages:</div>
       </div>
