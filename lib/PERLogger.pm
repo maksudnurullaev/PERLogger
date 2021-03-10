@@ -66,8 +66,12 @@ sub startup ($self) {
     my $r = $self->routes;
 
     # MAIN Route
-    $r->any( [ 'GET', 'POST' ], '/' )
-      ->to( controller => 'initial', action => 'welcome', payload => undef );
+    $r->get('/' )
+      ->to( controller => 'initial', action => 'welcome');
+    
+    # API
+    $r->get('/servers/')
+      ->to( controller => 'initial', action => 'servers');
 }
 
 sub _Prefix {
