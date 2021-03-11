@@ -84,7 +84,7 @@ if ($test_flag){
 if ($listen) {
     $lineWrap = 0;
     $lineChop = 0;
-	runAsServer();
+	runAsServer(\&testPrint);
 } else {
 	if (!@files) {
 		print "          WARNING: No files to monitor!\n";
@@ -92,6 +92,11 @@ if ($listen) {
 	}
 	runAsClient();
 }
+
+sub testPrint{
+    my $message = shift || "No message";
+    print "testPrint: $message";
+};
 
 sub runAsClient{
 	my $sleepTime = 1;              # Sleep time between poll of files
@@ -206,6 +211,7 @@ sub reopenFile {
 }
 
 sub runAsServer{
+    my $messageHandler = shift || \&deliver;
     my $sock;                           # Socket to listen for entries from other hosts
 
     #   If we're to receive messages from other hosts, create
@@ -237,7 +243,7 @@ sub runAsServer{
         }
         $msg =~ s/\n$//;
         #   Print the message locally, but don't echo
-        deliver("$hostname: $msg\n", 0);
+        $messageHandler->("$hostname: $msg\n", 0);
     }        
 };
 
