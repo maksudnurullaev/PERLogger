@@ -266,27 +266,29 @@ sub printWrap {
 
         $sep = '';
         $lwrap = '';
-            if (($lineChop > 0) && (length($l) > $lineChop)) {
-                $l = substr($l, 0, $lineChop);
-                if ($l !~ m/\n$/) {
-                    $l .= "\n";
-                }
+        if (($lineChop > 0) && (length($l) > $lineChop)) {
+            $l = substr($l, 0, $lineChop);
+            if ($l !~ m/\n$/) {
+                $l .= "\n";
             }
-        while (length($l) > $lineWrap) {
-            if (($l =~ s/(^.{1,$lineWrap})(\s)//o) ||
-                ($l =~ s/(^.{1,$lineWrap})($lineBreak1)//o) ||
-                ($l =~ s/(^.{1,$lineWrap})($lineBreak2)//o)
-               ) {
-                $rem = $1;
-                $ter = $2;
-                if ($ter =~ m/\s+/) {
-                    $ter='';
+        }
+        if( $lineWrap > 1 ){
+            while (length($l) > $lineWrap) {
+                if (($l =~ s/(^.{1,$lineWrap})(\s)//o) ||
+                    ($l =~ s/(^.{1,$lineWrap})($lineBreak1)//o) ||
+                    ($l =~ s/(^.{1,$lineWrap})($lineBreak2)//o)
+                ) {
+                    $rem = $1;
+                    $ter = $2;
+                    if ($ter =~ m/\s+/) {
+                        $ter='';
+                    }
+                    $lwrap .= "$sep$rem$ter\n";
+                    $l =~ s/^\s*//;
+                    $sep = "        ";
+                } else {
+                    last;
                 }
-                $lwrap .= "$sep$rem$ter\n";
-                $l =~ s/^\s*//;
-                $sep = "        ";
-            } else {
-                last;
             }
         }
         print("$lwrap$sep$l");
