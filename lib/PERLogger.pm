@@ -8,6 +8,8 @@ use Data::Dumper;
 use Mojo::SQLite;
 use Mojo::Home;
 
+use Logger;
+
 # This method will run once at server start
 sub startup ($self) {
 
@@ -72,7 +74,27 @@ sub startup ($self) {
     # API
     $r->get('/servers/')
       ->to( controller => 'initial', action => 'servers');
+
+    # Run UDP listener thread
+    runUdpListener();
 }
+
+sub runUdpListener {
+    my $log = Mojo::Log->new;
+    $log->debug("Start listener!");
+    # Mojo::IOLoop->server({port => 9875} => sub ($loop, $stream) {
+    #     $stream->on(read => sub ($stream, $bytes) {
+    #         # Process input chunk
+    #             $log->debug($bytes);
+        
+    #         # Write response
+    #         # $stream->write('HTTP/1.1 200 OK');
+    #     });
+    
+    # Write request
+    # $stream->write("GET / HTTP/1.1\x0d\x0a\x0d\x0a");
+    # });
+};
 
 sub _Prefix {
     my ( $prefix, $color, $msg ) = @_;
