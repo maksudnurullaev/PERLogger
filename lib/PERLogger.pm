@@ -8,6 +8,8 @@ use Data::Dumper;
 use Mojo::SQLite;
 use Mojo::Home;
 
+use Utils;
+
 use Logger;
 
 # This method will run once at server start
@@ -24,25 +26,17 @@ sub startup ($self) {
 
     # Check configuration variables for database
     if ( !defined( $config->{dir4db} ) ) {
-        _Prefix( "ERROR", "red",
-"Not defined location for SQLite database file (dir4db) in configuration file"
-        );
+        Utils::print_error( "Not defined location for SQLite database file (dir4db) in configuration file." );
         exit(1);
     }
 
     # Check & Configure database
-    my $home = Mojo::Home->new;
-    $home->detect;
-    my $path2db = $home->rel_file( $config->{dir4db} );
-    my $dir     = $path2db->dirname();
+    my $path2db = Utils::init_dir($config->{dir4db});
 
-    # ... check database directory existance
-    if ( !-d $path2db->dirname ) {
-        _Prefix( "WARNING", "yellow",
-            "$path2db not exitst, trying to create new one..." );
-        make_path $dir
-          or die "$!: Failed to create path: " . $dir;
-    }
+    # Check directory for log files
+    my $path2logs = Utils::init_dir($config->{dir4logs}, 1);
+
+    Utils::print_warn $path2logs;
 
     # ... create helper for sqlite
     $self->helper(
@@ -54,8 +48,8 @@ sub startup ($self) {
 
     if ( ! @{$db->tables} ) {
         my @SQLITE_INIT_SQLs = (
-"CREATE TABLE logs (server varchar(64), logfile varchar(255), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, log TEXT );",
-"CREATE INDEX i_logs ON logs (server, logfile, ltime);",
+"CREATE TABLE logs (lhost varchar(64), lfile varchar(255), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, lsize NUMERIC, log TEXT);",
+"CREATE INDEX i_logs ON logs (lhost, lfile, ltime);",
         );
         for my $sql (@SQLITE_INIT_SQLs) {
             my $sth = $db->dbh()->prepare($sql);
@@ -75,36 +69,8 @@ sub startup ($self) {
     $r->get('/servers/')
       ->to( controller => 'initial', action => 'servers');
 
-    # Run UDP listener thread
-    runUdpListener();
-}
-
-sub runUdpListener {
-    my $log = Mojo::Log->new;
-    $log->debug("Start listener!");
-    # Mojo::IOLoop->server({port => 9875} => sub ($loop, $stream) {
-    #     $stream->on(read => sub ($stream, $bytes) {
-    #         # Process input chunk
-    #             $log->debug($bytes);
-        
-    #         # Write response
-    #         # $stream->write('HTTP/1.1 200 OK');
-    #     });
-    
-    # Write request
-    # $stream->write("GET / HTTP/1.1\x0d\x0a\x0d\x0a");
-    # });
-};
-
-sub _Prefix {
-    my ( $prefix, $color, $msg ) = @_;
-    if ( $^O =~ /win/i ) {
-        print sprintf( "[%s]: ", $prefix );
-    }
-    else {
-        print colored( sprintf( "%s: ", $prefix ), $color );
-    }
-    say $msg;
+    # Run log file listener thread
+    # run_log_file_listener();
 }
 
 1;
