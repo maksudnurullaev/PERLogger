@@ -16,6 +16,7 @@
 <!-- Load the following for BootstrapVueIcons support -->
 <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
 
+<!-- XMLHttpRequests JS library -->
 %= javascript 'https://unpkg.com/axios/dist/axios.min.js'
 
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
