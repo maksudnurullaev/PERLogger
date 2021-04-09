@@ -7,6 +7,7 @@ use Data::Dumper;
 
 use Mojo::SQLite;
 use Mojo::Home;
+use Mojo::IOLoop::Subprocess;
 
 use Utils;
 
@@ -70,7 +71,22 @@ sub startup ($self) {
       ->to( controller => 'initial', action => 'servers');
 
     # Run log file listener thread
-    # run_log_file_listener();
+    start_log_listener();
+}
+
+sub start_log_listener{
+    Utils::print_info("Start log listener!");    
+    my $subprocess = Mojo::IOLoop::Subprocess->new;
+    $subprocess->run(
+      sub ($subprocess) {
+        sleep 5;
+        return '♥', 'Mojolicious';
+      },
+      sub ($subprocess, $err, @results) {
+        say "Subprocess error: $err" and return if $err;
+        say "I $results[0] $results[1]!";
+      }
+    );
 }
 
 1;

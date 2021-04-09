@@ -369,6 +369,38 @@ sub deliver {
 
 }
 
+sub helpMe {
+    print("Usage: logger.pl [ options ] logfile(s) ...\n");
+    print("Version $version -- $reldate.\n");
+    print("       Options:\n");
+    print(
+"             -ccols          Chop lines at cols columns, 0 = no chop.\n"
+    );
+    print(
+"             -ehostname      Echo to named host.  Multiple -e options\n"
+    );
+    print(
+"             -vlevel         Verbose: generate debug output.\n"
+    );
+    print(
+"             -lport          Listen for echo on port (default $defaultPort),\n"
+    );
+    print(
+"             -Dwdir          Monitor file(s) in 'wdir' directory.\n"
+    );
+    print(
+"             -dmdays         Monitor for files modified in last 'mdays'.\n"
+    );
+    print(
+"             -wcols          Wrap lines at cols columns, 0 = no wrap.\n"
+    );
+    print(
+"             -T              Just send test messages to monitoring files.\n"
+    );
+    print("Report bugs to MNurullaev\@beeline.uz\n");
+    exit(0);
+};
+
 sub showHeader {
     print "     PERL VERSION: $]\n";
     print "   SCRIPT VERSION: $version\n";
@@ -386,6 +418,8 @@ sub showHeader {
 }
 
 sub parseArgs {
+
+    helpMe and exit(0) until @ARGV;
 
     #   Process options on command line
     for ( my $i = 0 ; $i <= $#ARGV ; $i++ ) {
@@ -464,38 +498,8 @@ sub parseArgs {
 
             }
             elsif ( $opt eq '?' ) {
-                print("Usage: logger.pl [ options ] logfile(s) ...\n");
-                print("Version $version -- $reldate.\n");
-                print("       Options:\n");
-                print(
-"             -ccols          Chop lines at cols columns, 0 = no chop.\n"
-                );
-                print(
-"             -ehostname      Echo to named host.  Multiple -e options\n"
-                );
-                print(
-"             -vlevel         Verbose: generate debug output.\n"
-                );
-                print(
-"             -lport          Listen for echo on port (default $defaultPort),\n"
-                );
-                print(
-"             -Dwdir          Monitor file(s) in 'wdir' directory.\n"
-                );
-                print(
-"             -dmdays         Monitor for files modified in last 'mdays'.\n"
-                );
-                print(
-"             -wcols          Wrap lines at cols columns, 0 = no wrap.\n"
-                );
-                print(
-"             -T              Just send test messages to monitoring files.\n"
-                );
-                print("Report bugs to MNurullaev\@beeline.uz\n");
-                exit(0);
-
+                helpMe;
                 #   -vlevel             -- Verbose: generate debug output
-
             }
             elsif ( $opt eq 'v' ) {
                 $verbose = 1;
@@ -542,7 +546,7 @@ sub parseArgs {
         }
     }
 
-}
+};
 
 
 

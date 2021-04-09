@@ -3,6 +3,8 @@ package Utils;
 use Mojo::Base -strict;
 use Mojo::Home;
 
+use Term::ANSIColor;
+
 sub init_dir {
     my $home = Mojo::Home->new;
     $home->detect;
@@ -19,14 +21,17 @@ sub init_dir {
     return $_[1] ? $dir : $path;
 };
 
+sub print_info{
+    _prefix_print( "   INFO", "green", $_[0] )
+};
+
 sub print_warn{
-    _prefix_print( "WARNING", "yellow", $_[0]);
+    _prefix_print( "WARNING", "yellow", $_[0] );
 };
 
 sub print_error{
-    _prefix_print( "ERROR", "red", $_[0]);
+    _prefix_print( " ERROR", "red", $_[0] );
 };
-
 
 sub _prefix_print {
     my ( $prefix, $color, $msg ) = @_;
