@@ -81,7 +81,7 @@ sub main {
         }
     }
 
-    showHeader();
+    print getInfo();
 
     if ($test_flag) {
         my ( $total_files, $next_file ) = ( ( $#files + 1 ), 0 );
@@ -93,8 +93,6 @@ sub main {
     }
 
     if ($listen) {
-        $lineWrap = 0;
-        $lineChop = 0;
         runServer( \&serverDeliver );
     }
     else {
@@ -236,11 +234,14 @@ sub reopenFile {
 sub runServer {
     my $messageHandler = shift || \&serverDeliver;
     my $sock;    # Socket to listen for entries from other hosts
+    $listen = $defaultPort if !$listen;
+    $lineWrap = 0;
+    $lineChop = 0;
 
     #   If we're to receive messages from other hosts, create
     #   the inbound socket and bind it to the specified port.
 
-    print "Create inboud socket...\n" if $progress;
+    print "Create inboud socket...\n" ; # if $progress;
     foreach my $dest ( "::", "0.0.0.0" ) {
         if (
             $sock = IO::Socket::INET->new(
@@ -401,20 +402,21 @@ sub helpMe {
     exit(0);
 };
 
-sub showHeader {
-    print "     PERL VERSION: $]\n";
-    print "   SCRIPT VERSION: $version\n";
+sub getInfo {
+    my $result = "     PERL VERSION: $]\n";
+    $result .= "   SCRIPT VERSION: $version\n";
     if ($listen) {
-        print "             MODE: SERVER\n";
+        $result .= "             MODE: SERVER\n";
     }
     else {
-        print "             MODE: CLIENT\n";
-        print "        DIRECTORY: $wdir\n";
-        print "        EXTENSION: $wext\n";
-        print "            MASKS: $wfiles\n";
-        print "       MONITORING: " . ( $#files + 1 ) . " FILES\n";
-        map { print qx/ls -lh $_/ } @files;
+        $result .= "             MODE: CLIENT\n";
+        $result .= "        DIRECTORY: $wdir\n";
+        $result .= "        EXTENSION: $wext\n";
+        $result .= "            MASKS: $wfiles\n";
+        $result .= "       MONITORING: " . ( $#files + 1 ) . " FILES\n";
+        map { $result .= qx/ls -lh $_/ } @files;
     }
+    return $result;
 }
 
 sub parseArgs {

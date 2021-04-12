@@ -75,11 +75,11 @@ sub startup ($self) {
 }
 
 sub start_log_listener{
-    Utils::print_info("Start log listener!");    
+    Utils::print_info("Start log listener!");  
     my $subprocess = Mojo::IOLoop::Subprocess->new;
     $subprocess->run(
       sub ($subprocess) {
-        sleep 5;
+        Logger::runServer(\&Utils::print_info) ;
         return '♥', 'Mojolicious';
       },
       sub ($subprocess, $err, @results) {
