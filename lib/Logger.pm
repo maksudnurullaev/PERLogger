@@ -7,7 +7,7 @@ package Logger;
 #
 #                  by Makhsud Nurullaev -- Feb, 2021
 #                  Modified version of John Walker's
-#           "Log File Watcher" script(http://www.fourmilab.ch/)
+#           "Log File Watcher" script(https://www.fourmilab.ch/webtools/logtail/)
 
 use strict;
 use warnings;
@@ -37,6 +37,7 @@ my $echoes = 0;                             # Number of echo destinations
 #   Internal debugging flags
 my $verbose  = 0;                           # Print debug output if true
 my $progress = 0;                           # Show progress if nonzero
+my $tryConver2Hostname = 0;                 # Try to convert IP address to hostname
 
 my $mdays = 1;    # Monitor files that modified for last mdays
 
@@ -231,6 +232,8 @@ sub reopenFile {
     }
 }
 
+sub stopServer{ $ctrl_c = 1; };
+
 sub runServer {
     my $messageHandler = shift || \&serverDeliver;
     my $sock;    # Socket to listen for entries from other hosts
@@ -241,7 +244,7 @@ sub runServer {
     #   If we're to receive messages from other hosts, create
     #   the inbound socket and bind it to the specified port.
 
-    print "Create inboud socket...\n" ; # if $progress;
+    print "Create inboud socket...\n" if $progress;
     foreach my $dest ( "::", "0.0.0.0" ) {
         if (
             $sock = IO::Socket::INET->new(
@@ -260,20 +263,21 @@ sub runServer {
     }
 
     my ( $name, $msg );
-    print "      LISTEN PORT: $listen\n";
+    print "      LISTEN PORT: $listen\n" if $progress;
     while ( $listen && $sock->recv( $msg, 65535 ) && !$ctrl_c ) {
         my ( $port, $ipaddr ) = sockaddr_in( $sock->peername );
-        my $hostname = gethostbyaddr( $ipaddr, AF_INET );
-        if ( $hostname !~ m/^\d+\./ && !$verbose ) {
-            $hostname =~ s/\..*$//;
+        my $hostname .= "(" . inet_ntoa($ipaddr) . ")";
+        if( $tryConver2Hostname ){
+            $hostname = gethostbyaddr( $ipaddr, AF_INET );
+            if ( $hostname and $hostname !~ m/^\d+\./ && !$verbose ) {
+                $hostname =~ s/\..*$//;
+            }
         }
-        else {
-            $hostname .= "(" . inet_ntoa($ipaddr) . ")";
-        }
+        
         $msg =~ s/\n$//;
 
         #   Print the message locally, but don't echo
-        $messageHandler->( "$hostname: $msg\n", 0 );
+        $messageHandler->( "$hostname: $msg", 0 );
     }
 }
 
@@ -398,6 +402,9 @@ sub helpMe {
     print(
 "             -T              Just send test messages to monitoring files.\n"
     );
+    print(
+"             -CH             Try to conver address to host name.\n"
+    );
     print("Report bugs to MNurullaev\@beeline.uz\n");
     exit(0);
 };
@@ -448,6 +455,14 @@ sub parseArgs {
                 }
                 else {
                     die("Invalid chop length '$arg' in -c option.\n");
+                }
+
+                #   -CH                - Try to convert IP address to hostname
+
+            }
+            elsif ( $opt eq 'C' ) {
+                if ( $arg eq 'H' ) {
+                    $tryConver2Hostname = 1;
                 }
 
                 #   -Dwdir             - Work directory for monitor log files

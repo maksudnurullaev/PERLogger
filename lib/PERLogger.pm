@@ -77,6 +77,12 @@ sub startup ($self) {
 sub start_log_listener{
     Utils::print_info("Start log listener!");  
     my $subprocess = Mojo::IOLoop::Subprocess->new;
+    
+    $SIG{INT} = $SIG{TERM} = sub {
+        Utils::print_warn "-=Stop signal catched!=-\n";
+        Logger::stopServer() ;
+    };
+
     $subprocess->run(
       sub ($subprocess) {
         Logger::runServer(\&Utils::print_info) ;
