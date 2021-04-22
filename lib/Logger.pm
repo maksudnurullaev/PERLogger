@@ -17,16 +17,17 @@ use File::Basename qw( dirname basename );
 use Time::Local;
 use Socket;
 use IO::Socket;
+use Data::Dumper;
 
 my $version = '0.0.1b';
 my $reldate = '2021 Feb 23';
-my $wdir    = abs_path('.');    # Work directory is current catalog
+my $wdir    = abs_path('.');                # Work directory is current catalog
 my $wext    = "log";
 my $wfiles  = "$wdir/*.$wext";
 
 #   Default settings when options not specified
 my $defaultPort = 9875;
-my $listen      = 0;            # Port to listen on
+my $listen      = 0;                        # Port to listen on
 
 my $defaultReopen = 15;
 my $reopenTime    = $defaultReopen * 60;    # How often to re-open files
@@ -94,14 +95,14 @@ sub main {
     }
 
     if ($listen) {
-        runServer( \&serverDeliver );
+        runServer( \&defaultServerDeliver );
     }
     else {
         if ( !@files ) {
             print "          WARNING: No files to monitor!\n";
             exit(0);
         }
-        runClient( \&clientDeliver );
+        runClient( \&defaultClientDeliver );
     }
 
 }
@@ -112,7 +113,7 @@ sub testPrint {
 }
 
 sub runClient {
-    my $messageHandler = shift || \&clientDeliver;
+    my $messageHandler = shift || \&defaultClientDeliver;
     my $sleepTime      = 1;    # Sleep time between poll of files
 
     while ( 1 && !$ctrl_c ) {
@@ -235,7 +236,7 @@ sub reopenFile {
 sub stopServer{ $ctrl_c = 1; };
 
 sub runServer {
-    my $messageHandler = shift || \&serverDeliver;
+    my $messageHandler = shift || \&defaultServerDeliver;
     my $sock;    # Socket to listen for entries from other hosts
     $listen = $defaultPort if !$listen;
     $lineWrap = 0;
@@ -294,7 +295,7 @@ sub printWrap {
     #   switching among multiple processes.
 
     while ( length($s) > 0 ) {
-        if ( ( $s =~ s/(.*\n)// ) != 1 ) {
+        if ( ( $s =~ s/(.*\n)// ) != 1 ) { #TODO: I don't undestand this 'if'
             my $aax = $_[0];
             print("printWrap arg = |$aax|\n");
             print("printWrap s = |$s|\n");
@@ -347,11 +348,11 @@ sub messageCleaner {
     return $s;
 }
 
-sub clientDeliver {
+sub defaultClientDeliver {
     deliver( $_[0], 1 );
 }
 
-sub serverDeliver {
+sub defaultServerDeliver {
     deliver( $_[0], 0 );
 }
 
@@ -360,7 +361,8 @@ sub deliver {
 
     $s = messageCleaner($s);
 
-    printWrap($s);
+    #printWrap($s);
+    print("$s\n");
 
     #   If we're echoing to one or more other hosts,
     #   send a copy of the information to each.
