@@ -10,6 +10,7 @@ use Mojo::Home;
 use Mojo::IOLoop::Subprocess;
 
 use Utils;
+use DBUtils;
 
 use Logger;
 
@@ -48,11 +49,7 @@ sub startup ($self) {
     my $db = $self->sqlite->db;
 
     if ( ! @{$db->tables} ) {
-        my @SQLITE_INIT_SQLs = (
-"CREATE TABLE logs (lhost varchar(64), lfile varchar(255), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, lsize NUMERIC, log TEXT);",
-"CREATE INDEX i_logs ON logs (lhost, lfile, ltime);",
-        );
-        for my $sql (@SQLITE_INIT_SQLs) {
+        for my $sql (@DBUtild::SQLITE_INIT_SQLs) {
             my $sth = $db->dbh()->prepare($sql);
             $sth->execute() || die "$!";
             say $sql;
@@ -85,7 +82,8 @@ sub start_log_listener{
 
     $subprocess->run(
       sub ($subprocess) {
-        Logger::runServer(\&Utils::print_info) ;
+        Logger::runServer(\&DBUtils::parse_it) ;
+        #Logger::runServer(\&Utils::print_warn) ;
         return '♥', 'Mojolicious';
       },
       sub ($subprocess, $err, @results) {
