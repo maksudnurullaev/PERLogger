@@ -49,12 +49,17 @@ sub startup ($self) {
     my $db = $self->sqlite->db;
 
     if ( ! @{$db->tables} ) {
-        for my $sql (@DBUtild::SQLITE_INIT_SQLs) {
+        for my $sql (DBUtils::get_init_sqls()) {
             my $sth = $db->dbh()->prepare($sql);
             $sth->execute() || die "$!";
-            say $sql;
+            Utils::print_info("Executed initial SQL:" . $sql);
         }
     }
+
+    # print Dumper $db->tables;
+    # exit;
+    # ... set db
+    DBUtils::set_db $db;
 
     # Router
     my $r = $self->routes;
