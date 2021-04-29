@@ -9,3 +9,8 @@ html,body {
 .page-footer{
     background: lightgray;
 }
+
+.splitpanes__pane{
+   overflow-y: scroll;
+   padding: 3px;
+}

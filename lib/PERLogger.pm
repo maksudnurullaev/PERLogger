@@ -38,8 +38,6 @@ sub startup ($self) {
     # Check directory for log files
     my $path2logs = Utils::init_dir($config->{dir4logs}, 1);
 
-    Utils::print_warn $path2logs;
-
     # ... create helper for sqlite
     $self->helper(
         sqlite => sub { state $sql = Mojo::SQLite->new( 'sqlite:' . $path2db ) }

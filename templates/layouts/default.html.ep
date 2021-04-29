@@ -11,40 +11,37 @@
 
   <div id="app" class="container-fluid h-100 d-flex flex-column">
       <div class="page-header row flex-shrink-0">
-          <div class="-h-1 col-12 border"><h3>PERLogger v<%= config->{version} %></h3></div>
+          <div class="-h-1 col-12 border"><h3>PERLogger</h3></div>
       </div>
-      <!--
-      <div class="row flex-shrink-0">
-        <div class="col-2"><b-link v-on:click="refreshServers">Servers</b-link>:</div>
-        <div class="col-4">Log files:</div>
-        <div class="col-6">Log messages:</div>
-      </div>
-      -->
+
       <div class="row flex-fill" style="min-height:0">
-        <div class="col-2 border mh-100" style="overflow-y: scroll;">
-          <b-link v-on:click="refreshServers">Update</b-link>
-          <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
-              <b-form-checkbox-group
-                v-model="selected"
-                :aria-describedby="ariaDescribedby"
-                name="flavour-1"
-              ></b-form-checkbox-group>
-              <template v-for="item in servers">
-                <b-form-checkbox :id="item.id" value="item.lhost"><span v-html="item.html"></span></b-form-checkbox>
-              </template>
-            </b-form-group>
-          </div>
-          <div class="col-4 border mh-100" style="overflow-y: scroll;"> 
-           %== "Log files!<br />" x 100 
-          </div>
-          <div class="col-6 border mh-100" style="overflow-y: scroll;"><%= content %></div>
+
+        <splitpanes class="default-theme">
+          <pane size="20">
+              <b-link v-on:click="refreshServers">Update</b-link>
+              <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
+                  <b-form-checkbox-group
+                    v-model="selected"
+                    :aria-describedby="ariaDescribedby"
+                    name="flavour-1"
+                  ></b-form-checkbox-group>
+                  <template v-for="item in servers">
+                    <b-form-checkbox :id="item.id" value="item.lhost"><span v-html="item.html"></span></b-form-checkbox>
+                  </template>
+                </b-form-group>
+            </pane>
+            <pane>2</pane>
+            <pane>3</pane>
+        </splitpanes>
+        
       </div>
       <div class="page-footer row flex-shrink-0">
-          <div class="col-12">&copy; 2021 <a href="https://github.com/maksudnurullaev/PERLogger">PERLogger</a></div>
+          <div class="col-12">&copy; 2021 <a href="https://github.com/maksudnurullaev/PERLogger">PERLogger</a> v<%= config->{version} %>, Vue v{{ vueVersion() }}</div>
       </div>
   </div>
 
 %= javascript begin
+    const { Splitpanes, Pane } = splitpanes
 
     var app = new Vue({
       el: '#app',
@@ -56,6 +53,9 @@
                 selected: [],
             },
       methods: {
+        vueVersion: function(){
+          return Vue.version;
+        },
         refreshServers: function() {
             var self = this;
             axios.get('/servers/').then(
@@ -72,6 +72,7 @@
             );
           },
       },
+      components: { Splitpanes, Pane },
       beforeMount(){
         this.refreshServers()
       },
