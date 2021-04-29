@@ -18,19 +18,27 @@
 
         <splitpanes class="default-theme">
           <pane size="20">
-              <b-link v-on:click="refreshServers">Update</b-link>
+              <b-button size="sm" variant="primary" v-on:click="refreshServers">Update</b-button>
+              <b-button size="sm" variant="success" v-on:click="selectAll('All')">+++</b-button>
+              <b-button size="sm" variant="secondary" v-on:click="selectAll('None')">---</b-button>
+              <b-button size="sm" variant="info" v-on:click="selectAll('Reverse')">+/-</b-button>
               <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
                   <b-form-checkbox-group
                     v-model="selected"
                     :aria-describedby="ariaDescribedby"
+                    :options="servers"
                     name="flavour-1"
+                    stacked
+                    id="item.id"
                   ></b-form-checkbox-group>
+                  <!--
                   <template v-for="item in servers">
                     <b-form-checkbox :id="item.id" value="item.lhost"><span v-html="item.html"></span></b-form-checkbox>
                   </template>
+                  -->
                 </b-form-group>
             </pane>
-            <pane>2</pane>
+            <pane>{{ selected }}</pane>
             <pane>3</pane>
         </splitpanes>
         
@@ -56,6 +64,23 @@
         vueVersion: function(){
           return Vue.version;
         },
+        selectAll: function(smode){
+          var _selected = [];
+          switch(smode.toLowerCase()){
+            case 'all':
+              this.servers.forEach(function(server){
+                _selected.push(server.value);
+              });
+              break;
+            case 'reverse':
+              this.servers.forEach(function(server){
+                if(!app.selected.includes(server.value)){
+                  _selected.push(server.value);
+                };
+              });
+          }
+          this.selected = _selected;
+        },
         refreshServers: function() {
             var self = this;
             axios.get('/servers/').then(
@@ -64,9 +89,8 @@
                 response.data.map(function(el){
                   self.servers.push({
                     value:   el.lhost, 
-                    html:    el.lhost  + "<sup>" + el.count + "</sup>", 
-                    id:      "ss-" + el.lhost,
-                    disable: false});
+                    html:    el.lhost  + "<sup>" + el.count + "</sup>",
+                  });
                 });
               }
             );
