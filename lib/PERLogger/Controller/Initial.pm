@@ -1,5 +1,8 @@
 package PERLogger::Controller::Initial;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
+use DBUtils;
+use Utils;
+
 use Data::Dumper;
 
 # This action will render a template
@@ -13,7 +16,9 @@ sub servers ($self) {
     $servers { "server - $_" } = $_ ;
   }
 
-  $self->render( json => \%servers)
+  $self->render( json => DBUtils::get_server_logs());
+
+
 }
 
 

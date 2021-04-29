@@ -13,22 +13,26 @@
       <div class="page-header row flex-shrink-0">
           <div class="-h-1 col-12 border"><h3>PERLogger v<%= config->{version} %></h3></div>
       </div>
+      <!--
       <div class="row flex-shrink-0">
         <div class="col-2"><b-link v-on:click="refreshServers">Servers</b-link>:</div>
         <div class="col-4">Log files:</div>
         <div class="col-6">Log messages:</div>
       </div>
+      -->
       <div class="row flex-fill" style="min-height:0">
-          <div class="col-2 border mh-100" style="overflow-y: scroll;">
-              <template v-for="(server,sname,sindex) in servers">
-                <template v-if="sindex != 9">
-                  <b-link >{{ sname }}</b-link><br />
-                </template>
-                <template v-else>
-                {{ sname }}<br />
-                </template>
-            </template>
-            %== "Servers <br />" x 100 
+        <div class="col-2 border mh-100" style="overflow-y: scroll;">
+          <b-link v-on:click="refreshServers">Update</b-link>
+          <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
+              <b-form-checkbox-group
+                v-model="selected"
+                :aria-describedby="ariaDescribedby"
+                name="flavour-1"
+              ></b-form-checkbox-group>
+              <template v-for="item in servers">
+                <b-form-checkbox :id="item.id" value="item.lhost"><span v-html="item.html"></span></b-form-checkbox>
+              </template>
+            </b-form-group>
           </div>
           <div class="col-4 border mh-100" style="overflow-y: scroll;"> 
            %== "Log files!<br />" x 100 
@@ -48,14 +52,22 @@
                 counter: 0,
                 stopit: false,
                 message: 'Hello Vue.js!',
-                servers: []
+                servers: [],
+                selected: [],
             },
       methods: {
         refreshServers: function() {
             var self = this;
             axios.get('/servers/').then(
               function(response) {
-                self.servers = response.data;
+                self.servers = [];
+                response.data.map(function(el){
+                  self.servers.push({
+                    value:   el.lhost, 
+                    html:    el.lhost  + "<sup>" + el.count + "</sup>", 
+                    id:      "ss-" + el.lhost,
+                    disable: false});
+                });
               }
             );
           },
