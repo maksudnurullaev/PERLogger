@@ -18,13 +18,13 @@
 
         <splitpanes class="default-theme">
           <pane size="20">
-              <b-button size="sm" variant="primary" v-on:click="refreshServers" v-b-tooltip.hover title="Refresh servers list"><b-icon icon="arrow-counterclockwise"></b-icon></b-button>
+              <b-button size="sm" variant="primary" v-on:click="refreshServers"><b-icon icon="arrow-counterclockwise"></b-icon></b-button>
               <b-button-group>
-                <b-button :disabled="disableMainBtnSelAll" size="sm" variant="success" v-on:click="selectAll('All')" v-b-tooltip.hover title="Select all"><b-icon icon="list-check"></b-icon></b-button>
-                <b-button :disabled="disableMainBtnSelNone" size="sm" variant="secondary" v-on:click="selectAll('None')" v-b-tooltip.hover title="Unselect all"><b-icon icon="list"></b-icon></b-button>
-                <b-button :disabled="disableMainBtnSelRev" size="sm" variant="info" v-on:click="selectAll('Reverse')" v-b-tooltip.hover title="Reverse selection"><b-icon icon="arrow-repeat"></b-icon></b-button>
+                <b-button :disabled="disableMainBtnSelAll" size="sm" variant="success" v-on:click="selectAll('All')"><b-icon icon="list-check"></b-icon></b-button>
+                <b-button :disabled="disableMainBtnSelNone" size="sm" variant="secondary" v-on:click="selectAll('None')"><b-icon icon="list"></b-icon></b-button>
+                <b-button :disabled="disableMainBtnSelRev" size="sm" variant="info" v-on:click="selectAll('Reverse')"><b-icon icon="arrow-repeat"></b-icon></b-button>
               </b-button-group>
-              <b-button :disabled="disableMainBtnShowLog" size="sm" v-on:click="selectAll('xoxox')" v-b-tooltip.hover title="Show log files"><b-icon icon="arrow-bar-right"></b-icon></b-button>
+              <b-button :disabled="disableMainBtnShowLog" size="sm" v-on:click="selectAll('xoxox')"><b-icon icon="arrow-bar-right"></b-icon></b-button>
               <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
                   <b-form-checkbox-group
                     v-model="selected"
