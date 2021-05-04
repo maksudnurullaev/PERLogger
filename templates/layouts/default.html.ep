@@ -1,66 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-  
-    %= include 'layouts/_headers'
-    
-    <!-- OTHERS -->
-    <title>PERLogger v<%= config->{version} %></title>
-  </head>
-  <body>
+
+<head>
+
+  %= include 'layouts/_headers'
+
+  <!-- OTHERS -->
+  <title>PERLogger v<%= config->{version} %></title>
+</head>
+
+<body>
 
   <div id="app" class="container-fluid h-100 d-flex flex-column">
-      <div class="page-header row flex-shrink-0">
-          <div class="-h-1 col-12 border"><h3>PERLogger</h3></div>
+    <div class="page-header row flex-shrink-0">
+      <div class="-h-1 col-12 border">
+        <h3>PERLogger</h3>
       </div>
+    </div>
 
-      <div class="row flex-fill" style="min-height:0">
+    <div class="row flex-fill" style="min-height:0">
 
-        <splitpanes class="default-theme">
-          <pane size="20">
-              <b-button size="sm" variant="primary" v-on:click="jsonRefreshServers"><b-icon icon="arrow-counterclockwise"></b-icon></b-button>
-              <b-button-group>
-                <b-button :disabled="disableMainBtnSelAll" size="sm" variant="success" v-on:click="l1_selection('All')"><b-icon icon="list-check"></b-icon></b-button>
-                <b-button :disabled="disableMainBtnSelNone" size="sm" variant="secondary" v-on:click="l1_selection('None')"><b-icon icon="list"></b-icon></b-button>
-                <b-button :disabled="disableMainBtnSelRev" size="sm" variant="info" v-on:click="l1_selection('Reverse')"><b-icon icon="arrow-repeat"></b-icon></b-button>
-              </b-button-group>
-              <!--
+      <splitpanes class="default-theme">
+        <pane size="20">
+          <b-button size="sm" variant="primary" v-on:click="jsonRefreshServers">
+            <b-icon icon="arrow-counterclockwise"></b-icon>
+          </b-button>
+          <b-button-group>
+            <b-button :disabled="disableMainBtnSelAll" size="sm" variant="success" v-on:click="l1_selection('All')">
+              <b-icon icon="list-check"></b-icon>
+            </b-button>
+            <b-button :disabled="disableMainBtnSelNone" size="sm" variant="secondary" v-on:click="l1_selection('None')">
+              <b-icon icon="list"></b-icon>
+            </b-button>
+            <b-button :disabled="disableMainBtnSelRev" size="sm" variant="info" v-on:click="l1_selection('Reverse')">
+              <b-icon icon="arrow-repeat"></b-icon>
+            </b-button>
+          </b-button-group>
+          <!--
               <b-button :disabled="disableMainBtnShowLog" size="sm" v-on:click="l1_selection('xoxox')"><b-icon icon="arrow-bar-right"></b-icon></b-button>
               -->
-              <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
-                  <b-form-checkbox-group
-                    v-model="l1_selected"
-                    :aria-describedby="ariaDescribedby"
-                    :options="l1_servers"
-                    name="flavour-1"
-                    stacked
-                    id="item.id"
-                  ></b-form-checkbox-group>
-                </b-form-group>
-            </pane>
-            <pane>
-              <server-with-log-files
-                v-for="server in l1_selected"
-                v-bind:key="server"
-                v-bind:server="server"
-                v-bind:l2saf="l2_servers_and_files"
-                ></server-with-log-files>
-            </pane>
-            <pane>{{ l1_selected }}<br />{{ l2_servers_and_files }}</pane>
-        </splitpanes>
-      </div>
-      <div class="page-footer row flex-shrink-0">
-        <small>
-          <div class="col-12">&copy;{{ new Date().getFullYear() }} 
-            <a href="https://github.com/maksudnurullaev/PERLogger">PERLogger</a> v<%= config->{version} %>, 
-            <a href="https://vuejs.org/">Vue</a> v{{ vueVersion() }}
+          <b-form-group 
+            label="Select server(s):" 
+            v-slot="{ ariaDescribedby }">
+            <b-form-checkbox-group v-model="l1_selected" :aria-describedby="ariaDescribedby" :options="l1_servers"
+              name="flavour-1" stacked id="item.id"></b-form-checkbox-group>
+          </b-form-group>
+        </pane>
+        <pane>
+          <server-with-log-files v-for="server in l1_selected" v-bind:key="server" v-bind:server="server">
+          </server-with-log-files>
+        </pane>
+        <pane>
+          <div v-if="l3_watching_servers.length">
+            <h3>Test</h3>
+            <ul>
+              <li v-for="sname in l3_watching_servers" :key="sname">
+                {{ sname }}
+              </li>
+            </ul>
           </div>
-        </small>
-      </div>
+        </pane>
+      </splitpanes>
+    </div>
+    <div class="page-footer row flex-shrink-0">
+      <small>
+        <div class="col-12">&copy;{{ new Date().getFullYear() }}
+          <a href="https://github.com/maksudnurullaev/PERLogger">PERLogger</a> v<%= config->{version} %>,
+            <a href="https://vuejs.org/">Vue</a> v{{ vueVersion() }}
+        </div>
+      </small>
+    </div>
   </div>
   <!-- JS - custom components -->
   <script src="/components.js"></script>
   <!-- JS - main script -->
   <script src="/main.js"></script>
-  </body>
+</body>
+
 </html>

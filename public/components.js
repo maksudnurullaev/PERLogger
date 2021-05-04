@@ -1,5 +1,5 @@
 Vue.component('server-with-log-files', {
-    props: ['server','l2saf'],
+    props: ['server'],
     data: function () {
       return {
         sfiles: ['Orange', 'Grape', 'Apple', 'Lime', 'Very Berry'],
@@ -47,7 +47,6 @@ Vue.component('server-with-log-files', {
        <template v-slot="{ ariaDescribedby }">
           <b-form-checkbox-group
              :id="server"
-             :key="server"
              v-model="selected"
              :options="sfiles"
              :aria-describedby="ariaDescribedby"
@@ -66,5 +65,5 @@ Vue.component('server-with-log-files', {
     </div>
     -->
 </div>
-    `
+`
   });

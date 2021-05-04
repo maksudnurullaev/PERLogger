@@ -4,12 +4,10 @@ const { Splitpanes, Pane } = splitpanes;
 var app = new Vue({
     el: '#app',
     data: {
-        counter: 0,
-        stopit: false,
-        message: 'Hello Vue.js!',
         l1_servers: [],  // Level#1 servers
         l1_selected: [], // Level#1 selected servers
         l2_servers_and_files: new Map(),
+        l3_watching_servers: [],
         disableMainBtnShowLog: true,
         disableMainBtnSelAll: false,
         disableMainBtnSelNone: true,
@@ -63,6 +61,9 @@ var app = new Vue({
         updateServerAndFiles: function(server, files){
             if (files && files.length > 0) this.l2_servers_and_files.set(server, files);
             else this.l2_servers_and_files.delete(server);
+            
+            //TODO: may be we should change this code for more effective version
+            this.l3_watching_servers = Array.from(this.l2_servers_and_files.keys());
         },
     },
     components: { Splitpanes, Pane },
