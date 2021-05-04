@@ -57,13 +57,17 @@ var app = new Vue({
                     });
                 }
             );
-        },
+        },        
         updateServerAndFiles: function(server, files){
             if (files && files.length > 0) this.l2_servers_and_files.set(server, files);
             else this.l2_servers_and_files.delete(server);
             
-            //TODO: may be we should change this code for more effective version
-            this.l3_watching_servers = Array.from(this.l2_servers_and_files.keys());
+            //TODO: may be we should change this code for more effective version to update l3_watching_servers
+            var _l3_watching_servers = [];
+            this.l2_servers_and_files.forEach((fnames, sname)=>{
+                _l3_watching_servers.push({sname: sname, fnames: fnames});
+            });
+            this.l3_watching_servers = _l3_watching_servers;
         },
     },
     components: { Splitpanes, Pane },
@@ -76,6 +80,8 @@ var app = new Vue({
         this.jsonRefreshServers()
     },
 });
+
+
 
 function refreshMainButtons() {
     if( app.l1_servers.length == 0 ) { return; }

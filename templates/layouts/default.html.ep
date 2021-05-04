@@ -39,9 +39,7 @@
           <!--
               <b-button :disabled="disableMainBtnShowLog" size="sm" v-on:click="l1_selection('xoxox')"><b-icon icon="arrow-bar-right"></b-icon></b-button>
               -->
-          <b-form-group 
-            label="Select server(s):" 
-            v-slot="{ ariaDescribedby }">
+          <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
             <b-form-checkbox-group v-model="l1_selected" :aria-describedby="ariaDescribedby" :options="l1_servers"
               name="flavour-1" stacked id="item.id"></b-form-checkbox-group>
           </b-form-group>
@@ -52,10 +50,15 @@
         </pane>
         <pane>
           <div v-if="l3_watching_servers.length">
-            <h3>Test</h3>
+            <h3>Logs:</h3>
             <ul>
-              <li v-for="sname in l3_watching_servers" :key="sname">
-                {{ sname }}
+              <li v-for="server in l3_watching_servers" :key="server.sname">
+                {{ server.sname }}
+                <ul>
+                  <li v-for="fname in server.fnames" :key="fname">
+                    {{ fname }}
+                  </li>
+                </ul>
               </li>
             </ul>
           </div>
