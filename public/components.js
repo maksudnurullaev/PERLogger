@@ -26,7 +26,7 @@ Vue.component('server-with-log-files', {
           this.indeterminate = true
           this.allSelected = false
         }
-        app.updateServerAndFiles(this.server, this.selected);
+        app.l2_updateServerAndFiles(this.server, this.selected);
       }
     },
     template: `

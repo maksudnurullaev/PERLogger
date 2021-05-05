@@ -21,7 +21,7 @@
     <div class="row flex-fill" style="min-height:0">
 
       <splitpanes class="default-theme">
-        <pane size="20">
+        <pane size="20"> <!-- Level #1 -->
           <b-button size="sm" variant="primary" v-on:click="jsonRefreshServers">
             <b-icon icon="arrow-counterclockwise"></b-icon>
           </b-button>
@@ -44,18 +44,18 @@
               name="flavour-1" stacked id="item.id"></b-form-checkbox-group>
           </b-form-group>
         </pane>
-        <pane>
+        <pane> <!-- Level #2 -->
           <server-with-log-files v-for="server in l1_selected" v-bind:key="server" v-bind:server="server">
           </server-with-log-files>
-        </pane>
+        </pane> <!-- Level #3 -->
         <pane>
-          <div v-if="l3_watching_servers.length">
+          <div v-if="l2_selected.length">
             <h3>Logs:</h3>
             <ul>
-              <li v-for="server in l3_watching_servers" :key="server.sname">
-                {{ server.sname }}
+              <li v-for="server in l2_selected" :key="server">
+                {{ server }}
                 <ul>
-                  <li v-for="fname in server.fnames" :key="fname">
+                  <li v-for="fname in l3_getLogFilesForServer(server)" :key="fname">
                     {{ fname }}
                   </li>
                 </ul>

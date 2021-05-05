@@ -6,8 +6,8 @@ var app = new Vue({
     data: {
         l1_servers: [],  // Level#1 servers
         l1_selected: [], // Level#1 selected servers
-        l2_servers_and_files: new Map(),
-        l3_watching_servers: [],
+        l2_servers: new Map(),
+        l2_selected: [],
         disableMainBtnShowLog: true,
         disableMainBtnSelAll: false,
         disableMainBtnSelNone: true,
@@ -57,23 +57,39 @@ var app = new Vue({
                     });
                 }
             );
-        },        
-        updateServerAndFiles: function(server, files){
-            if (files && files.length > 0) this.l2_servers_and_files.set(server, files);
-            else this.l2_servers_and_files.delete(server);
-            
-            //TODO: may be we should change this code for more effective version to update l3_watching_servers
-            var _l3_watching_servers = [];
-            this.l2_servers_and_files.forEach((fnames, sname)=>{
-                _l3_watching_servers.push({sname: sname, fnames: fnames});
+        },
+        l3_getLogFilesForServer: function (sname) {
+            if (app.l2_servers.size == 0) return [];
+            return Array.from(app.l2_servers.get(sname));
+        },
+        l2_updateServerAndFiles: function (server, files) {
+            if (files && files.length > 0) this.l2_servers.set(server, files);
+            else this.l2_servers.delete(server);
+
+            //TODO: may be we should change this code for more effective version to update l2_selected
+            this.l2_selected = Array.from(this.l2_servers.keys());
+        },
+        l2_refreshData: function (oldValues) {
+            if (app.l1_selected.length == 0) {
+                this.l2_servers = new Map();
+                this.l2_selected = [];
+                return;
+            }
+
+            oldValues.map(function (server) {
+                app.l2_servers.delete(server);
             });
-            this.l3_watching_servers = _l3_watching_servers;
+            app.l2_selected = Array.from(this.l2_servers.keys());
         },
     },
     components: { Splitpanes, Pane },
     watch: {
-        l1_selected: function (value, oldValue) {
-            refreshMainButtons();
+        l1_selected: function (values, oldValues) {
+            l1_refreshMainButtons();
+            if (app.l2_selected.length != 0 &&
+                app.l2_selected.length > app.l1_selected.length) {
+                this.l2_refreshData(arr_diff(values, oldValues));
+            }
         },
     },
     beforeMount() {
@@ -83,31 +99,54 @@ var app = new Vue({
 
 
 
-function refreshMainButtons() {
-    if( app.l1_servers.length == 0 ) { return; }
+function l1_refreshMainButtons() {
+    if (app.l1_servers.length == 0) { return; }
     // Main Btn - Show Log
-    if( app.l1_selected.length == 0 ) {
+    if (app.l1_selected.length == 0) {
         app.disableMainBtnShowLog = true;
     } else {
         app.disableMainBtnShowLog = false;
     }
     // Main Btn - Select All
-    if( app.l1_selected.length == app.l1_servers.length ) {
+    if (app.l1_selected.length == app.l1_servers.length) {
         app.disableMainBtnSelAll = true;
     } else {
         app.disableMainBtnSelAll = false;
     }
     // Main Btn - Select None
-    if( app.l1_selected.length == 0 ) {
+    if (app.l1_selected.length == 0) {
         app.disableMainBtnSelNone = true;
     } else {
         app.disableMainBtnSelNone = false;
     }
     // Main Btn - Reverse selection
-    if( app.l1_selected.length == 0 ||
-        app.l1_selected.length == app.l1_servers.length ) {
+    if (app.l1_selected.length == 0 ||
+        app.l1_selected.length == app.l1_servers.length) {
         app.disableMainBtnSelRev = true;
     } else {
         app.disableMainBtnSelRev = false;
     }
 };
+
+function arr_diff(a1, a2) {
+
+    var a = [], diff = [];
+
+    for (var i = 0; i < a1.length; i++) {
+        a[a1[i]] = true;
+    }
+
+    for (var i = 0; i < a2.length; i++) {
+        if (a[a2[i]]) {
+            delete a[a2[i]];
+        } else {
+            a[a2[i]] = true;
+        }
+    }
+
+    for (var k in a) {
+        diff.push(k);
+    }
+
+    return diff;
+}
