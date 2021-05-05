@@ -86,8 +86,7 @@ var app = new Vue({
     watch: {
         l1_selected: function (values, oldValues) {
             l1_refreshMainButtons();
-            if (app.l2_selected.length != 0 &&
-                app.l2_selected.length > app.l1_selected.length) {
+            if (values.length < oldValues.length) {
                 this.l2_refreshData(arr_diff(values, oldValues));
             }
         },
