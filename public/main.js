@@ -41,8 +41,13 @@ var app = new Vue({
                             _selected.push(server.value);
                         };
                     });
+                    this.l2_reset();
             }
             this.l1_selected = _selected;
+        },
+        l2_reset: function(){
+            this.l2_servers = new Map();
+            this.l2_selected = [];
         },
         jsonRefreshServers: function () {
             var self = this;
@@ -71,8 +76,7 @@ var app = new Vue({
         },
         l2_refreshData: function (oldValues) {
             if (app.l1_selected.length == 0) {
-                this.l2_servers = new Map();
-                this.l2_selected = [];
+                l2_reset();
                 return;
             }
 
