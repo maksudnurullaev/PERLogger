@@ -11,14 +11,11 @@ sub welcome ($self) {
 }
 
 sub servers ($self) {
-  my %servers;
-  foreach (1..12) {
-    $servers { "server - $_" } = $_ ;
-  }
+  $self->render( json => DBUtils::get_servers_with_stats());
+}
 
-  $self->render( json => DBUtils::get_server_logs());
-
-
+sub serverlfiles($self) {
+  $self->render( json => [$self->param('server'),'1','2','3','4']);
 }
 
 

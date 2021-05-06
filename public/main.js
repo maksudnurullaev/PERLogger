@@ -43,9 +43,10 @@ var app = new Vue({
                     });
                     this.l2_reset();
             }
+            if (_selected.length == 0) { this.l2_reset(); }
             this.l1_selected = _selected;
         },
-        l2_reset: function(){
+        l2_reset: function () {
             this.l2_servers = new Map();
             this.l2_selected = [];
         },
@@ -63,6 +64,19 @@ var app = new Vue({
                 }
             );
         },
+        jsonGetServerLFiles: function (server, result) {
+            axios.get('/serverlfiles/', {
+                params: {
+                    server: server,
+                },
+            }).then(
+                function (response) {
+                    response.data.map((el) => {
+                        result.push(el);
+                    });
+                }
+            );
+        },
         l3_getLogFilesForServer: function (sname) {
             if (app.l2_servers.size == 0) return [];
             return Array.from(app.l2_servers.get(sname));
@@ -76,7 +90,7 @@ var app = new Vue({
         },
         l2_refreshData: function (oldValues) {
             if (app.l1_selected.length == 0) {
-                l2_reset();
+                this.l2_reset();
                 return;
             }
 

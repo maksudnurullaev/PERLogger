@@ -69,6 +69,8 @@ sub startup ($self) {
     # API
     $r->get('/servers/')
       ->to( controller => 'initial', action => 'servers');
+    $r->get('/serverlfiles/')
+      ->to( controller => 'initial', action => 'serverlfiles');
 
     # Run log file listener thread
     start_log_listener();

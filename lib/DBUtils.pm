@@ -60,7 +60,7 @@ sub parse_it{
     }
 };
 
-sub get_server_logs{
+sub get_servers_with_stats{
     Utils::print_error "Database not initilized!" and return if ! defined($db);
 
     my $results = $db->query('select count(*) as count, lhost from logs group by lhost');
