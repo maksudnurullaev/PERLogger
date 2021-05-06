@@ -30,40 +30,41 @@ Vue.component('server-with-log-files', {
       }
     },
     template: `
-<div>
-    <b-form-group>
-       <template #label>
-          <b>{{ server }}:</b><br>
-          <b-form-checkbox
-             v-model="allSelected"
-             :indeterminate="indeterminate"
-             aria-describedby="sfiles"
-             aria-controls="sfiles"
-             @change="toggleAll"
-             >
-             {{ allSelected ? 'Un-select All' : 'Select All' }}
-          </b-form-checkbox>
-       </template>
-       <template v-slot="{ ariaDescribedby }">
-          <b-form-checkbox-group
-             :id="server"
-             v-model="selected"
-             :options="sfiles"
-             :aria-describedby="ariaDescribedby"
-             name="sfiles"
-             class="ml-4"
-             aria-label="Individual server log files"
-             stacked
-             ></b-form-checkbox-group>
-       </template>
-    </b-form-group>
-    <!--
+ <template>
     <div>
-       Selected: <strong>{{ selected }}</strong><br>
-       All Selected: <strong>{{ allSelected }}</strong><br>
-       Indeterminate: <strong>{{ indeterminate }}</strong>
+       <b-form-group>
+          <template #label>
+             <b-form-checkbox
+                v-model="allSelected"
+                :indeterminate="indeterminate"
+                aria-describedby="sfiles"
+                aria-controls="sfiles"
+                @change="toggleAll"
+                >
+                <b>{{ server }}:</b>
+             </b-form-checkbox>
+          </template>
+          <template v-slot="{ ariaDescribedby }">
+             <b-form-checkbox-group
+                :id="server"
+                v-model="selected"
+                :options="sfiles"
+                :aria-describedby="ariaDescribedby"
+                name="sfiles"
+                class="ml-4"
+                aria-label="Individual server log files"
+                stacked
+                ></b-form-checkbox-group>
+          </template>
+       </b-form-group>
+       <!--
+       <div>
+          Selected: <strong>{{ selected }}</strong><br>
+          All Selected: <strong>{{ allSelected }}</strong><br>
+          Indeterminate: <strong>{{ indeterminate }}</strong>
+       </div>
+       -->
     </div>
-    -->
-</div>
-`
+ </template>
+ `
   });
