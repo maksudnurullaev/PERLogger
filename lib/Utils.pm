@@ -44,4 +44,19 @@ sub _prefix_print {
     say $msg;
 }
 
+sub dbResult2hash {
+    my ($results,$key,$value) = @_;
+    my $dbResults = {};
+
+    for (@{ $results->hashes }) {
+        if (!exists($dbResults->{$_->{$key}})){
+            $dbResults->{$_->{$key}} = [$_->{$value}] ;
+        } else {
+            push @{$dbResults->{$_->{$key}}}, $_->{$value};
+        } 
+    }
+
+    return $dbResults;
+}
+
 1;

@@ -71,7 +71,7 @@ var app = new Vue({
                 },
             }).then(
                 function (response) {
-                    response.data.map((el) => {
+                    response.data[server].map((el) => {
                         result.push(el);
                     });
                 }

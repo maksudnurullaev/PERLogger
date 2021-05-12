@@ -15,7 +15,8 @@ sub servers ($self) {
 }
 
 sub serverlfiles($self) {
-  $self->render( json => [$self->param('server'),'1','2','3','4']);
+  my $result = DBUtils::get_servers_and_log_files($self->param('server'));
+  $self->render( json => $result ); 
 }
 
 
