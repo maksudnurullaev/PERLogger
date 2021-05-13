@@ -1,38 +1,39 @@
 Vue.component('server-with-log-files', {
-    props: ['server'],
-    data: function () {
-      return {
-        logfiles: [],
-        selected: [],
-        allSelected: false,
-        indeterminate: false
+  props: ['server'],
+  data: function () {
+    return {
+      logfiles: [],
+      selected: [],
+      allSelected: false,
+      indeterminate: false
+    }
+  },
+  methods: {
+    toggleAll(checked) {
+      this.selected = checked ? this.logfiles.map( (el) => { return el.value; }) : [];
+      // this.logfiles.map( (el) => { return el['value']})
+    }
+  },
+  watch: {
+    selected(newValue, oldValue) {
+      // Handle changes in individual flavour checkboxes
+      if (newValue.length === 0) {
+        this.indeterminate = false
+        this.allSelected = false
+      } else if (newValue.length === this.logfiles.length) {
+        this.indeterminate = false
+        this.allSelected = true
+      } else {
+        this.indeterminate = true
+        this.allSelected = false
       }
-    },
-    methods: {
-      toggleAll(checked) {
-        this.selected = checked ? this.logfiles.slice() : [];
-      }
-    },
-    watch: {
-      selected(newValue, oldValue) {
-        // Handle changes in individual flavour checkboxes
-        if (newValue.length === 0) {
-          this.indeterminate = false
-          this.allSelected = false
-        } else if (newValue.length === this.logfiles.length) {
-          this.indeterminate = false
-          this.allSelected = true
-        } else {
-          this.indeterminate = true
-          this.allSelected = false
-        }
-        app.l2_updateServerAndFiles(this.server, this.selected);
-      }
-    },
-    beforeMount() {
-        app.jsonGetServerLFiles(this.server, this.logfiles);
-    },
-    template: `
+      app.l2_updateServerAndFiles(this.server, this.selected);
+    }
+  },
+  beforeMount() {
+    app.jsonGetServerLFiles(this.server, this.logfiles);
+  },
+  template: `
 <div>
     <b-form-group>
       <template #label>
@@ -68,4 +69,4 @@ Vue.component('server-with-log-files', {
     -->
 </div>
 `
-  });
+});

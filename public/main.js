@@ -71,8 +71,15 @@ var app = new Vue({
                 },
             }).then(
                 function (response) {
-                    response.data[server].map((el) => {
-                        result.push(el);
+                    var re = /[^\/]+$/;
+                    response.data[server].map((el) => { 
+                        var key = el.match(re)[0];
+                        if ( key.length > 20 ) {
+                            var re2 = /^(.{7})(.*)(.{10})$/;
+                            var reg2Result = re2.exec(key);
+                            key = reg2Result[1] + '...' + reg2Result[3];
+                        }
+                        result.push({value: el, text:key});
                     });
                 }
             );
