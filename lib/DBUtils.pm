@@ -82,7 +82,8 @@ sub get_servers_and_log_files {
 
     my $results = $db->query($sql_string);
 
-    return Utils::dbResult2hash($results,'lhost','lfile');
+    return Utils::dbResult2hash( $results, 'lhost', 'lfile' );
+
     #return $results->hashes->TO_JSON;
 }
 

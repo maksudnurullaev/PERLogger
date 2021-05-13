@@ -8,6 +8,7 @@ var app = new Vue({
         l1_selected: [], // Level#1 selected servers
         l2_servers: new Map(),
         l2_selected: [],
+        l3_logs: [],
         disableMainBtnShowLog: true,
         disableMainBtnSelAll: false,
         disableMainBtnSelNone: true,
@@ -61,6 +62,17 @@ var app = new Vue({
                             html: el.lhost + "<sup>" + el.count + "</sup>",
                         });
                     });
+                }
+            );
+        },
+        jsonGetLogs: function(){
+            var data = {};
+            app.l2_servers.forEach( (value, key) => {
+                data[key] = value;
+            });
+            axios.post('/logs/', data).then(
+                function (response) {
+                    app.l3_logs = response.data;
                 }
             );
         },

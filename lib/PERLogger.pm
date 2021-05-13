@@ -71,6 +71,8 @@ sub startup ($self) {
       ->to( controller => 'initial', action => 'servers');
     $r->get('/serverlfiles/')
       ->to( controller => 'initial', action => 'serverlfiles');
+    $r->post('/logs/')
+      ->to( controller => 'initial', action => 'getlogs');
 
     # Run log file listener thread
     start_log_listener();

@@ -21,47 +21,21 @@
     <div class="row flex-fill" style="min-height:0">
 
       <splitpanes class="default-theme">
-        <pane size="20"> <!-- Level #1 -->
-          <b-button size="sm" variant="primary" v-on:click="jsonRefreshServers">
-            <b-icon icon="arrow-counterclockwise"></b-icon>
-          </b-button>
-          <b-button-group>
-            <b-button :disabled="disableMainBtnSelAll" size="sm" variant="success" v-on:click="l1_selection('All')">
-              <b-icon icon="list-check"></b-icon>
-            </b-button>
-            <b-button :disabled="disableMainBtnSelNone" size="sm" variant="secondary" v-on:click="l1_selection('None')">
-              <b-icon icon="list"></b-icon>
-            </b-button>
-            <b-button :disabled="disableMainBtnSelRev" size="sm" variant="info" v-on:click="l1_selection('Reverse')">
-              <b-icon icon="arrow-repeat"></b-icon>
-            </b-button>
-          </b-button-group>
-          <!--
-              <b-button :disabled="disableMainBtnShowLog" size="sm" v-on:click="l1_selection('xoxox')"><b-icon icon="arrow-bar-right"></b-icon></b-button>
-              -->
+        <pane size="20">
+          <!-- Level #1 -->
+          %= include 'parts/_l1_head_buttons'
           <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
             <b-form-checkbox-group v-model="l1_selected" :aria-describedby="ariaDescribedby" :options="l1_servers"
-              name="flavour-1" stacked id="item.id"></b-form-checkbox-group>
+              name="flavour-1" stacked id="l1_servers"></b-form-checkbox-group>
           </b-form-group>
         </pane>
-        <pane> <!-- Level #2 -->
+        <pane>
+          <!-- Level #2 -->
           <server-with-log-files v-for="server in l1_selected" v-bind:key="server" v-bind:server="server">
           </server-with-log-files>
         </pane> <!-- Level #3 -->
         <pane>
-          <div v-if="l2_selected.length">
-            <h3>Logs:</h3>
-            <ul>
-              <li v-for="server in l2_selected" :key="server">
-                {{ server }}
-                <ul>
-                  <li v-for="fname in l3_getLogFilesForServer(server)" :key="fname">
-                    {{ fname }}
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+          %= include 'parts/_l3_tabs'
         </pane>
       </splitpanes>
     </div>

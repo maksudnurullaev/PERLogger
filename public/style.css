@@ -11,6 +11,6 @@ html,body {
 }
 
 .splitpanes__pane{
-   overflow-y: scroll;
+   overflow: auto;
    padding: 3px;
 }
