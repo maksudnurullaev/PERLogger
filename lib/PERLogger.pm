@@ -57,7 +57,7 @@ sub startup ($self) {
     # print Dumper $db->tables;
     # exit;
     # ... set db
-    DBUtils::set_db $db;
+    DBUtils::set_sqlite $self->sqlite;
 
     # Router
     my $r = $self->routes;

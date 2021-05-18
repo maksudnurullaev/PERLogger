@@ -37,6 +37,8 @@ sub getlogs ($self) {
     }
     print Dumper $where;
 
+    DBUtils::get_logs($where);
+
     $self->render( json => [ 1, 2, 3 ] );
 }
 
