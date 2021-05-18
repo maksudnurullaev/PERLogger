@@ -22,11 +22,7 @@ sub serverlfiles ($self) {
 }
 
 sub getlogs ($self) {
-    print Dumper $self->req->params;
-    print Dumper $self->req->params->names;
-    print Dumper $self->req->body;
     my $params = decode_json( $self->req->body );
-    print Dumper $params;
     my $where = [];    #map { lhost => $_ } keys %{$params};
     foreach my $key ( keys %{$params} ) {
         push @{$where},
@@ -35,7 +31,6 @@ sub getlogs ($self) {
             lfile => $params->{$key}
           };
     }
-    print Dumper $where;
 
     DBUtils::get_logs($where);
 
