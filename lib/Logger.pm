@@ -40,8 +40,7 @@ my $verbose  = 0;                           # Print debug output if true
 my $progress = 0;                           # Show progress if nonzero
 my $tryConver2Hostname = 0;                 # Try to convert IP address to hostname
 
-my $mdays = 1;    # Monitor files that modified for last mdays
-
+my $mhours = 1;             # Monitor files that modified for last hours
 my $lineWrap   = 132;       # Wrap lines at this column
 my $lineChop   = 131;       # Trim lines at this column
 my $lineBreak1 = '[,&]';    # Line break first pass candidates
@@ -73,7 +72,7 @@ sub main {
         $ctrl_c = 1;
     };
 
-    @files = grep { $mdays > -M $_ } glob($wfiles);
+    @files = grep { ($mhours/24) > -M $_ } glob($wfiles);
     foreach (@ARGV) {
         if ( -e $_ ) {
             push @files, abs_path($_);
@@ -396,16 +395,13 @@ sub helpMe {
 "             -Dwdir          Monitor file(s) in 'wdir' directory.\n"
     );
     print(
-"             -dmdays         Monitor for files modified in last 'mdays'.\n"
+"             -Hhours         Monitor for files modified in last 'hours' (default $mhours).\n"
     );
     print(
 "             -wcols          Wrap lines at cols columns, 0 = no wrap.\n"
     );
     print(
 "             -T              Just send test messages to monitoring files.\n"
-    );
-    print(
-"             -CH             Try to conver address to host name.\n"
     );
     print("Report bugs to MNurullaev\@beeline.uz\n");
     exit(0);
@@ -459,14 +455,6 @@ sub parseArgs {
                     die("Invalid chop length '$arg' in -c option.\n");
                 }
 
-                #   -CH                - Try to convert IP address to hostname
-
-            }
-            elsif ( $opt eq 'C' ) {
-                if ( $arg eq 'H' ) {
-                    $tryConver2Hostname = 1;
-                }
-
                 #   -Dwdir             - Work directory for monitor log files
 
             }
@@ -505,12 +493,12 @@ sub parseArgs {
                 }
 
             }
-            elsif ( $opt eq 'd' ) {
+            elsif ( $opt eq 'H' ) {
                 if ( $arg =~ m/^\d+$/ ) {
-                    $mdays = $arg;
+                    $mhours = $arg;
                 }
                 else {
-                    die("Invalid port number '$arg' in -dmdays option.\n");
+                    die("Invalid hours '$arg' in -Hhours option.\n");
                 }
 
                 #   -?                  -- Print help

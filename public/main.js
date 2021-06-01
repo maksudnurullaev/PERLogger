@@ -59,16 +59,17 @@ var app = new Vue({
                     response.data.map(function (el) {
                         self.l1_servers.push({
                             value: el.lhost,
+                            lhost_md5: el.lhost_md5,
                             html: el.lhost + "<sup>" + el.count + "</sup>",
                         });
                     });
                 }
             );
         },
-        jsonGetLogs: function(){
+        jsonGetLogs: function () {
             var data = {};
-            app.l2_servers.forEach( (value, key) => {
-                data[key] = value;
+            app.l2_servers.forEach((lfiles, server) => {
+                data[this.l1_getMD5ForHost(server)] = lfiles;
             });
             axios.post('/logs/', data).then(
                 function (response) {
@@ -76,7 +77,7 @@ var app = new Vue({
                 }
             );
         },
-        jsonGetServerLFiles: function (server, result) {
+        jsonGetServerLFiles: function (server, logfiles) {
             axios.get('/serverlfiles/', {
                 params: {
                     server: server,
@@ -84,17 +85,24 @@ var app = new Vue({
             }).then(
                 function (response) {
                     var re = /[^\/]+$/;
-                    response.data[server].map((el) => { 
-                        var key = el.match(re)[0];
-                        if ( key.length > 20 ) {
-                            var re2 = /^(.{7})(.*)(.{10})$/;
+                    var re2 = /^(.{7})(.*)(.{10})$/;
+                    response.data[server].map((el) => {
+                        var key = el.lfile.match(re)[0];
+                        if (key.length > 20) {
                             var reg2Result = re2.exec(key);
                             key = reg2Result[1] + '...' + reg2Result[3];
                         }
-                        result.push({value: el, text:key});
+                        logfiles.push({ value: el.lfile_md5, html: `<span title="${el.lfile}">${key}</span>` });
                     });
                 }
             );
+        },
+        l1_getMD5ForHost: function (lhost) {
+            for (const el of app.l1_servers) {
+                if (el.value == lhost) {
+                    return el.lhost_md5;
+                }
+            }
         },
         l3_getLogFilesForServer: function (sname) {
             if (app.l2_servers.size == 0) return [];
@@ -126,14 +134,13 @@ var app = new Vue({
             if (values.length < oldValues.length) {
                 this.l2_refreshData(arr_diff(values, oldValues));
             }
+            l2_blink_updates(5);
         },
     },
     beforeMount() {
         this.jsonRefreshServers()
     },
 });
-
-
 
 function l1_refreshMainButtons() {
     if (app.l1_servers.length == 0) { return; }
@@ -185,4 +192,15 @@ function arr_diff(a1, a2) {
     }
 
     return diff;
+}
+
+function l2_blink_updates(_times) {
+    if (_times) {
+        setTimeout(() => {
+            document.getElementById('title').classList.toggle("blink");
+            l2_blink_updates(--_times);
+        }, 500);
+    } else {
+        document.getElementById('title').classList.remove("blink");
+    }
 }

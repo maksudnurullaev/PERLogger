@@ -4,6 +4,9 @@ use Mojo::Base -strict;
 use Mojo::Home;
 
 use Term::ANSIColor;
+use Digest::MD5 qw(md5_hex);
+
+use Data::Dumper;
 
 sub init_dir {
     my $home = Mojo::Home->new;
@@ -45,18 +48,26 @@ sub _prefix_print {
 }
 
 sub dbResult2hash {
-    my ($results,$key,$value) = @_;
+    my ($results,$key) = (shift,shift);
     my $dbResults = {};
 
-    for (@{ $results->hashes }) {
-        if (!exists($dbResults->{$_->{$key}})){
-            $dbResults->{$_->{$key}} = [$_->{$value}] ;
+    for my $hash (@{ $results->hashes }) {
+        my %values = map { $_ => $hash->{$_} } @_ ;
+        say Dumper \%values;
+        if (!exists($dbResults->{$hash->{$key}})){
+            $dbResults->{$hash->{$key}} = [\%values] ;
         } else {
-            push @{$dbResults->{$_->{$key}}}, $_->{$value};
+            push @{$dbResults->{$hash->{$key}}}, \%values ;
         } 
     }
 
     return $dbResults;
 }
+
+sub md5{
+    return substr(md5_hex(shift),shift,shift);
+}
+
+
 
 1;

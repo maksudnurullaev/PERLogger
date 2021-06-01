@@ -17,8 +17,8 @@ sub set_sqlite {
 
 sub get_init_sqls {
     return (
-"CREATE TABLE logs (lhost varchar(64), lfile varchar(255), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, lsize NUMERIC, log TEXT);",
-        "CREATE INDEX i_logs ON logs (lhost, lfile, ltime);",
+"CREATE TABLE logs (lhost varchar(64), lhost_md5 varchar(4), lfile varchar(255), lfile_md5 varchar(4), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, lsize NUMERIC, log TEXT);",
+"CREATE INDEX i_logs ON logs (lhost, lhost_md5, lfile, lfile_md5, ltime);",
     );
 }
 
@@ -57,9 +57,11 @@ sub parse_it {
     if ($db) {
         $db->insert(
             logs => {
-                lhost => $lhost,
-                lfile => $lfile,
-                log   => $log
+                lhost     => $lhost,
+                lhost_md5 => Utils::md5( $lhost, 0, 4 ),
+                lfile     => $lfile,
+                lfile_md5 => Utils::md5( $lfile, 0, 4 ),
+                log       => $log
             }
         );
         $lfile =~ /[^\/]+$/;
@@ -76,7 +78,8 @@ sub get_servers_with_stats {
 
     my $db = $sqlite->db;
     my $results =
-      $db->query('select count(*) as count, lhost from logs group by lhost');
+      $db->query(
+        'select count(*) as count, lhost, lhost_md5 from logs group by lhost');
 
     return $results->hashes->TO_JSON;
 }
@@ -85,14 +88,16 @@ sub get_servers_and_log_files {
     Utils::print_error "Database not initilized!" and return
       if !defined($sqlite);
 
-    my $db         = $sqlite->db;
-    my $sql_string = 'select distinct lhost, lfile from logs';
+    my $db = $sqlite->db;
+    my $sql_string =
+      'select distinct lhost, lhost_md5, lfile, lfile_md5 from logs';
     $sql_string .= "  where lhost = '$_[0]'" if $_[0];
     Utils::print_info( "SQL to select server and log files: " . $sql_string );
 
     my $results = $db->query($sql_string);
 
-    return Utils::dbResult2hash( $results, 'lhost', 'lfile' );
+    return Utils::dbResult2hash( $results, 'lhost', 'lfile', 'lhost_md5',
+        'lfile_md5' );
 
     #return $results->hashes->TO_JSON;
 }
@@ -104,15 +109,16 @@ sub get_logs {
     my $sql = $sqlite->abstract(
         SQL::Abstract::Pg->new( name_sep => '.', quote_char => '"' ) );
 
-    my $results =
+    my $result =
       $sql->db->select( 'logs',
-        [ 'lhost', 'lfile', \q{ length(log) as len_log}, 'OID', 'ltime' ],
+        [ 'log', 'OID', 'ltime' ],
+        # [ 'lhost', 'lfile', \q{ length(log) as len_log}, 'OID', 'ltime' ],
         $_[0], { limit => 25, order_by => { -desc => 'ltime' } } );
 
-    while ( my $next = $results->hash ) {
-        say $next->{ltime} . ' - ' . $next->{rowid} ;
-    }
-
+    # while ( my $next = $results->hash ) {
+    #     say $next->{ltime} . ' - ' . $next->{rowid} ;
+    # }
+    return $result->hashes;
 }
 
 1;

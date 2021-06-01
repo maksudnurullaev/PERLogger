@@ -14,3 +14,7 @@ html,body {
    overflow: auto;
    padding: 3px;
 }
+
+.blink {
+    background: dodgerblue;
+}

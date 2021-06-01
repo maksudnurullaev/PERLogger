@@ -11,7 +11,6 @@ Vue.component('server-with-log-files', {
   methods: {
     toggleAll(checked) {
       this.selected = checked ? this.logfiles.map( (el) => { return el.value; }) : [];
-      // this.logfiles.map( (el) => { return el['value']})
     }
   },
   watch: {

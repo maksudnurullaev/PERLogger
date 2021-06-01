@@ -7,6 +7,10 @@
       <b-button size="sm" variant="primary" v-on:click="jsonGetLogs">
         <b-icon icon="arrow-counterclockwise"></b-icon>
       </b-button>
+      <hr />
+      <template v-for="log in l3_logs">
+        <b-alert show>{{ log.log.replace(/(?:\r\n|\r|\n)/g, '<br>'); }}</b-alert>
+      </template>
     </b-tab>
   </b-tabs>
 </div>

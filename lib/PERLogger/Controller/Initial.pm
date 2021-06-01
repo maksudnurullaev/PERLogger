@@ -23,18 +23,20 @@ sub serverlfiles ($self) {
 
 sub getlogs ($self) {
     my $params = decode_json( $self->req->body );
-    my $where = [];    #map { lhost => $_ } keys %{$params};
+    my $where  = [];    #map { lhost => $_ } keys %{$params};
     foreach my $key ( keys %{$params} ) {
         push @{$where},
           {
-            lhost => $key,
-            lfile => $params->{$key}
+            lhost_md5 => $key,
+            lfile_md5 => $params->{$key}
           };
     }
 
-    DBUtils::get_logs($where);
+    print Dumper $where;
 
-    $self->render( json => [ 1, 2, 3 ] );
+    $self->render( json => DBUtils::get_logs($where) );
+
+    # $self->render( json => [ 1, 2, 3 ] );
 }
 
 1;

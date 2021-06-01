@@ -1,14 +1,9 @@
-#!/usr/bin/perl
+use Digest::MD5 qw(md5_hex);
 
-my $pid = fork;
-# now two processes are executing
+use Mojo::File qw(curfile);
+use lib curfile->dirname->sibling('lib')->to_string;
 
-if ($pid == 0) {
-  print "Child thread\n";
-  sleep 1;
-  exit;
-}
-
-print "Wating from parent thread child: $pid\n";
-waitpid $pid, 0;
-print "EXIT\n";
+use Utils;
+print "Digest is ", md5_hex("foobarbaz"), "\n";
+print "Digest is ", substr(md5_hex("foobarbaz"),0,4), "\n";
+print "Digest is ", Utils::md5("foobarbaz",0,5), "\n";

@@ -1,6 +1,6 @@
 <ul>
     <li v-for="server in l2_selected" :key="server">
-        {{ server }}
+        {{ server }} - {{ l1_getMD5ForHost(server) }}
         <ul>
             <li v-for="fname in l3_getLogFilesForServer(server)" :key="fname">
                 {{ fname }}
