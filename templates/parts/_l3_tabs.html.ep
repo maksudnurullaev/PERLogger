@@ -4,13 +4,16 @@
       %= include 'parts/_l3_tabs_info'
     </b-tab>
     <b-tab title="Logs" active>
-      <b-button size="sm" variant="primary" v-on:click="jsonGetLogs">
-        <b-icon icon="arrow-counterclockwise"></b-icon>
-      </b-button>
+      <div class="sticky">
+        <b-button size="sm" variant="primary" v-on:click="jsonGetLogs">
+          <b-icon icon="arrow-counterclockwise"></b-icon>
+        </b-button>
+      </div>
       <hr />
       <template v-for="log in l3_logs">
-        <b-alert show>{{ log.log.replace(/(?:\r\n|\r|\n)/g, '<br>'); }}</b-alert>
+        <b-alert show v-html="newLine2BR(log.log)"> </b-alert>
       </template>
+      <hr />
     </b-tab>
   </b-tabs>
 </div>

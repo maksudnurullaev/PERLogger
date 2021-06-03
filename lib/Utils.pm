@@ -16,25 +16,25 @@ sub init_dir {
 
     # ... check database directory existance
     if ( !-d $path->dirname ) {
-        print_warn( "Directory $dir not exists, trying to create new one..." );
+        print_warn("Directory $dir not exists, trying to create new one...");
         make_path $dir
           or die "$!: Failed to create path: " . $dir;
     }
 
     return $_[1] ? $dir : $path;
-};
+}
 
-sub print_info{
-    _prefix_print( "   INFO", "green", $_[0] )
-};
+sub print_info {
+    _prefix_print( "   INFO", "green", $_[0] );
+}
 
-sub print_warn{
+sub print_warn {
     _prefix_print( "WARNING", "yellow", $_[0] );
-};
+}
 
-sub print_error{
+sub print_error {
     _prefix_print( " ERROR", "red", $_[0] );
-};
+}
 
 sub _prefix_print {
     my ( $prefix, $color, $msg ) = @_;
@@ -47,27 +47,33 @@ sub _prefix_print {
     say $msg;
 }
 
-sub dbResult2hash {
-    my ($results,$key) = (shift,shift);
-    my $dbResults = {};
+sub hashesGroupBy {
+    my ( $hashes, $key ) = ( shift, shift );
+    my $result = {};
 
-    for my $hash (@{ $results->hashes }) {
-        my %values = map { $_ => $hash->{$_} } @_ ;
-        say Dumper \%values;
-        if (!exists($dbResults->{$hash->{$key}})){
-            $dbResults->{$hash->{$key}} = [\%values] ;
-        } else {
-            push @{$dbResults->{$hash->{$key}}}, \%values ;
-        } 
+    for my $hash ( @{$hashes} ) {
+        my @keys   = grep { $_ !~ /$key/ } keys( %{$hash} );
+        my %values = map  { $_ => $hash->{$_} } @keys;
+        if ( !exists( $result->{ $hash->{$key} } ) ) {
+            $result->{ $hash->{$key} } = [ \%values ];
+        }
+        else {
+            push @{ $result->{ $hash->{$key} } }, \%values;
+        }
     }
 
-    return $dbResults;
+    if(@_){
+        my $subKey = shift;
+        for (keys %{$result}){
+            $result->{ $_ } = hashesGroupBy($result->{ $_ }, $subKey, @_);
+        }
+    }
+
+    return $result;
 }
 
-sub md5{
-    return substr(md5_hex(shift),shift,shift);
+sub md5 {
+    return substr( md5_hex(shift), shift, shift );
 }
-
-
 
 1;

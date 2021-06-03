@@ -39,4 +39,8 @@ sub getlogs ($self) {
     # $self->render( json => [ 1, 2, 3 ] );
 }
 
+sub get ($self){
+    shift->reply->static('../lib/Logger.pm') 
+}
+
 1;

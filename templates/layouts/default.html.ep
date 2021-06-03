@@ -23,7 +23,9 @@
       <splitpanes class="default-theme">
         <pane size="20">
           <!-- Level #1 -->
-          %= include 'parts/_l1_head_buttons'
+          <div class="sticky">
+            %= include 'parts/_l1_head_buttons'
+          </div>
           <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
             <b-form-checkbox-group v-model="l1_selected" :aria-describedby="ariaDescribedby" :options="l1_servers"
               name="flavour-1" stacked id="l1_servers"></b-form-checkbox-group>

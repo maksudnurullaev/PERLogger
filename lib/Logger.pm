@@ -60,6 +60,9 @@ my @files = ();
 #   To detect termination 
 my $ctrl_c = 0;                  # CTL+C watcher
 
+#   Get current user
+my $cuser = getlogin || getpwuid($<) || 'UNKNOWN_USER';
+
 #  Main part to test & run from command line
 main() if not caller();
 
@@ -368,7 +371,7 @@ sub deliver {
 
     if ( $doEcho && @destinations ) {
         foreach my $h (@destinations) {
-            $h->send($s)
+            $h->send("$cuser:$s")
               ; # || die("Error writing to echo socket for $h->peerhost(): $@");
         }
     }

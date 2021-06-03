@@ -18,6 +18,9 @@ var app = new Vue({
         vueVersion: function () {
             return Vue.version;
         },
+        newLine2BR: function (s) {
+            return s.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        },
         l1_selection: function (smode) {
             smode = smode.toLowerCase();
             // check smode as ENUM
@@ -77,23 +80,14 @@ var app = new Vue({
                 }
             );
         },
-        jsonGetServerLFiles: function (server, logfiles) {
+        jsonGetServerLFiles: function (server, server_data) {
             axios.get('/serverlfiles/', {
                 params: {
                     server: server,
                 },
             }).then(
                 function (response) {
-                    var re = /[^\/]+$/;
-                    var re2 = /^(.{7})(.*)(.{10})$/;
-                    response.data[server].map((el) => {
-                        var key = el.lfile.match(re)[0];
-                        if (key.length > 20) {
-                            var reg2Result = re2.exec(key);
-                            key = reg2Result[1] + '...' + reg2Result[3];
-                        }
-                        logfiles.push({ value: el.lfile_md5, html: `<span title="${el.lfile}">${key}</span>` });
-                    });
+                    server_data.push(response.data[server]);
                 }
             );
         },
