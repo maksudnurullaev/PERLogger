@@ -33,8 +33,15 @@
         </pane>
         <pane>
           <!-- Level #2 -->
-          <server-with-log-files v-for="server in l1_selected" v-bind:key="server" v-bind:server="server">
-          </server-with-log-files>
+          <div v-if="l1_selected.length" :key="l2_forceRerenderKey">
+            <div class="sticky">
+              <b-button size="sm" variant="primary" v-on:click="l2_forceRerender">
+                <b-icon icon="arrow-counterclockwise"></b-icon>
+              </b-button>
+            </div>
+            <server-with-log-files v-for="server in l1_selected" v-bind:key="server" v-bind:server="server">
+            </server-with-log-files>
+          </div>
         </pane> <!-- Level #3 -->
         <pane>
           %= include 'parts/_l3_tabs'

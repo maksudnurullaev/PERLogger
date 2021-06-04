@@ -9,11 +9,9 @@
           <b-icon icon="arrow-counterclockwise"></b-icon>
         </b-button>
       </div>
-      <hr />
       <template v-for="log in l3_logs">
         <b-alert show v-html="newLine2BR(log.log)"> </b-alert>
       </template>
-      <hr />
     </b-tab>
   </b-tabs>
 </div>

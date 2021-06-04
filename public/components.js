@@ -12,27 +12,36 @@ Vue.component('server-with-log-files', {
   methods: {
     toggleAll(checked) {
       this.selected = [];
-      if (checked){
+      if (checked) {
         for (const [key, value] of Object.entries(this.server_data[0])) {
-          this.selected = this.selected.concat(value.map( (el) => { return el.value; }));
+          this.selected = this.selected.concat(value.map((el) => { return el.value; }));
         }
       }
     },
-    userDef(user){
+    userDef(user) {
       return "User: " + user;
     },
-    getOptions(v){
+    getOptions(v) {
       var result = [];
       var re = /[^\/]+$/;
       var re2 = /^(.{7})(.*)(.{10})$/;
       v.map((el) => {
-          var key = el.lfile.match(re)[0];
-          if (key.length > 20) {
-              var reg2Result = re2.exec(key);
-              key = reg2Result[1] + '...' + reg2Result[3];
+        var key = el.lfile.match(re)[0];
+        if (key.length > 20) {
+          var reg2Result = re2.exec(key);
+          key = reg2Result[1] + '...' + reg2Result[3];
+        }
+        if (app.l2_last_data.has(el.di)) {
+          if (app.l2_last_data.get(el.di) != el.count) {
+            //setTimeout(() => {
+              blink_me(el.di, 10);
+            //}, 1 * 300);
           }
-          result.push({ value: el.lfile_md5, html: `<span title="${el.lfile}">${key}</span>` });
-      });      
+        }
+        app.l2_last_data.set(el.di, el.count);
+
+        result.push({ value: el.lfile_md5, html: `<span id="${el.di}" title="${el.lfile}">${key}<sup>${el.count}</sup></span>` });
+      });
       return result;
     },
   },
@@ -51,9 +60,9 @@ Vue.component('server-with-log-files', {
       }
       app.l2_updateServerAndFiles(this.server, this.selected);
     },
-    server_data(newValue, oldValue){
+    server_data(newValue, oldValue) {
       this.total_files = 0;
-      if (newValue.length == 1 ){
+      if (newValue.length == 1) {
         for (const [key, value] of Object.entries(newValue[0])) {
           newValue[0][key] = this.getOptions(value);
           this.total_files += value.length;
@@ -82,7 +91,7 @@ Vue.component('server-with-log-files', {
     </template>
   </b-form-group>
   <template v-for="(v,k) in server_data[0]">
-      {{ userDef(k) }}
+      <div class="user_group">{{ userDef(k) }}</div>
       <b-form-checkbox-group
         :id="k"
         v-model="selected"
@@ -99,7 +108,7 @@ Vue.component('server-with-log-files', {
     All Selected: <strong>{{ allSelected }}</strong><br>
     Indeterminate: <strong>{{ indeterminate }}</strong>
   </div>
-   -->  
+  -->  
 </div>
 `
 });

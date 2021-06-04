@@ -17,7 +17,7 @@ sub set_sqlite {
 
 sub get_init_sqls {
     return (
-"CREATE TABLE logs (lhost varchar(64), lhost_md5 varchar(4), luser varchar(16), lfile varchar(255), lfile_md5 varchar(4), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, lsize NUMERIC, log TEXT);",
+"CREATE TABLE logs (lhost varchar(64), lhost_md5 varchar(6), luser varchar(16), lfile varchar(255), lfile_md5 varchar(6), ltime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, lsize NUMERIC, log TEXT);",
 "CREATE INDEX i_logs ON logs (lhost, lhost_md5, luser, lfile, lfile_md5, ltime);",
     );
 }
@@ -62,10 +62,10 @@ sub parse_it {
         $db->insert(
             logs => {
                 lhost     => $lhost,
-                lhost_md5 => Utils::md5( $lhost, 0, 4 ),
+                lhost_md5 => Utils::md5( $lhost, 0, 6 ),
                 luser     => $user,
                 lfile     => $lfile,
-                lfile_md5 => Utils::md5( $lfile, 0, 4 ),
+                lfile_md5 => Utils::md5( $lfile, 0, 6 ),
                 log       => $log
             }
         );
@@ -95,13 +95,14 @@ sub get_servers_and_log_files {
 
     my $db = $sqlite->db;
     my $sql_string =
-      'select distinct lhost, lhost_md5, luser, lfile, lfile_md5 from logs';
+      "select count(*) as count, luser, lfile, lfile_md5, lhost_md5 || '_' || lfile_md5 as di from logs ";
     $sql_string .= "  where lhost = '$_[0]'" if $_[0];
+    $sql_string .= ' group by lfile';
     Utils::print_info( "SQL to select server and log files: " . $sql_string );
 
     my $results = $db->query($sql_string);
 
-    return Utils::hashesGroupBy( $results->hashes, 'lhost', 'luser');
+    return Utils::hashesGroupBy( $results->hashes, 'luser');
 }
 
 sub get_logs {

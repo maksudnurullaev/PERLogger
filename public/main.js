@@ -8,6 +8,8 @@ var app = new Vue({
         l1_selected: [], // Level#1 selected servers
         l2_servers: new Map(),
         l2_selected: [],
+        l2_forceRerenderKey: 0,
+        l2_last_data: new Map(),
         l3_logs: [],
         disableMainBtnShowLog: true,
         disableMainBtnSelAll: false,
@@ -17,6 +19,9 @@ var app = new Vue({
     methods: {
         vueVersion: function () {
             return Vue.version;
+        },
+        l2_forceRerender: function(){
+            this.l2_forceRerenderKey += 1;
         },
         newLine2BR: function (s) {
             return s.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -87,7 +92,7 @@ var app = new Vue({
                 },
             }).then(
                 function (response) {
-                    server_data.push(response.data[server]);
+                    server_data.push(response.data);
                 }
             );
         },
@@ -115,9 +120,11 @@ var app = new Vue({
                 return;
             }
 
-            oldValues.map(function (server) {
-                app.l2_servers.delete(server);
-            });
+            if (oldValues && oldValues.length > 0) {
+                oldValues.map(function (server) {
+                    app.l2_servers.delete(server);
+                });
+            }
             app.l2_selected = Array.from(this.l2_servers.keys());
         },
     },
@@ -127,8 +134,8 @@ var app = new Vue({
             l1_refreshMainButtons();
             if (values.length < oldValues.length) {
                 this.l2_refreshData(arr_diff(values, oldValues));
+                l2_last_data.clear();
             }
-            l2_blink_updates(5);
         },
     },
     beforeMount() {
@@ -188,13 +195,13 @@ function arr_diff(a1, a2) {
     return diff;
 }
 
-function l2_blink_updates(_times) {
+function blink_me(elId, _times) {
     if (_times) {
         setTimeout(() => {
-            document.getElementById('title').classList.toggle("blink");
-            l2_blink_updates(--_times);
+            document.getElementById(elId).classList.toggle("blink");
+            blink_me(elId,--_times);
         }, 500);
     } else {
-        document.getElementById('title').classList.remove("blink");
+        document.getElementById(elId).classList.add("blink");
     }
 }

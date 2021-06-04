@@ -27,4 +27,11 @@ div.sticky {
     background-color: #cae8ca;
     border: 2px solid #4CAF50;
     z-index: 999;
+    margin-bottom: 5px;
+}
+
+.user_group {
+    padding: 2px;
+    background-color: #f6fdf6;
+    border: 2px solid #17a2b8;
 }
