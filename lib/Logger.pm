@@ -41,8 +41,8 @@ my $progress = 0;                           # Show progress if nonzero
 my $tryConver2Hostname = 0;                 # Try to convert IP address to hostname
 
 my $mhours = 1;             # Monitor files that modified for last hours
-my $lineWrap   = 132;       # Wrap lines at this column
-my $lineChop   = 131;       # Trim lines at this column
+my $lineWrap   = 76;       # Wrap lines at this column
+my $lineChop   = 75;       # Trim lines at this column
 my $lineBreak1 = '[,&]';    # Line break first pass candidates
 my $lineBreak2 = '[/+]';    # Line break second pass candidates
 
@@ -241,7 +241,7 @@ sub runServer {
     my $messageHandler = shift || \&defaultServerDeliver;
     my $sock;    # Socket to listen for entries from other hosts
     $listen = $defaultPort if !$listen;
-    $lineWrap = 0;
+    #$lineWrap = 0;
     $lineChop = 0;
 
     #   If we're to receive messages from other hosts, create

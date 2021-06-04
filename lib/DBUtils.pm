@@ -114,7 +114,7 @@ sub get_logs {
 
     my $result = $sql->db->select(
         'logs',
-        [ 'log', 'OID', 'ltime' ],
+        [ 'log', 'OID', 'ltime', \q{ lhost_md5 || '_' || lfile_md5 as di }, 'lfile' ],
 
         # [ 'lhost', 'lfile', \q{ length(log) as len_log}, 'OID', 'ltime' ],
         $_[0], { limit => 25, order_by => { -desc => 'ltime' } }

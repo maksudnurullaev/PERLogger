@@ -23,19 +23,12 @@ Vue.component('server-with-log-files', {
     },
     getOptions(v) {
       var result = [];
-      var re = /[^\/]+$/;
-      var re2 = /^(.{7})(.*)(.{10})$/;
       v.map((el) => {
-        var key = el.lfile.match(re)[0];
-        if (key.length > 20) {
-          var reg2Result = re2.exec(key);
-          key = reg2Result[1] + '...' + reg2Result[3];
-        }
+        var key = file_name_from_path(el.lfile);
+        key = shrink_me(key,20);
         if (app.l2_last_data.has(el.di)) {
           if (app.l2_last_data.get(el.di) != el.count) {
-            //setTimeout(() => {
               blink_me(el.di, 10);
-            //}, 1 * 300);
           }
         }
         app.l2_last_data.set(el.di, el.count);
@@ -76,7 +69,7 @@ Vue.component('server-with-log-files', {
     app.jsonGetServerLFiles(this.server, this.server_data);
   },
   template: `
-<div>
+<div style="margin-bottom: 10px;">
   <b-form-group>
     <template #label>
         <b-form-checkbox
@@ -98,6 +91,7 @@ Vue.component('server-with-log-files', {
         :options="v"
         name="logfiles"
         class="ml-4"
+        style="margin-bottom: 5px;"
         aria-label="Individual server log files"
         stacked
       ></b-form-checkbox-group>

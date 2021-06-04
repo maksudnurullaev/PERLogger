@@ -10,7 +10,10 @@
         </b-button>
       </div>
       <template v-for="log in l3_logs">
-        <b-alert show v-html="newLine2BR(log.log)"> </b-alert>
+        <div v-on:mouseover="overLogText(log.di)" v-on:mouseleave="leaveLogText(log.di)">
+          <b-alert show v-html="log2HTML(log)">
+        </div>
+        </b-alert>
       </template>
     </b-tab>
   </b-tabs>

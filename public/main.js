@@ -11,6 +11,7 @@ var app = new Vue({
         l2_forceRerenderKey: 0,
         l2_last_data: new Map(),
         l3_logs: [],
+        l3_mouseover_id: "",
         disableMainBtnShowLog: true,
         disableMainBtnSelAll: false,
         disableMainBtnSelNone: true,
@@ -20,11 +21,25 @@ var app = new Vue({
         vueVersion: function () {
             return Vue.version;
         },
-        l2_forceRerender: function(){
+        overLogText: function (elId) {
+            if (this.getL2SelectedLFilesCount() <= 1) {
+                return;
+            }
+            document.getElementById(elId).classList.add("show-text");
+        },
+        leaveLogText: function (elId) {
+            if (this.getL2SelectedLFilesCount() <= 1) {
+                return;
+            }
+            document.getElementById(elId).classList.remove("show-text");
+        },
+        l2_forceRerender: function () {
             this.l2_forceRerenderKey += 1;
         },
-        newLine2BR: function (s) {
-            return s.replace(/(?:\r\n|\r|\n)/g, '<br />');
+        log2HTML: function (log) {
+            var result = log.log.replace(/(?:\r\n|\r|\n)/g, '<br />');
+            result += `<hr /><small>${log.ltime} | ${shrink_me(file_name_from_path(log.lfile),20)}</small>`;
+            return result;
         },
         l1_selection: function (smode) {
             smode = smode.toLowerCase();
@@ -73,6 +88,13 @@ var app = new Vue({
                     });
                 }
             );
+        },
+        getL2SelectedLFilesCount: function () {
+            var result = 0;
+            app.l2_servers.forEach((lfiles, server) => {
+                result = lfiles.length;
+            });
+            return result;
         },
         jsonGetLogs: function () {
             var data = {};
@@ -199,9 +221,23 @@ function blink_me(elId, _times) {
     if (_times) {
         setTimeout(() => {
             document.getElementById(elId).classList.toggle("blink");
-            blink_me(elId,--_times);
+            blink_me(elId, --_times);
         }, 500);
     } else {
-        document.getElementById(elId).classList.add("blink");
+        document.getElementById(elId).classList.remove("blink");
     }
+}
+
+var re = /[^\/]+$/;
+function file_name_from_path(path) {
+    return path.match(re)[0];
+}
+
+var re2 = /^(.{7})(.*)(.{10})$/;
+function shrink_me(s, count) {
+    if (s.length > 20) {
+        var reg2Result = re2.exec(s);
+        s = reg2Result[1] + '...' + reg2Result[3];
+    }
+    return s;
 }
