@@ -35,12 +35,10 @@ sub getlogs ($self) {
     print Dumper $where;
 
     $self->render( json => DBUtils::get_logs($where) );
-
-    # $self->render( json => [ 1, 2, 3 ] );
 }
 
 sub get ($self){
-    shift->reply->static('../lib/Logger.pm') 
+    shift->reply->static('../lib/LoggerClient.pm') 
 }
 
 1;
