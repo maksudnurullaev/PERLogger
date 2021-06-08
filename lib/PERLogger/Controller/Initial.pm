@@ -8,7 +8,6 @@ use Data::Dumper;
 
 # This action will render a template
 sub welcome ($self) {
-
     #$self->render();
 }
 
@@ -32,12 +31,12 @@ sub getlogs ($self) {
           };
     }
 
-    print Dumper $where;
+    #print Dumper $where;
 
     $self->render( json => DBUtils::get_logs($where) );
 }
 
-sub get ($self){
+sub client ($self){
     shift->reply->static('../lib/LoggerClient.pm') 
 }
 
