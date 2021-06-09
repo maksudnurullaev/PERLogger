@@ -1,0 +1,22 @@
+.bv-example-row .row>.col:not(.header), .bv-example-row .row>[class^=col-] {
+    background-color: rgba(86,61,124,.15);
+    border: 1px solid rgba(86,61,124,.2);
+}
+
+.bv-example-row {
+    background-color: ivory;
+}
+
+#app {
+    background-color: yellowgreen;
+}
+
+html, body {
+    height: 100%;
+}
+  
+.full-height {
+    height: 100%;
+    background-color: antiquewhite;
+}
+  

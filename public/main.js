@@ -4,8 +4,8 @@ const { Splitpanes, Pane } = splitpanes;
 var app = new Vue({
     el: '#app',
     data: {
-        l1_servers: [],  // Level#1 servers
-        l1_selected: [], // Level#1 selected servers
+        l1_servers: [],                   // Level#1 servers
+        l1_selected: [],                  // Level#1 selected servers
         l2_servers: new Map(),
         l2_selected: [],
         l2_forceRerenderKey: 0,

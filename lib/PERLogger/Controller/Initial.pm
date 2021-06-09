@@ -8,7 +8,11 @@ use Data::Dumper;
 
 # This action will render a template
 sub welcome ($self) {
-    #$self->render();
+    $self->render();
+}
+
+sub test($self){
+    $self->render();
 }
 
 sub servers ($self) {

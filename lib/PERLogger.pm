@@ -74,9 +74,15 @@ sub startup ($self) {
     $r->post('/logs/')
       ->to( controller => 'initial', action => 'getlogs');
     
+    # static files
     $r->any('/client')
       ->to(  controller => 'initial', action => 'client' );
 
+    # test page
+    $r->any('/test')
+      ->to(  controller => 'initial', action => 'test' );
+
+    # Admin page
 
     # Run log file listener thread
     start_log_listener();

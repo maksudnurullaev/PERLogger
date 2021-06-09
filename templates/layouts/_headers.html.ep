@@ -26,4 +26,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 <!-- Custom styles -->
-<link rel="stylesheet" type="text/css" href="/style.css">
+% if ($self->stash("action") eq 'test' && $self->stash("controller") eq 'initial') {
+    <link rel="stylesheet" type="text/css" href="/test.css">
+% } else {
+    <link rel="stylesheet" type="text/css" href="/style.css">
+%}

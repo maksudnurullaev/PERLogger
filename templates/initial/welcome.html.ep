@@ -1,1 +1,27 @@
 % layout 'default';
+
+<div id="app" class="container-fluid h-100 d-flex flex-column">
+    <div class="page-header row flex-shrink-0">
+        <div class="-h-1 col-12 border">
+            <b-row>
+                <b-col><b-link href="/"><span class="h3">PERLogger</span></b-link></b-col>
+                <b-col align="right">
+                    <b-link href="/admin">Login</b-link>
+                </b-col>
+            </b-row>
+        </div>
+    </div>
+    %= include 'tabs/logs/content';
+    <div class="page-footer row flex-shrink-0">
+        <small>
+            <div class="col-12">&copy;{{ new Date().getFullYear() }}
+                <a href="https://github.com/maksudnurullaev/PERLogger">PERLogger</a> v<%= config->{version} %>,
+                    <a href="https://vuejs.org/">Vue</a> v{{ vueVersion() }}
+            </div>
+        </small>
+    </div>
+</div>
+<!-- JS - custom components -->
+<script src="/components.js"></script>
+<!-- JS - main script -->
+<script src="/main.js"></script>
