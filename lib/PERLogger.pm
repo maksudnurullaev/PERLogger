@@ -50,7 +50,7 @@ sub startup ($self) {
         for my $sql (DBUtils::get_init_sqls()) {
             my $sth = $db->dbh()->prepare($sql);
             $sth->execute() || die "$!";
-            Utils::print_info("Executed initial SQL:" . $sql);
+            Utils::print_info("Executed logs SQL:" . $sql);
         }
     }
 
@@ -64,23 +64,23 @@ sub startup ($self) {
 
     # MAIN Route
     $r->get('/' )
-      ->to( controller => 'initial', action => 'welcome');
+      ->to( controller => 'logs', action => 'start');
     
     # API
     $r->get('/servers/')
-      ->to( controller => 'initial', action => 'servers');
+      ->to( controller => 'logs', action => 'servers');
     $r->get('/serverlfiles/')
-      ->to( controller => 'initial', action => 'serverlfiles');
+      ->to( controller => 'logs', action => 'serverlfiles');
     $r->post('/logs/')
-      ->to( controller => 'initial', action => 'getlogs');
+      ->to( controller => 'logs', action => 'getlogs');
     
     # static files
     $r->any('/client')
-      ->to(  controller => 'initial', action => 'client' );
+      ->to(  controller => 'logs', action => 'client' );
 
     # test page
     $r->any('/test')
-      ->to(  controller => 'initial', action => 'test' );
+      ->to(  controller => 'logs', action => 'test' );
 
     # Admin page
 

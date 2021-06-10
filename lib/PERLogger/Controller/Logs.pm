@@ -1,4 +1,4 @@
-package PERLogger::Controller::Initial;
+package PERLogger::Controller::Logs;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use DBUtils;
 use Utils;
@@ -7,7 +7,7 @@ use Mojo::JSON qw(decode_json encode_json);
 use Data::Dumper;
 
 # This action will render a template
-sub welcome ($self) {
+sub start ($self) {
     $self->render();
 }
 

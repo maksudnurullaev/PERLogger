@@ -1,0 +1,6 @@
+<small>
+    <div class="col-12">&copy;{{ new Date().getFullYear() }}
+        <a href="https://github.com/maksudnurullaev/PERLogger">PERLogger</a> v<%= config->{version} %>,
+            <a href="https://vuejs.org/">VueJS</a> v{{ vueVersion }}
+    </div>
+</small>

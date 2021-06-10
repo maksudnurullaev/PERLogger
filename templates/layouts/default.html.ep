@@ -3,14 +3,34 @@
 
 <head>
 
-  %= include 'layouts/_headers'
+  %= include 'layouts/html_headers'
 
   <!-- OTHERS -->
   <title>PERLogger v<%= config->{version} %></title>
 </head>
 
 <body>
-  %= content
+  <div id="app" class="container-fluid h-100 d-flex flex-column">
+    <div class="page-header row flex-shrink-0">
+      %= include 'page/header'
+    </div>
+    <div class="row flex-fill" style="min-height:0">
+      %= content
+    </div>
+    <div class="page-footer row flex-shrink-0">
+      %= include 'page/footer'
+    </div>
+  </div>
 </body>
+
+<!-- Custom JS files -->
+% if ($self->stash("action") eq 'test' && $self->stash("controller") eq 'initial') {
+<script src="/test.js"></script>
+% } else {
+<!-- JS - custom components -->
+<script src="/components.js"></script>
+<!-- JS - main script -->
+<script src="/main.js"></script>
+%}
 
 </html>

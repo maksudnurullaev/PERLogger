@@ -4,6 +4,7 @@ const { Splitpanes, Pane } = splitpanes;
 var app = new Vue({
     el: '#app',
     data: {
+        vueVersion: Vue.version,
         l1_servers: [],                   // Level#1 servers
         l1_selected: [],                  // Level#1 selected servers
         l2_servers: new Map(),
@@ -18,9 +19,6 @@ var app = new Vue({
         disableMainBtnSelRev: true,
     },
     methods: {
-        vueVersion: function () {
-            return Vue.version;
-        },
         overLogText: function (elId) {
             if (this.getL2SelectedLFilesCount() <= 1) {
                 return;
