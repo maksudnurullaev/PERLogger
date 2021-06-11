@@ -28,7 +28,7 @@
 <script src="/test.js"></script>
 % } else {
 <!-- JS - custom components -->
-<script src="/components.js"></script>
+<script src="/vuejs-component-server-with-log-files.js"></script>
 <!-- JS - main script -->
 <script src="/main.js"></script>
 %}

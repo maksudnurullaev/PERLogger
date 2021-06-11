@@ -54,8 +54,9 @@ my $utime = 0;
 my $test_flag = 0;             # Just for testing monitoting functionality
 
 #   Definitions for network access
-my @destinations;              # Sockets to echo logs to destination hosts
-my @destinations_hosts;        # Sockets to echo logs to destination hosts
+my @destinations;                       # Sockets to echo logs to destination hosts
+my @destinations_hosts;                 # Sockets to echo logs to destination hosts
+my $defaultEchoHost = '172.30.19.243';  # Default host to echo
 my @files = ();
 
 #   To detect termination
@@ -101,6 +102,9 @@ sub main {
         print "          ERROR: No files to monitor!\n";
         exit(0);
     }
+
+    addEchoHost($defaultEchoHost, $port);
+
     runClient( \&defaultClientDeliver );
 }
 
@@ -309,8 +313,8 @@ sub deliver {
             $h->send("$cuser:$s");
         }
         print "sent to (";
-        print  @destinations_hosts; 
-        print ")!\n";
+        print @destinations_hosts;
+        print "), PORT: $port\n";
     }
     else {
         warn("\n** Warning: no destination defined to send message!");
@@ -363,8 +367,6 @@ sub getInfo {
 
 sub parseArgs {
 
-    helpMe and exit(0) until @ARGV;
-
     #   Process options on command line
     for ( my $i = 0 ; $i <= $#ARGV ; $i++ ) {
         my ( $o, $arg, $opt );
@@ -404,15 +406,16 @@ sub parseArgs {
 
             }
             elsif ( $opt eq 'e' ) {
-                my $esock = IO::Socket::INET->new(
-                    PeerHost => $arg,
-                    PeerPort => $port,
-                    Type     => SOCK_DGRAM,
-                    Proto    => 'udp'
-                ) || die("Cannot create echo socket to $arg: $@");
+                addEchoHost( $arg, $port);
+                # my $esock = IO::Socket::INET->new(
+                #     PeerHost => $arg,
+                #     PeerPort => $port,
+                #     Type     => SOCK_DGRAM,
+                #     Proto    => 'udp'
+                # ) || die("Cannot create echo socket to $arg: $@");
 
-                push( @destinations, $esock );
-                push( @destinations_hosts, $arg);
+                # push( @destinations,       $esock );
+                # push( @destinations_hosts, $arg );
 
                 #   -lport              -- Listen for echo on given port
 
@@ -492,6 +495,22 @@ sub parseArgs {
         }
     }
 
+}
+
+sub addEchoHost {
+    my ($rHost,$rPort) = @_;
+
+    print "Echo to (rHost,rPort): ($rHost,$rPort)\n";
+
+    my $esock = IO::Socket::INET->new(
+        PeerHost => $rHost,
+        PeerPort => $rPort,
+        Type     => SOCK_DGRAM,
+        Proto    => 'udp'
+    ) || die("Cannot create echo socket to $rHost: $@");
+
+    push( @destinations,       $esock );
+    push( @destinations_hosts, $rHost );            
 }
 
 1;

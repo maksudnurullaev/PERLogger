@@ -3,6 +3,9 @@
         <b-col>
             <b-link href="/"><span class="h3">PERLogger</span></b-link>
         </b-col>
+        <b-col>
+            <pre>wget -O - http://172.30.19.243:3000/client | perl</pre> 
+        </b-col>
         <b-col align="right">
             <b-link href="/admin">Login</b-link>
         </b-col>
