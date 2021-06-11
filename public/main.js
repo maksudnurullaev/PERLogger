@@ -5,6 +5,15 @@ var app = new Vue({
     el: '#app',
     data: {
         vueVersion: Vue.version,
+        user: {
+            name: '',
+            nameState: null,
+            password: '',
+            passwordState: null,
+            loginStatus: "",
+            logged: false,
+            role: "",
+        },
         l1_servers: [],                   // Level#1 servers
         l1_selected: [],                  // Level#1 selected servers
         l2_servers: new Map(),
@@ -19,6 +28,30 @@ var app = new Vue({
         disableMainBtnSelRev: true,
     },
     methods: {
+        try2Login: function (bvModalEvt) {
+            // Prevent modal from closing
+            bvModalEvt.preventDefault();
+            // Trigger submit handler
+            this.try2LoginSubmit();
+        },
+        try2LoginSubmit: function () {
+            // Exit when the login form isn't valid
+            if (!this.checkLoginFormValidity()) {
+                return
+            }
+            // login
+            this.jsonLogin()
+        },
+        checkLoginFormValidity: function () {
+            this.user.nameState = this.$refs.loginForm.elements['name-input'].validity.valid
+            this.user.passwordState = this.$refs.loginForm.elements['password-input'].validity.valid
+            if( this.user.nameState && this.user.passwordState ){
+                this.user.nameState = null
+                this.user.passwordState = null
+                return true
+            }
+            return false
+        },
         overLogText: function (elId) {
             if (this.getL2SelectedLFilesCount() <= 1) {
                 return;
@@ -36,7 +69,7 @@ var app = new Vue({
         },
         log2HTML: function (log) {
             var result = log.log.replace(/(?:\r\n|\r|\n)/g, '<br />');
-            result += `<hr /><small>${log.ltime} | ${shrink_me(file_name_from_path(log.lfile),20)}</small>`;
+            result += `<hr /><small>${log.ltime} | ${shrink_me(file_name_from_path(log.lfile), 20)}</small>`;
             return result;
         },
         l1_selection: function (smode) {
@@ -93,6 +126,52 @@ var app = new Vue({
                 result = lfiles.length;
             });
             return result;
+        },
+        resetModalLogin: function () {
+            if (!this.user.logged) {
+                this.user.name = ''
+                this.user.role = ''
+            }
+            this.user.nameState = null
+            this.user.password = ''
+            this.user.passwordState = null
+            this.user.loginStatus = ''
+        },
+        jsonLogout: function () {
+            axios.get('/user/logout').then(
+                function (response) {
+                    console.log(response.data);
+                    if (response.data.status_code == 0) { // OK
+                        app.user.logged = false
+                        app.resetModalLogin()
+                    } else { // FAILED
+                        alert(response.data.status_text)
+                    }
+                }
+            );
+        },
+        jsonLogin: function () {
+            var data = {};
+
+            data['user.name'] = this.user.name;
+            data['user.password'] = this.user.password;
+
+            axios.post('/user/login', data).then(
+                function (response) {
+                    if (response.data.status_code == 0) { // OK
+                        app.user.logged = true;
+                        app.user.role = response.data.role;
+                        app.resetModalLogin();
+                        app.$nextTick(() => {
+                            app.$bvModal.hide('modal-login')
+                        });
+                    } else { // FAILED
+                        app.user.nameState = false
+                        app.user.passwordState = false        
+                        app.user.loginStatus = response.data.status_text
+                    }
+                }
+            );
         },
         jsonGetLogs: function () {
             var data = {};
@@ -159,7 +238,7 @@ var app = new Vue({
         },
     },
     beforeMount() {
-        this.jsonRefreshServers()
+        //this.jsonRefreshServers()
     },
 });
 

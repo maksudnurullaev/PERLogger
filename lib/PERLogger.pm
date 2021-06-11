@@ -78,6 +78,13 @@ sub startup ($self) {
     $r->any('/client')
       ->to(  controller => 'logs', action => 'client' );
 
+    # login
+    $r->any('/user/login')
+      ->to(  controller => 'user', action => 'login' );
+    # login
+    $r->get('/user/logout')
+      ->to(  controller => 'user', action => 'logout' );
+
     # test page
     $r->any('/test')
       ->to(  controller => 'logs', action => 'test' );
@@ -85,7 +92,7 @@ sub startup ($self) {
     # Admin page
 
     # Run log file listener thread
-    start_log_listener();
+    # start_log_listener();
 }
 
 sub start_log_listener{

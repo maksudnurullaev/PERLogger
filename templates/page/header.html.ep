@@ -4,10 +4,17 @@
             <b-link href="/"><span class="h3">PERLogger</span></b-link>
         </b-col>
         <b-col>
-            <pre>wget -O - http://172.30.19.243:3000/client | perl</pre> 
+            <pre>wget -O - http://172.30.19.243:3000/client | perl</pre>
         </b-col>
-        <b-col align="right">
-            <b-link href="/admin">Login</b-link>
-        </b-col>
+        <div>
+            <b-col align="right">
+                <template v-if="user.logged">
+                    <span :title="user.role">{{ user.name }}</span> | <b-link @click="jsonLogout">Logout</b-link>
+                </template>
+                <template v-else>
+                    <b-link v-b-modal.modal-login>Login</b-link>
+                </template>
+            </b-col>
+        </div>
     </b-row>
 </div>
