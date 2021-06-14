@@ -6,15 +6,6 @@ use Mojo::JSON qw(decode_json encode_json);
 
 use Data::Dumper;
 
-# This action will render a template
-sub start ($self) {
-    $self->render();
-}
-
-sub test($self){
-    $self->render();
-}
-
 sub servers ($self) {
     $self->render( json => DBUtils::get_servers_with_stats() );
 }

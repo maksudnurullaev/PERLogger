@@ -64,7 +64,7 @@ sub startup ($self) {
 
     # MAIN Route
     $r->get('/' )
-      ->to( controller => 'logs', action => 'start');
+      ->to( controller => 'initial', action => 'start');
     
     # API
     $r->get('/servers/')
@@ -92,7 +92,7 @@ sub startup ($self) {
     # Admin page
 
     # Run log file listener thread
-    # start_log_listener();
+    start_log_listener();
 }
 
 sub start_log_listener{

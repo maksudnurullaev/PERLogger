@@ -3,18 +3,26 @@
         <b-col>
             <b-link href="/"><span class="h3">PERLogger</span></b-link>
         </b-col>
-        <b-col>
-            <pre>wget -O - http://172.30.19.243:3000/client | perl</pre>
+        <b-col align="right">
+            <b-link @click="currentActivePage='help'">Help</b-link> |
+            <template v-if="user.logged">
+                <template v-if="user.role == 'log_operator' || user.role == 'administrator'">
+                    <b-link @click="currentActivePage='logs'">Logs</b-link> |
+                </template>
+                <template v-if="user.role == 'bss_operator' || user.role == 'administrator'">
+                    <b-link @click="currentActivePage='bss'">BSS</b-link> |
+                </template>
+                <template v-if="user.role == 'administrator'">
+                    <b-link @click="currentActivePage='admin'">Admin</b-link> |
+                </template>
+                <b-link id="logout-link" :title="user.role" @click="jsonLogout">Logout</b-link>
+                <b-tooltip target="logout-link" triggers="hover">
+                    {{user.name}}<sup>({{user.role}})</sup>
+                  </b-tooltip>
+            </template>
+            <template v-else>
+                <b-link v-b-modal.modal-login>Login</b-link>
+            </template>
         </b-col>
-        <div>
-            <b-col align="right">
-                <template v-if="user.logged">
-                    <span :title="user.role">{{ user.name }}</span> | <b-link @click="jsonLogout">Logout</b-link>
-                </template>
-                <template v-else>
-                    <b-link v-b-modal.modal-login>Login</b-link>
-                </template>
-            </b-col>
-        </div>
     </b-row>
 </div>

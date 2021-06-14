@@ -5,6 +5,7 @@ var app = new Vue({
     el: '#app',
     data: {
         vueVersion: Vue.version,
+        currentActivePage: "help",
         user: {
             name: '',
             nameState: null,
@@ -140,10 +141,10 @@ var app = new Vue({
         jsonLogout: function () {
             axios.get('/user/logout').then(
                 function (response) {
-                    console.log(response.data);
                     if (response.data.status_code == 0) { // OK
                         app.user.logged = false
                         app.resetModalLogin()
+                        app.currentActivePage = 'help'
                     } else { // FAILED
                         alert(response.data.status_text)
                     }
@@ -234,6 +235,13 @@ var app = new Vue({
             if (values.length < oldValues.length) {
                 this.l2_refreshData(arr_diff(values, oldValues));
                 l2_last_data.clear();
+            }
+        },
+        currentActivePage: function(value, oldValue){
+            if( value != oldValue){
+                this.l1_selected = []
+                this.l2_selected = []
+                this.l3_logs = []
             }
         },
     },

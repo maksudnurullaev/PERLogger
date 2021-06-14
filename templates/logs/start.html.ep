@@ -1,5 +1,3 @@
-% layout 'default';
-
 <splitpanes class="default-theme">
     <pane size="20">
         <!-- Level #1 -->

@@ -1,4 +1,4 @@
-<ul>
+<ul v-if="false">
     <li v-for="server in l2_selected" :key="server">
         {{ server }} - {{ l1_getMD5ForHost(server) }}
         <ul>
