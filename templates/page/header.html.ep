@@ -9,8 +9,8 @@
                 <template v-if="user.role == 'log_operator' || user.role == 'administrator'">
                     <b-link @click="currentActivePage='logs'">Logs</b-link> |
                 </template>
-                <template v-if="user.role == 'bss_operator' || user.role == 'administrator'">
-                    <b-link @click="currentActivePage='bss'">BSS</b-link> |
+                <template v-if="user.role == 'shell_operator' || user.role == 'administrator'">
+                    <b-link @click="currentActivePage='shell'">Servers</b-link> |
                 </template>
                 <template v-if="user.role == 'administrator'">
                     <b-link @click="currentActivePage='admin'">Admin</b-link> |
