@@ -46,7 +46,7 @@ var app = new Vue({
         checkLoginFormValidity: function () {
             this.user.nameState = this.$refs.loginForm.elements['name-input'].validity.valid
             this.user.passwordState = this.$refs.loginForm.elements['password-input'].validity.valid
-            if( this.user.nameState && this.user.passwordState ){
+            if (this.user.nameState && this.user.passwordState) {
                 this.user.nameState = null
                 this.user.passwordState = null
                 return true
@@ -151,6 +151,17 @@ var app = new Vue({
                 }
             );
         },
+        jsonCheckCurrentUser: function () {
+            axios.get('/user/current').then(
+                function (response) {
+                    if (response.data.status_code == 0) { // OK
+                        app.user.name = response.data.user;
+                        app.user.logged = true;
+                        app.user.role = response.data.role;
+                    }
+                }
+            );
+        },
         jsonLogin: function () {
             var data = {};
 
@@ -168,7 +179,7 @@ var app = new Vue({
                         });
                     } else { // FAILED
                         app.user.nameState = false
-                        app.user.passwordState = false        
+                        app.user.passwordState = false
                         app.user.loginStatus = response.data.status_text
                     }
                 }
@@ -237,8 +248,8 @@ var app = new Vue({
                 l2_last_data.clear();
             }
         },
-        currentActivePage: function(value, oldValue){
-            if( value != oldValue){
+        currentActivePage: function (value, oldValue) {
+            if (value != oldValue) {
                 this.l1_selected = []
                 this.l2_selected = []
                 this.l3_logs = []
@@ -246,7 +257,7 @@ var app = new Vue({
         },
     },
     beforeMount() {
-        //this.jsonRefreshServers()
+        this.jsonCheckCurrentUser()
     },
 });
 

@@ -81,9 +81,12 @@ sub startup ($self) {
     # login
     $r->any('/user/login')
       ->to(  controller => 'user', action => 'login' );
-    # login
+    # logout
     $r->get('/user/logout')
       ->to(  controller => 'user', action => 'logout' );
+    # get current user info
+    $r->get('/user/current')
+      ->to(  controller => 'user', action => 'current' );
 
     # test page
     $r->any('/test')

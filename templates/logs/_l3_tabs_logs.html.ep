@@ -1,0 +1,7 @@
+%= include 'logs/_l3_tabs_logs_toolbar'
+
+<template v-for="log in l3_logs">
+    <div v-on:mouseover="overLogText(log.di)" v-on:mouseleave="leaveLogText(log.di)">
+        <b-alert show v-html="log2HTML(log)"></b-alert>
+    </div>
+</template>

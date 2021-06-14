@@ -1,0 +1,5 @@
+<div class="sticky">
+    <b-button size="sm" variant="primary" v-on:click="jsonGetLogs">
+        <b-icon icon="arrow-counterclockwise"></b-icon>
+    </b-button>
+</div>

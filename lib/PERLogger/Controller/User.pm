@@ -24,6 +24,27 @@ sub login ($self) {
     }
 }
 
+sub current ($self) {
+    if ( $self->session->{'user.name'} ) {
+        $self->render(
+            json => {
+                status_code => 0,
+                user        => $self->session->{'user.name'},
+                role        => getUserRole($self)
+            }
+        );
+    }
+    else {
+        $self->render(
+            json => {
+                status_code => 1,
+                status_text => "NO authorization!"
+            }
+        );
+
+    }
+}
+
 sub getUserRole ($self) {
     return "administrator"
       if $self->session->{'user.name'} =~ /administrator/i;

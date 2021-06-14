@@ -4,17 +4,7 @@
       %= include 'logs/_l3_tabs_config'
     </b-tab>
     <b-tab title="Logs" active>
-      <div class="sticky">
-        <b-button size="sm" variant="primary" v-on:click="jsonGetLogs">
-          <b-icon icon="arrow-counterclockwise"></b-icon>
-        </b-button>
-      </div>
-      <template v-for="log in l3_logs">
-        <div v-on:mouseover="overLogText(log.di)" v-on:mouseleave="leaveLogText(log.di)">
-          <b-alert show v-html="log2HTML(log)">
-        </div>
-        </b-alert>
-      </template>
+      %= include 'logs/_l3_tabs_logs'
     </b-tab>
   </b-tabs>
 </div>
