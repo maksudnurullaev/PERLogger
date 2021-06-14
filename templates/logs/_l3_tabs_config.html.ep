@@ -1,10 +1,13 @@
-<ul v-if="false">
-    <li v-for="server in l2_selected" :key="server">
-        {{ server }} - {{ l1_getMD5ForHost(server) }}
-        <ul>
-            <li v-for="fname in l3_getLogFilesForServer(server)" :key="fname">
-                {{ fname }}
-            </li>
-        </ul>
-    </li>
-</ul>
+%= include 'logs/_l3_tabs_config_toolbar'
+
+<template>
+    <div>
+        <b-form-group label="Error definitions:" label-for="textarea-errors" class="mb-0" label-class="text-danger">
+            <b-form-textarea id="textarea-errors" v-model="logs.error_defs" class="bg-red"></b-form-textarea>
+        </b-form-group>
+
+        <b-form-group label="Warning definitions:" label-for="textarea-warnings" class="mb-0" label-class="text-warning">
+            <b-form-textarea id="textarea-warnings" v-model="logs.warning_defs" class="bg-yellow"></b-form-textarea>
+        </b-form-group>
+    </div>
+</template>

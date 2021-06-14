@@ -6,6 +6,10 @@ var app = new Vue({
     data: {
         vueVersion: Vue.version,
         currentActivePage: "help",
+        logs:{
+            error_defs: "",
+            warning_defs: "",
+        },
         user: {
             name: '',
             nameState: null,
@@ -105,6 +109,9 @@ var app = new Vue({
         l2_reset: function () {
             this.l2_servers = new Map();
             this.l2_selected = [];
+        },
+        jsonGetErrWarnDefs: function(){
+            //TODO
         },
         jsonRefreshServers: function () {
             var self = this;
