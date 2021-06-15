@@ -17,7 +17,6 @@ sub serverlfiles ($self) {
 
 sub getlogs ($self) {
     my $params = decode_json( $self->req->body );
-    print Dumper $params;
 
     if ( !exists( $params->{where} ) ) {
         $self->render(
