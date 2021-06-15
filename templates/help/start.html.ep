@@ -1,4 +1,4 @@
 <b-alert show variant="light">
-    <h5 class="card-title">To run client, just copy & paste & run current line in server' console(command line)</h5>
+    <h5 class="card-title">To run client, just copy & paste & run from server console:</h5>
     <p class="card-text"><code>wget -O - http://172.30.19.243:3000/client | perl</code></p>
 </b-alert>

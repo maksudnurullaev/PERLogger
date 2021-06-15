@@ -17,22 +17,30 @@ sub serverlfiles ($self) {
 
 sub getlogs ($self) {
     my $params = decode_json( $self->req->body );
-    my $where  = [];    #map { lhost => $_ } keys %{$params};
-    foreach my $key ( keys %{$params} ) {
-        push @{$where},
-          {
-            lhost_md5 => $key,
-            lfile_md5 => $params->{$key}
-          };
+    print Dumper $params;
+
+    if ( !exists( $params->{where} ) ) {
+        $self->render(
+            json => { status_code => 1, error_msg => "NO WHERE definitions!" } );
     }
+    elsif ( !exists( $params->{top} ) ) {
+        $self->render(
+            json => { status_code => 0, error_msg => "NO TOP definitions!" } );
+    }
+    else {
+        my $where = [];
+        for ( @{ $params->{where} } ) {
+            push @{$where}, $_;
+        }
 
-    #print Dumper $where;
+        $self->render(
+            json => { status_code => 0, logs => DBUtils::get_logs($where, $params->{top}) } );
 
-    $self->render( json => DBUtils::get_logs($where) );
+    }
 }
 
-sub client ($self){
-    shift->reply->static('../lib/LoggerClient.pm') 
+sub client ($self) {
+    shift->reply->static('../lib/LoggerClient.pm');
 }
 
 1;

@@ -1,5 +1,11 @@
 <div class="sticky">
-    <b-button size="sm" variant="primary" v-on:click="jsonGetLogs">
-        <b-icon icon="arrow-counterclockwise"></b-icon>
-    </b-button>
+    <b-form inline>
+        <b-button size="sm" variant="primary" v-on:click="jsonGetLogs" style="margin-right: 10px;">
+            <b-icon icon="arrow-counterclockwise"></b-icon>
+        </b-button>
+
+        <label for="inline-form-custom-select-pref" style="margin-right: 5px;">Top:</label>
+        <b-form-select size="sm" id="inline-form-custom-select-pref" v-model="logs.top.selected"
+            :options="logs.top.options"></b-form-select>
+    </b-form>
 </div>

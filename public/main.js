@@ -6,9 +6,13 @@ var app = new Vue({
     data: {
         vueVersion: Vue.version,
         currentActivePage: "help",
-        logs:{
+        logs: {
             error_defs: "",
             warning_defs: "",
+            top: {
+                selected: 20,
+                options: [20, 50, 100, 200, 500, 1000],
+            },
         },
         user: {
             name: '',
@@ -33,9 +37,9 @@ var app = new Vue({
         disableMainBtnSelRev: true,
     },
     methods: {
-        userHasRole: function(role){
+        userHasRole: function (role) {
             console.debug("userHasRole: " + role);
-            if (this.user.roles.length == 0){
+            if (this.user.roles.length == 0) {
                 return false;
             }
             return this.user.roles.indexOf(role) != -1;
@@ -117,7 +121,7 @@ var app = new Vue({
             this.l2_servers = new Map();
             this.l2_selected = [];
         },
-        jsonGetErrWarnDefs: function(){
+        jsonGetErrWarnDefs: function () {
             //TODO
         },
         jsonRefreshServers: function () {
@@ -202,12 +206,21 @@ var app = new Vue({
         },
         jsonGetLogs: function () {
             var data = {};
+            data['where'] = [];
             app.l2_servers.forEach((lfiles, server) => {
-                data[this.l1_getMD5ForHost(server)] = lfiles;
+                data['where'].push({
+                    lhost_md5: app.l1_getMD5ForHost(server),
+                    lfile_md5: lfiles
+                });
             });
+            data['top'] = app.logs.top.selected;
             axios.post('/logs/', data).then(
                 function (response) {
-                    app.l3_logs = response.data;
+                    if (response.data.status_code == 0) {
+                        app.l3_logs = response.data.logs;
+                    } else {
+                        alert(respone.data.error_msg);
+                    }
                 }
             );
         },
