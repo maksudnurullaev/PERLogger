@@ -7,3 +7,9 @@ dir4db: DATA/main.db
 dir4logs: DATA/TMP/dummy.file.
 
 admin_password: f437ab7f5de2c9051a7c1468f8bc5fa8
+
+users:
+  - administrator:
+    - log_operator
+    - shell_operator
+    - administrator

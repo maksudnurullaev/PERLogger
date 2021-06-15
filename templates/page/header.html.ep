@@ -6,19 +6,19 @@
         <b-col align="right">
             <b-link @click="currentActivePage='help'">Help</b-link> |
             <template v-if="user.logged">
-                <template v-if="user.role == 'log_operator' || user.role == 'administrator'">
+                <template v-if="userHasRole('log_operator')">
                     <b-link @click="currentActivePage='logs'">Logs</b-link> |
                 </template>
-                <template v-if="user.role == 'shell_operator' || user.role == 'administrator'">
-                    <b-link @click="currentActivePage='shell'">Shell</b-link> |
+                <template v-if="userHasRole('shell_operator')">
+                    <b-link @click=" currentActivePage='shell'">Shell</b-link> |
                 </template>
-                <template v-if="user.role == 'administrator'">
+                <template v-if="userHasRole('administrator')">
                     <b-link @click="currentActivePage='admin'">Admin</b-link> |
                 </template>
-                <b-link id="logout-link" :title="user.role" @click="jsonLogout">Logout</b-link>
+                <b-link id="logout-link" title="user.roles" @click="jsonLogout">Logout</b-link>
                 <b-tooltip target="logout-link" triggers="hover">
-                    {{user.name}}<sup>({{user.role}})</sup>
-                  </b-tooltip>
+                    {{user.name}}
+                </b-tooltip>
             </template>
             <template v-else>
                 <b-link v-b-modal.modal-login>Login</b-link>

@@ -1,5 +1,5 @@
 <b-button size="sm" variant="primary" v-on:click="jsonRefreshServers">
-    <b-icon icon="arrow-counterclockwise"></b-icon>
+    <b-icon icon="arrow-bar-down"></b-icon>
 </b-button>
 <b-button-group>
     <b-button :disabled="disableMainBtnSelAll" size="sm" variant="success" v-on:click="l1_selection('All')">

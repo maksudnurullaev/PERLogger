@@ -4,6 +4,7 @@ use DBUtils;
 use Utils;
 use Mojo::JSON qw(decode_json encode_json);
 use Digest::MD5 qw(md5_hex);
+use Auth;
 
 use Data::Dumper;
 
@@ -16,7 +17,7 @@ sub login ($self) {
     {
         $self->session->{'user.name'} = $params->{'user.name'};
         $self->render(
-            json => { status_code => 0, role => getUserRole($self) } );
+            json => { status_code => 0, roles => Auth::getUserRoles($self, $params->{'user.name'}) } );
     }
     else {
         $self->render( json =>
@@ -30,7 +31,7 @@ sub current ($self) {
             json => {
                 status_code => 0,
                 user        => $self->session->{'user.name'},
-                role        => getUserRole($self)
+                roles        => Auth::getUserRoles($self, $self->session->{'user.name'})
             }
         );
     }
@@ -43,13 +44,6 @@ sub current ($self) {
         );
 
     }
-}
-
-sub getUserRole ($self) {
-    return "administrator"
-      if $self->session->{'user.name'} =~ /administrator/i;
-    return "operator" if $self->session->{'user.name'};
-    return "";
 }
 
 sub logout ($self) {

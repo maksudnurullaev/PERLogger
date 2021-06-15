@@ -17,7 +17,7 @@ var app = new Vue({
             passwordState: null,
             loginStatus: "",
             logged: false,
-            role: "",
+            roles: [],
         },
         l1_servers: [],                   // Level#1 servers
         l1_selected: [],                  // Level#1 selected servers
@@ -33,6 +33,13 @@ var app = new Vue({
         disableMainBtnSelRev: true,
     },
     methods: {
+        userHasRole: function(role){
+            console.debug("userHasRole: " + role);
+            if (this.user.roles.length == 0){
+                return false;
+            }
+            return this.user.roles.indexOf(role) != -1;
+        },
         try2Login: function (bvModalEvt) {
             // Prevent modal from closing
             bvModalEvt.preventDefault();
@@ -138,7 +145,7 @@ var app = new Vue({
         resetModalLogin: function () {
             if (!this.user.logged) {
                 this.user.name = ''
-                this.user.role = ''
+                this.user.roles = []
             }
             this.user.nameState = null
             this.user.password = ''
@@ -164,7 +171,7 @@ var app = new Vue({
                     if (response.data.status_code == 0) { // OK
                         app.user.name = response.data.user;
                         app.user.logged = true;
-                        app.user.role = response.data.role;
+                        app.user.roles = response.data.roles;
                     }
                 }
             );
@@ -179,15 +186,16 @@ var app = new Vue({
                 function (response) {
                     if (response.data.status_code == 0) { // OK
                         app.user.logged = true;
-                        app.user.role = response.data.role;
+                        app.user.roles = response.data.roles;
                         app.resetModalLogin();
                         app.$nextTick(() => {
                             app.$bvModal.hide('modal-login')
                         });
+                        app.user.lastLoginTime = new Date();
                     } else { // FAILED
-                        app.user.nameState = false
-                        app.user.passwordState = false
-                        app.user.loginStatus = response.data.status_text
+                        app.user.nameState = false;
+                        app.user.passwordState = false;
+                        app.user.loginStatus = response.data.status_text;
                     }
                 }
             );
