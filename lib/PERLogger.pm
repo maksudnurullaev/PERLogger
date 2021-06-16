@@ -10,9 +10,9 @@ use Mojo::Home;
 use Mojo::IOLoop::Subprocess;
 
 use Utils;
-use DBUtils;
+use Utils::DB;
 
-use Logger;
+use Utils::Logger::Server;
 
 # This method will run once at server start
 sub startup ($self) {
@@ -47,7 +47,7 @@ sub startup ($self) {
     my $db = $self->sqlite->db;
 
     if ( ! @{$db->tables} ) {
-        for my $sql (DBUtils::get_init_sqls()) {
+        for my $sql (DB::get_init_sqls()) {
             my $sth = $db->dbh()->prepare($sql);
             $sth->execute() || die "$!";
             Utils::print_info("Executed logs SQL:" . $sql);
@@ -57,7 +57,7 @@ sub startup ($self) {
     # print Dumper $db->tables;
     # exit;
     # ... set db
-    DBUtils::set_sqlite $self->sqlite;
+    DB::set_sqlite $self->sqlite;
 
     # Router
     my $r = $self->routes;
@@ -104,13 +104,13 @@ sub start_log_listener{
     
     $SIG{INT} = $SIG{TERM} = sub {
         Utils::print_warn "-=Stop signal catched!=-\n";
-        Logger::stopServer() ;
+        Server::stopServer() ;
     };
 
     $subprocess->run(
       sub ($subprocess) {
-        Logger::runServer(\&DBUtils::parse_it) ;
-        #Logger::runServer(\&Utils::print_warn) ;
+        Server::runServer(\&DB::parse_it) ;
+        #DEBUG: Server::runServer(\&Utils::print_warn) ;
         return '♥', 'Mojolicious';
       },
       sub ($subprocess, $err, @results) {

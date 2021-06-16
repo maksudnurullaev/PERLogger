@@ -1,4 +1,4 @@
-package DBUtils;
+package DB;
 
 use Mojo::Base -strict;
 use Mojo::Home;

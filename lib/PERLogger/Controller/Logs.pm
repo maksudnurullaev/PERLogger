@@ -1,17 +1,17 @@
 package PERLogger::Controller::Logs;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
-use DBUtils;
+use Utils::DB;
 use Utils;
 use Mojo::JSON qw(decode_json encode_json);
 
 use Data::Dumper;
 
 sub servers ($self) {
-    $self->render( json => DBUtils::get_servers_with_stats() );
+    $self->render( json => DB::get_servers_with_stats() );
 }
 
 sub serverlfiles ($self) {
-    my $result = DBUtils::get_servers_and_log_files( $self->param('server') );
+    my $result = DB::get_servers_and_log_files( $self->param('server') );
     $self->render( json => $result );
 }
 
@@ -33,13 +33,13 @@ sub getlogs ($self) {
         }
 
         $self->render(
-            json => { status_code => 0, logs => DBUtils::get_logs($where, $params->{top}) } );
+            json => { status_code => 0, logs => DB::get_logs($where, $params->{top}) } );
 
     }
 }
 
 sub client ($self) {
-    shift->reply->static('../lib/LoggerClient.pm');
+    shift->reply->static('../lib/Utils/Logger/Client.pm');
 }
 
 1;

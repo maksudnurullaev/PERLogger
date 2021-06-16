@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-package Logger;
+package Server;
 
 #
 #                          Log Watcher (Logger)

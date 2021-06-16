@@ -1,10 +1,10 @@
 package PERLogger::Controller::User;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
-use DBUtils;
+use Utils::DB;
 use Utils;
 use Mojo::JSON qw(decode_json encode_json);
 use Digest::MD5 qw(md5_hex);
-use Auth;
+use Utils::Auth;
 
 use Data::Dumper;
 
