@@ -1,4 +1,5 @@
 <b-alert show variant="light">
     <h5 class="card-title">To run client, just copy & paste & run from server console:</h5>
-    <p class="card-text"><code>wget -O - http://172.30.19.243:3000/client | perl</code></p>
+    <p class="card-text">Run client to watch all "*.log" file from current directory:</p>
+    <p><code>SHELL&gt; wget -O - http://172.30.19.243:3000/client | perl</code></p>
 </b-alert>
