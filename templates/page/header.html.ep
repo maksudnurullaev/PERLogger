@@ -2,6 +2,9 @@
     <b-row>
         <b-col>
             <b-link href="/"><span class="h3">PERLogger</span></b-link>
+            % if (app->mode eq 'development') {
+            <sup>Development</sup>
+            % }
         </b-col>
         <b-col align="right">
             <b-link @click="currentActivePage='help'">Help</b-link> |

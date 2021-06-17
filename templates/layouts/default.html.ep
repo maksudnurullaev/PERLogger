@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <div id="app" class="container-fluid h-100 d-flex flex-column">
+  <div id="app" class="container-fluid h-100 d-flex flex-column" v-cloak>
     <div class="page-header row flex-shrink-0">
       %= include 'page/header'
     </div>
