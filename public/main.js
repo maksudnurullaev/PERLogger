@@ -38,7 +38,7 @@ var app = new Vue({
     },
     methods: {
         userHasRole: function (role) {
-            console.debug("userHasRole: " + role);
+            // console.debug("userHasRole: " + role);
             if (this.user.roles.length == 0) {
                 return false;
             }
@@ -273,7 +273,7 @@ var app = new Vue({
             l1_refreshMainButtons();
             if (values.length < oldValues.length) {
                 this.l2_refreshData(arr_diff(values, oldValues));
-                l2_last_data.clear();
+                this.l2_last_data.clear();
             }
         },
         currentActivePage: function (value, oldValue) {
