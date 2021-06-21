@@ -15,7 +15,7 @@ sub serverlfiles ($self) {
     $self->render( json => $result );
 }
 
-sub getlogs ($self) {
+sub get ($self) {
     my $params = decode_json( $self->req->body );
 
     if ( !exists( $params->{where} ) ) {
@@ -36,10 +36,6 @@ sub getlogs ($self) {
             json => { status_code => 0, logs => DB::get_logs($where, $params->{top}) } );
 
     }
-}
-
-sub client ($self) {
-    shift->reply->static('../lib/Utils/Logger/Client.pm');
 }
 
 1;

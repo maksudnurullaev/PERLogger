@@ -40,7 +40,7 @@ my $verbose            = 0;    # Print debug output if true
 my $progress           = 0;    # Show progress if nonzero
 my $tryConver2Hostname = 0;    # Try to convert IP address to hostname
 
-my $mhours     = 1;            # Monitor files that modified for last hours
+my $mhours     = 12;           # Monitor files that modified for last hours
 my $lineWrap   = 76;           # Wrap lines at this column
 my $lineChop   = 75;           # Trim lines at this column
 my $lineBreak1 = '[,&]';       # Line break first pass candidates

@@ -67,16 +67,17 @@ sub startup ($self) {
       ->to( controller => 'initial', action => 'start');
     
     # API
-    $r->get('/servers/')
+    $r->get('/logs/servers')
       ->to( controller => 'logs', action => 'servers');
-    $r->get('/serverlfiles/')
+    $r->get('/logs/serverlfiles')
       ->to( controller => 'logs', action => 'serverlfiles');
-    $r->post('/logs/')
-      ->to( controller => 'logs', action => 'getlogs');
+    $r->post('/logs/get')
+      ->to( controller => 'logs', action => 'get');
     
     # static files
-    $r->any('/client')
-      ->to(  controller => 'logs', action => 'client' );
+    $r->any('/client')->to( cb => sub {
+        shift->reply->static('../lib/Utils/Logger/Client.pm');
+      });
 
     # login
     $r->any('/user/login')
@@ -91,8 +92,6 @@ sub startup ($self) {
     # test page
     $r->any('/test')
       ->to(  controller => 'logs', action => 'test' );
-
-    # Admin page
 
     # Run log file listener thread
     start_log_listener();

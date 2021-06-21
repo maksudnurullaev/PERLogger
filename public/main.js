@@ -126,7 +126,7 @@ var app = new Vue({
         },
         jsonRefreshServers: function () {
             var self = this;
-            axios.get('/servers/').then(
+            axios.get('/logs/servers').then(
                 function (response) {
                     self.l1_servers = [];
                     response.data.map(function (el) {
@@ -214,7 +214,7 @@ var app = new Vue({
                 });
             });
             data['top'] = app.logs.top.selected;
-            axios.post('/logs/', data).then(
+            axios.post('/logs/get', data).then(
                 function (response) {
                     if (response.data.status_code == 0) {
                         app.l3_logs = response.data.logs;
@@ -225,7 +225,7 @@ var app = new Vue({
             );
         },
         jsonGetServerLFiles: function (server, server_data) {
-            axios.get('/serverlfiles/', {
+            axios.get('/logs/serverlfiles', {
                 params: {
                     server: server,
                 },
