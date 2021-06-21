@@ -9,7 +9,7 @@
         <b-col align="right">
             <b-link @click="currentActivePage='help'">Help</b-link> |
             <template v-if="user.logged">
-                <template v-if="userHasRole('log_operator')">
+                <template v-if="userHasRole('log_operator')"> <!-- TODO: May be we should find more optimized version of this 'userHasRole' logic! -->
                     <b-link @click="currentActivePage='logs'">Logs</b-link> |
                 </template>
                 <template v-if="userHasRole('shell_operator')">
