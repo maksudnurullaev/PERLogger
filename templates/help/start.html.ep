@@ -1,7 +1,10 @@
 <b-alert show variant="light">
     <h5 class="card-title">To run client, just copy & paste & run from server console:</h5>
-    <p class="card-text">Run client to watch all "*.log" file from current directory:</p>
+    <p class="card-text"><strong>Run client to watch all "*.log" file from current directory:</strong></p>
     <p><code>SHELL&gt; wget -O - http://172.30.19.243:3000/client | perl</code></p>
-    <p>OR</p>
+    <p><strong>OR:</strong></p>
     <p><code>SHELL&gt; curl http://172.30.19.243:3000/client | perl</code></p>
-</b-alert>
+    <p><strong>OR (write script and run with parameters):</strong></p>
+    <p><code>SHELL&gt; wget -O Logger.pm http://172.30.19.243:3000/client</code></p>
+    <p><code>SHELL&gt; sudo perl Logger.pm -e172.30.19.243 /var/log/httpd/access_log /var/log/httpd/error_log</code></p>
+    </b-alert>

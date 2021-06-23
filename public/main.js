@@ -159,12 +159,12 @@ var app = new Vue({
         jsonLogout: function () {
             axios.get('/user/logout').then(
                 function (response) {
-                    if (response.data.status_code == 0) { // OK
+                    if (response.data.status == 0) { // OK
                         app.user.logged = false
                         app.resetModalLogin()
                         app.currentActivePage = 'help'
                     } else { // FAILED
-                        alert(response.data.status_text)
+                        alert(response.data.error_msg)
                     }
                 }
             );
@@ -172,7 +172,7 @@ var app = new Vue({
         jsonCheckCurrentUser: function () {
             axios.get('/user/current').then(
                 function (response) {
-                    if (response.data.status_code == 0) { // OK
+                    if (response.data.status == 0) { // OK
                         app.user.name = response.data.user;
                         app.user.logged = true;
                         app.user.roles = response.data.roles;
@@ -188,7 +188,7 @@ var app = new Vue({
 
             axios.post('/user/login', data).then(
                 function (response) {
-                    if (response.data.status_code == 0) { // OK
+                    if (response.data.status == 0) { // OK
                         app.user.logged = true;
                         app.user.roles = response.data.roles;
                         app.resetModalLogin();
@@ -199,7 +199,7 @@ var app = new Vue({
                     } else { // FAILED
                         app.user.nameState = false;
                         app.user.passwordState = false;
-                        app.user.loginStatus = response.data.status_text;
+                        app.user.loginStatus = response.data.error_msg;
                     }
                 }
             );
@@ -216,7 +216,7 @@ var app = new Vue({
             data['top'] = app.logs.top.selected;
             axios.post('/logs/get', data).then(
                 function (response) {
-                    if (response.data.status_code == 0) {
+                    if (response.data.status == 0) {
                         app.l3_logs = response.data.logs;
                     } else {
                         alert(respone.data.error_msg);

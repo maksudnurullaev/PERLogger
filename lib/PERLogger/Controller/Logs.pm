@@ -20,11 +20,11 @@ sub get ($self) {
 
     if ( !exists( $params->{where} ) ) {
         $self->render(
-            json => { status_code => 1, error_msg => "NO WHERE definitions!" } );
+            json => { status => 1, error_msg => "NO WHERE definitions!" } );
     }
     elsif ( !exists( $params->{top} ) ) {
         $self->render(
-            json => { status_code => 0, error_msg => "NO TOP definitions!" } );
+            json => { status => 0, error_msg => "NO TOP definitions!" } );
     }
     else {
         my $where = [];
@@ -33,7 +33,7 @@ sub get ($self) {
         }
 
         $self->render(
-            json => { status_code => 0, logs => DB::get_logs($where, $params->{top}) } );
+            json => { status => 0, logs => DB::get_logs($where, $params->{top}) } );
 
     }
 }

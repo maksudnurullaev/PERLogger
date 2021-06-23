@@ -1,17 +1,55 @@
-use Digest::MD5 qw(md5_hex);
+use Mojolicious::Lite;
 
-use Mojo::File qw(curfile);
-use lib curfile->dirname->sibling('lib')->to_string;
+my $SERVER = $ENV{AD_SERVER} // die "AD_SERVER env variable not set";
 
-use Utils;
-print "Digest is ", md5_hex("foobarbaz"), "\n";
-print "Digest is ", substr(md5_hex("foobarbaz"),0,4), "\n";
-print "Digest is ", Utils::md5("foobarbaz",0,5), "\n";
+app->secrets( ['My secret passphrase here'] );
 
+plugin 'SPNEGO', ad_server => $SERVER;
 
-print "Digest is ", Utils::md5("/uzb-mps/prusers/uzboper/var/tsh/log/MPSRATER_TSHR01016_TSH_uzb-mps_20210604100350.log",0,5), "\n";
-print "Digest is ", Utils::md5("/uzb-mps/prusers/uzboper/var/tsh/log/RATER0111_TSHR01011_TSH_uzb-mps-n2_20210306_173414.log",0,5), "\n";
+get '/' => sub {
+    my $c = shift;
+    if ( not $c->session('user') ) {
+        $c->ntlm_auth(
+            {
+                ad_server => "ldap://my.server",
+                verify    => 'require'
+                ,    # if any verify value is set then start_tls is issued
+                auth_success_cb => sub {
+                    my $c    = shift;
+                    my $user = shift;
+                    my $ldap = shift;    # bound Net::LDAP::SPNEGO connection
+                    $c->session( 'user', $user->{samaccountname} );
+                    $c->session( 'name', $user->{displayname} );
+                    my $groups =
+                      $ldap->get_ad_groups( $user->{samaccountname} );
+                    $c->session( 'groups', [ sort keys %$groups ] );
+                    return 1;            # 1 is you are happy with the outcome
+                }
+            }
+        ) or return;
+    }
+} => 'index';
 
-print "Digest is ", Utils::md5("/uzb-mps/prusers/uzboper/var/tsh/log/RATER0111_TSHR01011_TSH_uzb-mps-n2_20210306_173414.log",0,5), "\n";
+app->start;
 
-print "Password: " . md5_hex('wwwww') . "\n";
+__DATA__
+ 
+@@ index.html.ep
+<!DOCTYPE html>
+<html>
+<head>
+<title>NTLM Auth Test</title>
+</head>
+<body>
+<h1>Hello <%= session 'name' %></h1>
+<div>Your account '<%= session 'user' %>' belongs to the following groups:</div>
+<ul>
+% if ( session 'groups'  ) {
+% for my $group (@{session 'groups' }) {
+   <li>'<%= $group %>'</li>
+% }
+% }
+</ul>
+</body>
+</html>
+
