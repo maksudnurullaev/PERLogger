@@ -124,18 +124,28 @@ var app = new Vue({
         jsonGetErrWarnDefs: function () {
             //TODO
         },
+        try2CatchBadResponse: function(response){
+            if (response.status == 401){ // No authrization!
+                console.error(response.error_msg);
+                document.location.reload();
+            }
+        },
         jsonRefreshServers: function () {
             var self = this;
             axios.get('/logs/servers').then(
                 function (response) {
                     self.l1_servers = [];
-                    response.data.map(function (el) {
-                        self.l1_servers.push({
-                            value: el.lhost,
-                            lhost_md5: el.lhost_md5,
-                            html: el.lhost + "<sup>" + el.count + "</sup>",
+                    if (response.data.status == 0) {
+                        response.data.servers.map(function (el) {
+                            self.l1_servers.push({
+                                value: el.lhost,
+                                lhost_md5: el.lhost_md5,
+                                html: el.lhost + "<sup>" + el.count + "</sup>",
+                            });
                         });
-                    });
+                    } else {
+                        self.try2CatchBadResponse(response.data);
+                    }
                 }
             );
         },
@@ -164,7 +174,7 @@ var app = new Vue({
                         app.resetModalLogin()
                         app.currentActivePage = 'help'
                     } else { // FAILED
-                        alert(response.data.error_msg)
+                        console.error(response.data.error_msg);
                     }
                 }
             );
@@ -176,6 +186,8 @@ var app = new Vue({
                         app.user.name = response.data.user;
                         app.user.logged = true;
                         app.user.roles = response.data.roles;
+                    } else {
+                        console.error(response.data.error_msg);
                     }
                 }
             );

@@ -15,7 +15,6 @@ sub login {
       if !defined( $params->{'user.password'} );
 
     my $passcode = getPasscode( $self, $params->{'user.name'} );
-    print Dumper $passcode;
 
     return { status => 5, error_msg => "No passcode definition!" }
       if !$passcode;
@@ -51,6 +50,30 @@ sub getPasscode {
       if !exists( $users->{$user_name} )
       or !exists( $users->{$user_name}{'passcode'} );
     return $users->{$user_name}{'passcode'};
+}
+
+sub hasRole {
+    my $self = shift;
+    return 0 if !$self->session->{'user.name'} or !scalar(@_);
+
+    my $roles = getUserRoles( $self, $self->session->{'user.name'} );
+    for my $role (@_) {
+        for ( @{$roles} ) {
+            return 1 if $_ eq $role;
+        }
+    }
+
+    return 0;
+}
+
+sub as {
+    my $self = shift;
+    return 0 if !@_;
+    say "@_";
+    $self->render( json => { status => 401, error_msg => 'You not authorized!' } )
+      and return 0
+      if !hasRole( $self, @_ );
+    return 1;
 }
 
 1;
