@@ -7,8 +7,16 @@ var app = new Vue({
         vueVersion: Vue.version,
         currentActivePage: "help",
         logs: {
-            error_defs: "",
-            warning_defs: "",
+            error_defs: "error",
+            warning_defs: "warning",
+            config: {
+                selected: null,
+                options:[
+                    {value: 'a', text: 'Value a'},
+                    {value: 'b', text: 'Value b'},
+                    {value: 'c', text: 'Value c'},
+                ],
+            },
             top: {
                 selected: 20,
                 options: [20, 50, 100, 200, 500, 1000],

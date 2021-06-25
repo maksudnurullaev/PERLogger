@@ -1,5 +1,11 @@
 <div class="sticky">
-    <b-button size="sm" variant="primary" v-on:click="jsonGetErrWarnDefs">
-        <b-icon icon="arrow-counterclockwise"></b-icon>
-    </b-button>
+    <b-button-group>
+        <b-button size="sm" variant="primary">+</b-button>
+    </b-button-group>
+    <b-button-group>
+        <b-form-select size="sm" v-model="logs.config.selected" :options="logs.config.options"></b-form-select>
+    </b-button-group>
+    <b-button-group>
+        <b-button v-if="logs.config.selected" size="sm">-</b-button>        
+    </b-button-group>
 </div>
