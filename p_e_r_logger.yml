@@ -3,10 +3,7 @@ secrets:
   - 73ed67a5518ed756f4ec629aad544fba8a095a9c
 
 version: 0.0.2a
-dir4db: DATA/main.db
-dir4logs: DATA/TMP/dummy.file.
-
-#admin_password: f437ab7f5de2c9051a7c1468f8bc5fa8
+path2LogsDb: DATA/Logs/main.db
 
 users: 
     administrator: 

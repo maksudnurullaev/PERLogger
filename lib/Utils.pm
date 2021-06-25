@@ -5,13 +5,15 @@ use Mojo::Home;
 
 use Term::ANSIColor;
 use Digest::MD5 qw(md5_hex);
+use Time::Piece;
+use Data::UUID;
 
 use Data::Dumper;
 
-sub init_dir {
+sub init_path {
     my $home = Mojo::Home->new;
     $home->detect;
-    my $path = $home->rel_file( $_[0] );
+    my $path = $home->rel_file( shift );
     my $dir  = $path->dirname();
 
     # ... check database directory existance
@@ -21,7 +23,7 @@ sub init_dir {
           or die "$!: Failed to create path: " . $dir;
     }
 
-    return $_[1] ? $dir : $path;
+    return shift ? $dir : $path;
 }
 
 sub print_info {
@@ -75,5 +77,17 @@ sub hashesGroupBy {
 sub md5 {
     return substr( md5_hex(shift), shift, shift );
 }
+
+sub get_uuid {
+    my $ug = new Data::UUID;
+    my $uuid = $ug->create;
+    my @result = split('-',$ug->to_string($uuid));
+    return($result[0]);
+};
+
+sub get_date_uuid {
+    my $result= Time::Piece->new->strftime('%Y.%m.%d %T ');
+    return($result . get_uuid());
+};
 
 1;

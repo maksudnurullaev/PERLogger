@@ -11,8 +11,16 @@ use SQL::Abstract::Pg;
 # SQLite
 my $sqlite;
 
-sub set_sqlite {
+sub setup_sqlite {
     $sqlite = $_[0] if $_[0];
+
+    if ( $sqlite && !@{ $sqlite->db->tables } ) {
+        for my $sql ( DB::get_init_sqls() ) {
+            my $sth = $sqlite->db->dbh()->prepare($sql);
+            $sth->execute() || die "$!";
+            Utils::print_info( "Executed logs SQL:" . $sql );
+        }
+    }
 }
 
 sub get_init_sqls {
@@ -95,14 +103,14 @@ sub get_servers_and_log_files {
 
     my $db = $sqlite->db;
     my $sql_string =
-      "select count(*) as count, luser, lfile, lfile_md5, lhost_md5 || '_' || lfile_md5 as di from logs ";
+"select count(*) as count, luser, lfile, lfile_md5, lhost_md5 || '_' || lfile_md5 as di from logs ";
     $sql_string .= "  where lhost = '$_[0]'" if $_[0];
     $sql_string .= ' group by lfile';
     Utils::print_info( "SQL to select server and log files: " . $sql_string );
 
     my $results = $db->query($sql_string);
 
-    return Utils::hashesGroupBy( $results->hashes, 'luser');
+    return Utils::hashesGroupBy( $results->hashes, 'luser' );
 }
 
 sub get_logs {
@@ -114,10 +122,14 @@ sub get_logs {
 
     my $result = $sql->db->select(
         'logs',
-        [ 'log', 'OID', 'ltime', \q{ lhost_md5 || '_' || lfile_md5 as di }, 'lfile' ],
+        [
+            'log', 'OID', 'ltime', \q{ lhost_md5 || '_' || lfile_md5 as di },
+            'lfile'
+        ],
 
         # [ 'lhost', 'lfile', \q{ length(log) as len_log}, 'OID', 'ltime' ],
-        shift, { limit => (shift || 25), order_by => { -desc => 'ltime' } }
+        shift,
+        { limit => ( shift || 25 ), order_by => { -desc => 'ltime' } }
     );
 
     # while ( my $next = $results->hash ) {

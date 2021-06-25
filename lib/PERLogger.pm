@@ -31,37 +31,22 @@ sub startup ($self) {
     $self->secrets( $config->{secrets} );
 
     # Check configuration variables for database
-    if ( !defined( $config->{dir4db} ) ) {
+    if ( !defined( $config->{path2LogsDb} ) ) {
         Utils::print_error(
-"Not defined location for SQLite database file (dir4db) in configuration file."
+"Not defined location for SQLite database file (path2LogsDb) in configuration file."
         );
         exit(1);
     }
 
     # Check & Configure database
-    my $path2db = Utils::init_dir( $config->{dir4db} );
+    my $path2db = Utils::init_path( $config->{path2LogsDb} );
 
-    # Check directory for log files
-    my $path2logs = Utils::init_dir( $config->{dir4logs}, 1 );
-
-    # ... create helper for sqlite
+    # Setup db for logs
     $self->helper(
         sqlite => sub { state $sql = Mojo::SQLite->new( 'sqlite:' . $path2db ) }
     );
 
-    # ... check for table existance
-    my $db = $self->sqlite->db;
-
-    if ( !@{ $db->tables } ) {
-        for my $sql ( DB::get_init_sqls() ) {
-            my $sth = $db->dbh()->prepare($sql);
-            $sth->execute() || die "$!";
-            Utils::print_info( "Executed logs SQL:" . $sql );
-        }
-    }
-
-    # Setup db
-    DB::set_sqlite $self->sqlite;
+    DB::setup_sqlite $self->sqlite;
 
     # Router
     $self->helper( authAs => sub { return Auth::as(@_) } );
@@ -96,7 +81,7 @@ sub startup ($self) {
     $r->any('/test')->to( controller => 'logs', action => 'test' );
 
     # Run log file listener thread
-    # start_log_listener();
+    start_log_listener();
 }
 
 sub start_log_listener {
