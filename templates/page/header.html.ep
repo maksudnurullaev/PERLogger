@@ -13,7 +13,7 @@
                     <b-link @click="currentActivePage='logs'">Logs</b-link> |
                 </template>
                 <template v-if="userHasRole('shell_operator')">
-                    <b-link @click=" currentActivePage='shell'">Shell</b-link> |
+                    <b-link @click="currentActivePage='shell'">Shell</b-link> |
                 </template>
                 <template v-if="userHasRole('administrator')">
                     <b-link @click="currentActivePage='admin'">Admin</b-link> |

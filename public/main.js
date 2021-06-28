@@ -11,10 +11,10 @@ var app = new Vue({
             warning_defs: "warning",
             config: {
                 selected: null,
-                options:[
-                    {value: 'a', text: 'Value a'},
-                    {value: 'b', text: 'Value b'},
-                    {value: 'c', text: 'Value c'},
+                options: [
+                    { value: 'a', text: 'Value a' },
+                    { value: 'b', text: 'Value b' },
+                    { value: 'c', text: 'Value c' },
                 ],
             },
             top: {
@@ -132,8 +132,8 @@ var app = new Vue({
         jsonGetErrWarnDefs: function () {
             //TODO
         },
-        try2CatchBadResponse: function(response){
-            if (response.status == 401){ // No authrization!
+        try2CatchBadResponse: function (response) {
+            if (response.status == 401) { // No authrization!
                 console.error(response.error_msg);
                 document.location.reload();
             }
@@ -181,8 +181,8 @@ var app = new Vue({
                         app.user.logged = false
                         app.resetModalLogin()
                         app.currentActivePage = 'help'
-                    } else { // FAILED
-                        console.error(response.data.error_msg);
+                    } else {
+                        app.try2CatchBadResponse(response.data);
                     }
                 }
             );
@@ -195,7 +195,7 @@ var app = new Vue({
                         app.user.logged = true;
                         app.user.roles = response.data.roles;
                     } else {
-                        console.error(response.data.error_msg);
+                        app.try2CatchBadResponse(response.data);
                     }
                 }
             );
@@ -239,7 +239,7 @@ var app = new Vue({
                     if (response.data.status == 0) {
                         app.l3_logs = response.data.logs;
                     } else {
-                        alert(respone.data.error_msg);
+                        app.try2CatchBadResponse(response.data);
                     }
                 }
             );
