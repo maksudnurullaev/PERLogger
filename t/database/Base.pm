@@ -17,19 +17,23 @@ package t::database::Base;
     use Test::Mojo;
     use t::Base;
 
-    use DBOTest;
+    use DBO;
     use File::Temp;
     use Data::Dumper;
 
-    use_ok('DBOTest');
-    require_ok('DBOTest');
+    use_ok('DBO');
+    require_ok('DBO');
+
 
     sub get_test_db {
         my $test_mojo = t::Base::get_test_mojo();
-        my $test_db   = DBOTest->new($test_mojo);
-        $test_db->{'file'} =
-          File::Temp::tempnam( $test_mojo->app->home->child('tmp'),
-            'db_test_' );
+        my $test_db   = DBO->new(
+            $test_mojo,
+            File::Temp::tempnam(
+                $test_mojo->app->home->child('tmp'), 'db_test_'
+            )
+        );
+        #diag($test_db->{'file'});
         ok( $test_db->initialize(), 'Test for initialize script!' );
         ok( $test_db->is_valid,     'Check database' );
         return ($test_db);

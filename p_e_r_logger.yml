@@ -4,6 +4,7 @@ secrets:
 
 version: 0.0.2a
 path2LogsDb: DATA/Logs/main.db
+path2MainDb: DATA/main.db
 
 users: 
     administrator: 

@@ -20,6 +20,7 @@ use File::Temp;
 sub get_test_mojo{ Test::Mojo->new('PERLogger'); };
 sub get_test_mojo_session{ Test::Mojo::Session->new('PERLogger'); };
 
+
 # END OF PACKAGE
 };
 

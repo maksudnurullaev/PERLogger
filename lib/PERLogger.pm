@@ -8,9 +8,10 @@ use Data::Dumper;
 use Mojo::SQLite;
 use Mojo::Home;
 use Mojo::IOLoop::Subprocess;
+use DBO;
 
 use Utils;
-use Utils::DB;
+use Utils::DBLogs;
 use Utils::Auth;
 
 use Utils::Logger::Server;
@@ -39,14 +40,22 @@ sub startup ($self) {
     }
 
     # Check & Configure database
-    my $path2db = Utils::init_path( $config->{path2LogsDb} );
+    my $path2LogsDb = Utils::init_path( $config->{path2LogsDb} );
 
     # Setup db for logs
     $self->helper(
-        sqlite => sub { state $sql = Mojo::SQLite->new( 'sqlite:' . $path2db ) }
+        dbLogs => sub { state $sql = Mojo::SQLite->new( 'sqlite:' . $path2LogsDb ) }
     );
 
-    DB::setup_sqlite $self->sqlite;
+    # Inistilize databases
+    # ... log database
+    DBLogs::setup_sqlite $self->dbLogs ;
+    # ... main database
+    my $db = DBO->new($self, $self->config->{path2MainDb});
+    $db->initialize() || die("Could not set initialize database!");
+    $self->helper(
+        dbMain => sub { state $dbMain = $db }
+    );
 
     # Router
     $self->helper( authAs => sub { return Auth::as(@_) } );
@@ -67,6 +76,11 @@ sub startup ($self) {
             shift->reply->static('../lib/Utils/Logger/Client.pm');
         }
     );
+
+    $r->post('/logs/config/new')->to( controller => 'logs', action => 'configNew' );
+    $r->post('/logs/config/del')->to( controller => 'logs', action => 'configDel' );
+    $r->get('/logs/configs')->to( controller => 'logs', action => 'configs' );
+
 
     # login
     $r->any('/user/login')->to( controller => 'user', action => 'login' );
@@ -95,7 +109,7 @@ sub start_log_listener {
 
     $subprocess->run(
         sub ($subprocess) {
-            Server::runServer( \&DB::parse_it );
+            Server::runServer( \&DBLogs::parse_it );
 
             #DEBUG: Server::runServer(\&Utils::print_warn) ;
             return '♥', 'Mojolicious';

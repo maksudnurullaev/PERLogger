@@ -1,11 +1,19 @@
 <div class="sticky">
     <b-button-group>
-        <b-button size="sm" variant="primary">+</b-button>
+        <b-form-select size="sm" v-model="logs.config.selected" :options="logs.config.options"
+            v-on:change="updateLogConfig"></b-form-select>
     </b-button-group>
-    <b-button-group>
-        <b-form-select size="sm" v-model="logs.config.selected" :options="logs.config.options"></b-form-select>
-    </b-button-group>
-    <b-button-group>
-        <b-button v-if="logs.config.selected" size="sm">-</b-button>        
-    </b-button-group>
+    <template v-if="logs.config.selected == '_new_'">
+        <b-button-group>
+            <b-button size="sm" variant="primary"
+                :disabled="!(logs.config.selected_text && logs.config.selected_text.trim() != '')"
+                v-on:click="jsonSaveLogConfig">+</b-button>
+        </b-button-group>
+    </template>
+    <template v-else-if="logs.config.selected && logs.config.selected != '_new_'">
+        <b-button-group>
+            <b-button size="sm"
+            v-on:click="jsonDeleteLogConfig">-</b-button>
+        </b-button-group>
+    </template>
 </div>

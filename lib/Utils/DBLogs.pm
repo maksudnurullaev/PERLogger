@@ -1,4 +1,4 @@
-package DB;
+package DBLogs;
 
 use Mojo::Base -strict;
 use Mojo::Home;
@@ -15,7 +15,7 @@ sub setup_sqlite {
     $sqlite = $_[0] if $_[0];
 
     if ( $sqlite && !@{ $sqlite->db->tables } ) {
-        for my $sql ( DB::get_init_sqls() ) {
+        for my $sql ( get_init_sqls() ) {
             my $sth = $sqlite->db->dbh()->prepare($sql);
             $sth->execute() || die "$!";
             Utils::print_info( "Executed logs SQL:" . $sql );

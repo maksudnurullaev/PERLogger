@@ -1,6 +1,5 @@
 package PERLogger::Controller::User;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
-use Utils::DB;
 use Utils;
 use Mojo::JSON qw(decode_json encode_json);
 use Utils::Auth;

@@ -7,16 +7,14 @@ var app = new Vue({
         vueVersion: Vue.version,
         currentActivePage: "help",
         logs: {
-            error_defs: "error",
-            warning_defs: "warning",
             config: {
-                selected: null,
-                options: [
-                    { value: 'a', text: 'Value a' },
-                    { value: 'b', text: 'Value b' },
-                    { value: 'c', text: 'Value c' },
-                ],
+                selected: '_new_',
+                selected_text: null,
+                options: null,
+                error_defs: "error",
+                warning_defs: "warning",
             },
+            configs: null,
             top: {
                 selected: 20,
                 options: [20, 50, 100, 200, 500, 1000],
@@ -46,7 +44,6 @@ var app = new Vue({
     },
     methods: {
         userHasRole: function (role) {
-            // console.debug("userHasRole: " + role);
             if (this.user.roles.length == 0) {
                 return false;
             }
@@ -81,6 +78,71 @@ var app = new Vue({
                 return;
             }
             document.getElementById(elId).classList.add("show-text");
+        },
+        jsonSaveLogConfig: function () {
+            var data = {
+                name: app.logs.config.selected_text,
+                warning_defs: app.logs.config.warning_defs,
+                error_defs: app.logs.config.error_defs,
+            };
+            axios.post('/logs/config/new', data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                        app.jsonGetLogConfigs(response.data.id);
+                    } else {
+                        app.try2CatchBadResponse(response.data);
+                    }
+                }
+            );
+        },
+        jsonDeleteLogConfig: function () {
+            var data = {
+                id: app.logs.config.selected,
+            };
+            axios.post('/logs/config/del', data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                        app.jsonGetLogConfigs();
+                    } else {
+                        app.try2CatchBadResponse(response.data);
+                    }
+                }
+            );
+        },
+        updateLogConfig: function () {
+            if (app.logs.config.selected != '_new_') {
+                app.logs.config.error_defs = app.logs.configs[app.logs.config.selected].error_defs;
+                app.logs.config.warning_defs = app.logs.configs[app.logs.config.selected].warning_defs;
+            } else {
+                app.logs.config.selected_text = "";
+                app.logs.config.error_defs = "error";
+                app.logs.config.warning_defs = "warning";
+            }
+        },
+        jsonGetLogConfigs: function (id) {
+            axios.get('/logs/configs').then(
+                function (response) {
+                    app.logs.config.options = [{ value: '_new_', text: 'New' }];
+                    if (response.data.status == 0) {
+                        Object.keys(response.data.configs).forEach(key => {
+                            app.logs.config.options.push({
+                                value: key,
+                                text: response.data.configs[key].name,
+                            });
+                        });
+                        app.logs.configs = response.data.configs;
+                        if (id) {
+                            app.logs.config.selected = id;
+                        } else {
+                            app.logs.config.selected = "_new_";
+                        }
+                    } else {
+                        app.try2CatchBadResponse(response.data);
+                        app.logs.config.selected = "_new_";
+                    }
+                    app.updateLogConfig();
+                }
+            );
         },
         leaveLogText: function (elId) {
             if (this.getL2SelectedLFilesCount() <= 1) {
@@ -134,8 +196,9 @@ var app = new Vue({
         },
         try2CatchBadResponse: function (response) {
             if (response.status == 401) { // No authrization!
-                console.error(response.error_msg);
                 document.location.reload();
+            } else if (response.error_msg) {
+                console.error(response.error_msg);
             }
         },
         jsonRefreshServers: function () {
@@ -305,7 +368,8 @@ var app = new Vue({
         },
     },
     beforeMount() {
-        this.jsonCheckCurrentUser()
+        this.jsonCheckCurrentUser();
+        this.jsonGetLogConfigs();
     },
 });
 

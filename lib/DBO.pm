@@ -17,6 +17,7 @@ use DBI;
 use DBD::SQLite;
 use Utils::Filter;
 use Data::Dumper;
+use Carp;
 
 my $DB_SQLite_TYPE  = 0;
 my $DB_Pg_TYPE      = 2;
@@ -29,9 +30,14 @@ sub set_production_mode{ $_production_mode = shift; };
 sub get_production_mode{ $_production_mode; };
 
 sub new {
-    my $class = shift;
-    my $mojo  = shift;
-    my $self = { mojo => $mojo, file => $mojo->app->home->rel_file('DATA/main.db') };
+    my ($class, $mojo, $path2db) = (shift,shift,shift);
+    my $self = { mojo => $mojo };
+    $self->{'file'} = $path2db if $path2db;
+    if ( $path2db ) {
+        $self->{'file'} = $path2db ;
+    } else {
+        confess ("Not defined database file path!")
+    }
     return(bless $self, $class);
 };
 
