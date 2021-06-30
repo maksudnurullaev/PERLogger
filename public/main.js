@@ -57,12 +57,13 @@ var app = new Vue({
             this.try2LoginSubmit();
         },
         try2LoginSubmit: function () {
-            // Exit when the login form isn't valid
-            if (!this.user.MSADUser && !this.checkLoginFormValidity()) {
+            if( this.user.MSADUser ){
+                window.location.href ="/user/msad"
                 return
             }
-            // login
-            this.jsonLogin()
+            if (this.checkLoginFormValidity()) {
+                this.jsonLogin()
+            }
         },
         checkLoginFormValidity: function () {
             this.user.nameState = this.$refs.loginForm.elements['name-input'].validity.valid
@@ -196,11 +197,14 @@ var app = new Vue({
             //TODO
         },
         try2CatchBadResponse: function (response) {
-            if (response.status == 401) { // No authrization!
-                document.location.reload();
-            } else if (response.error_msg) {
-                console.error(response.error_msg);
+            var msg = "Error";
+            if (response.status) {
+                msg += ":" + response.status;
             }
+            if (response.error_msg) {
+                msg +=  ":" + response.status;
+            }
+            console.error(msg);
         },
         jsonRefreshServers: function () {
             var self = this;

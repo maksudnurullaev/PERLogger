@@ -3,8 +3,13 @@ secrets:
   - 73ed67a5518ed756f4ec629aad544fba8a095a9c
 
 version: 0.0.2a
+
+# Paths to databases
 path2LogsDb: DATA/Logs/main.db
 path2MainDb: DATA/main.db
+
+# For MS AD Authorization
+MSADServer: TK-DCS011
 
 users: 
     administrator: 
@@ -13,3 +18,6 @@ users:
         - log_operator
         - shell_operator
         - administrator
+    mnurullaev: 
+      access: 
+        - log_operator

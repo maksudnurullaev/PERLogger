@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User</title>
+</head>
+
+<body>
+    %= link_to Home => '/'
+    <h1>You detected as: <%= session('user.name') || "UNKNOWN" %>
+    </h1>
+    % if ( session 'user.name' ) {
+    % if ( session 'user.fullName' ) {
+    <h2>Full name: <%= session 'user.fullName' %>
+    </h2>
+    % }
+    % if ( session 'user.groups' ) {
+    <div>Your account '<%= session 'user.name' %>' belongs to the following groups:</div>
+    <ul>
+        % for my $group (@{session 'user.groups' }) {
+        <li>'<%= $group %>'</li>
+        % }
+    </ul>
+    % }
+    % }
+</body>
+
+</html>

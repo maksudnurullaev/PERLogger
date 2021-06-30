@@ -81,15 +81,16 @@ sub startup ($self) {
     $r->post('/logs/config/del')->to( controller => 'logs', action => 'configDel' );
     $r->get('/logs/configs')->to( controller => 'logs', action => 'configs' );
 
-
     # login
     $r->any('/user/login')->to( controller => 'user', action => 'login' );
-
     # logout
     $r->get('/user/logout')->to( controller => 'user', action => 'logout' );
-
     # get current user info
     $r->get('/user/current')->to( controller => 'user', action => 'current' );
+    # tyr to detect MS AD authontication/user
+    $r->get('/user/msad')->to( controller => 'user', action => 'detectAsMSADUser' );
+    # get current user info
+    $r->get('/user/check')->to( controller => 'user', action => 'check' );
 
     # test page
     $r->any('/test')->to( controller => 'logs', action => 'test' );
