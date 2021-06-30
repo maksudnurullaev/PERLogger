@@ -2,10 +2,22 @@
     <b-alert v-if="user.loginStatus" show variant="danger">{{ user.loginStatus }}</b-alert>
     <form ref="loginForm" @submit.stop.prevent="handleSubmit">
         <b-form-group label="Name" label-for="name-input" invalid-feedback="Name is required" :state="user.nameState">
-            <b-form-input id="name-input" v-model="user.name" :state="user.nameState" required></b-form-input>
+            <b-form-input :disabled="user.MSADUser" id="name-input" v-model="user.name" :state="user.nameState"
+                required></b-form-input>
         </b-form-group>
-        <b-form-group label="Password" label-for="password-input" invalid-feedback="Password is required" :state="user.passwordState">
-            <b-form-input id="password-input" v-model="user.password" type="password" :state="user.passwordState" required></b-form-input>
+        <b-form-group label="Password" label-for="password-input" invalid-feedback="Password is required"
+            :state="user.passwordState">
+            <b-form-input :disabled="user.MSADUser" id="password-input" v-model="user.password" type="password"
+                :state="user.passwordState" required></b-form-input>
         </b-form-group>
+
     </form>
+    <template #modal-footer="{ ok }">
+        <b-form-checkbox id="checkbox-as-ms-ad-user" v-model="user.MSADUser" name="checkbox-as-ms-ad-user">
+            MS Active Directory
+        </b-form-checkbox>
+        <b-button size="sm" variant="success" @click="ok()">
+            OK
+        </b-button>
+    </template>
 </b-modal>

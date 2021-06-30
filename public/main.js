@@ -10,7 +10,7 @@ var app = new Vue({
             config: {
                 selected: '_new_',
                 selected_text: null,
-                options: null,
+                options: [{ value: '_new_', text: 'New' }],
                 error_defs: "error",
                 warning_defs: "warning",
             },
@@ -28,6 +28,7 @@ var app = new Vue({
             loginStatus: "",
             logged: false,
             roles: [],
+            MSADUser: false,
         },
         l1_servers: [],                   // Level#1 servers
         l1_selected: [],                  // Level#1 selected servers
@@ -57,7 +58,7 @@ var app = new Vue({
         },
         try2LoginSubmit: function () {
             // Exit when the login form isn't valid
-            if (!this.checkLoginFormValidity()) {
+            if (!this.user.MSADUser && !this.checkLoginFormValidity()) {
                 return
             }
             // login
@@ -257,6 +258,7 @@ var app = new Vue({
                         app.user.name = response.data.user;
                         app.user.logged = true;
                         app.user.roles = response.data.roles;
+                        app.jsonGetLogConfigs();
                     } else {
                         app.try2CatchBadResponse(response.data);
                     }
@@ -264,10 +266,12 @@ var app = new Vue({
             );
         },
         jsonLogin: function () {
-            var data = {};
+            var data = { MSADUser: (this.user.MSADUser ? 1 : 0) };
 
-            data['user.name'] = this.user.name;
-            data['user.password'] = this.user.password;
+            if (!this.user.MSADUser) {
+                data['user.name'] = this.user.name;
+                data['user.password'] = this.user.password;
+            }
 
             axios.post('/user/login', data).then(
                 function (response) {
@@ -369,7 +373,6 @@ var app = new Vue({
     },
     beforeMount() {
         this.jsonCheckCurrentUser();
-        this.jsonGetLogConfigs();
     },
 });
 
