@@ -1,11 +1,21 @@
 <div class="sticky">
     <b-form inline>
         <b-button size="sm" variant="primary" v-on:click="jsonGetLogs" style="margin-right: 10px;">
-            <b-icon icon="arrow-bar-down"></b-icon>
+            <b-icon icon="arrow-repeat"></b-icon>
         </b-button>
 
         <label for="inline-form-custom-select-pref" style="margin-right: 5px;">Top:</label>
         <b-form-select size="sm" id="inline-form-custom-select-pref" v-model="logs.top.selected"
-            :options="logs.top.options"></b-form-select>
+            :options="logs.top.options" style="margin-right: 10px;"></b-form-select>
+        <template v-if="logs.all">
+            <b-form-checkbox size="sm" v-model="logs.show.errors" v-if="logs.errors" style="margin-right: 5px;"
+                name="check-button-all-errors" @change="showLogs">
+                <span  class="bg-danger text-white"> {{ logs.errors }} </span>
+            </b-form-checkbox>
+            <b-form-checkbox size="sm" v-model="logs.show.warnings" v-if="logs.warnings"
+                name="check-button-all-warnings" @change="showLogs">
+                <span class="bg-warning text-white"> {{ logs.warnings }} </span>
+            </b-form-checkbox>
+        </template>
     </b-form>
 </div>

@@ -19,6 +19,13 @@ var app = new Vue({
                 selected: 20,
                 options: [20, 50, 100, 200, 500, 1000],
             },
+            all: 0,
+            errors: 0,
+            warnings: 0,
+            show: {
+                errors: false,
+                warnings: false,
+            },
         },
         user: {
             name: '',
@@ -79,8 +86,16 @@ var app = new Vue({
             if (this.getL2SelectedLFilesCount() <= 1) {
                 return;
             }
-            document.getElementById(elId).classList.add("show-text");
+            var fileLogEl = document.getElementById(elId);
+            if (fileLogEl) fileLogEl.classList.add("show-text");
         },
+        leaveLogText: function (elId) {
+            if (this.getL2SelectedLFilesCount() <= 1) {
+                return;
+            }
+            var fileLogEl = document.getElementById(elId);
+            if (fileLogEl) fileLogEl.classList.remove("show-text");
+        },        
         jsonSaveLogConfig: function () {
             var data = {
                 warning_defs: app.logs.config.warning_defs,
@@ -150,12 +165,6 @@ var app = new Vue({
                 }
             );
         },
-        leaveLogText: function (elId) {
-            if (this.getL2SelectedLFilesCount() <= 1) {
-                return;
-            }
-            document.getElementById(elId).classList.remove("show-text");
-        },
         l2_forceRerender: function () {
             this.l2_forceRerenderKey += 1;
         },
@@ -163,6 +172,23 @@ var app = new Vue({
             var result = log.log.replace(/(?:\r\n|\r|\n)/g, '<br />');
             result += `<hr /><small>${log.ltime} | ${shrink_me(file_name_from_path(log.lfile), 20)}</small>`;
             return result;
+        },
+        checkLogAlertVariant: function (logText) { // TODO: find more optimized version of this search
+            // danger
+            var words = app.logs.config.error_defs.trim();
+            if (words.length) {
+                var wordsArray = words.split(/[\s+|\n]/);
+                var wordsRe = new RegExp(wordsArray.join("|"), "gi");
+                if (wordsRe.test(logText)) return "danger";
+            }
+            // warning
+            words = app.logs.config.warning_defs.trim();
+            if (words.length) {
+                wordsArray = words.split(/[\s+|\n]/);
+                wordsRe = new RegExp(wordsArray.join("|"), "gi");
+                if (wordsRe.test(logText)) return "warning";
+            }
+            return "success";
         },
         l1_selection: function (smode) {
             smode = smode.toLowerCase();
@@ -313,11 +339,26 @@ var app = new Vue({
                 function (response) {
                     if (response.data.status == 0) {
                         app.l3_logs = response.data.logs;
+                        app.$nextTick(() => {
+                            var logs = document.querySelector("#L3_LOGS");
+                            if (logs) {
+                                app.logs.errors = logs.querySelectorAll(".alert-danger").length;
+                                app.logs.warnings = logs.querySelectorAll(".alert-warning").length;
+                                app.logs.all = app.logs.errors + app.logs.warnings;
+                            } else {
+                                app.logs.all = 0;
+                                app.logs.errors = 0;
+                                app.logs.warnings = 0;
+                            }
+                        })
                     } else {
                         app.try2CatchBadResponse(response.data);
                     }
                 }
             );
+        },
+        showWarningLogs: function () {
+
         },
         jsonGetServerLFiles: function (server, server_data) {
             axios.get('/logs/serverlfiles', {
@@ -360,6 +401,33 @@ var app = new Vue({
                 });
             }
             app.l2_selected = Array.from(this.l2_servers.keys());
+        },
+        showLogs: function () {
+            var logs = document.querySelector("#L3_LOGS");
+            if (!this.logs.show.errors && !this.logs.show.warnings) {
+                // show all
+                if (this.logs.all) {
+                    for (const el of logs.querySelectorAll(".alert")) {
+                        el.style.display = "";
+                    }
+                }
+            } else {
+                if (this.logs.all) {
+                    for (const el of logs.querySelectorAll(".alert")) {
+                        el.style.display = "none";
+                    }
+                }
+                if (this.logs.errors) {
+                    for (const el of logs.querySelectorAll(".alert-danger")) {
+                        el.style.display = this.logs.show.errors ? "" : "none";
+                    }
+                }
+                if (this.logs.warnings) {
+                    for (const el of logs.querySelectorAll(".alert-warning")) {
+                        el.style.display = this.logs.show.warnings ? "" : "none";
+                    }
+                }
+            }
         },
     },
     components: { Splitpanes, Pane },
