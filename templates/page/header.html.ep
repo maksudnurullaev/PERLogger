@@ -7,24 +7,28 @@
             % }
         </b-col>
         <b-col align="right">
-            <b-link @click="currentActivePage='help'">Help</b-link> |
-            <template v-if="user.logged">
-                <template v-if="userHasRole('log_operator')"> <!-- TODO: May be we should find more optimized version of this 'userHasRole' logic! -->
-                    <b-link @click="currentActivePage='logs'">Logs</b-link> |
+            <b-link @click="currentActivePage='help'">Help</b-link>
+            <template v-if="user">
+                <template v-if="user.logged">
+                    <template v-if="userHasRole('log_operator')">
+                        <!-- TODO: May be we should find more optimized version of this 'userHasRole' logic! -->
+                        | <b-link @click="currentActivePage='logs'">Logs</b-link>
+                    </template>
+                    <template v-if="userHasRole('shell_operator')">
+                        | <b-link @click="currentActivePage='shell'">Shell</b-link>
+                    </template>
+                    <template v-if="userHasRole('administrator')">
+                        | <b-link @click="currentActivePage='admin'">Admin</b-link>
+                    </template>
+                    | <b-link id="logout-link" title="user.roles" @click="jsonLogout">Logout</b-link>
+                    <sup>(<a href="/whoami">?</a>)</sup>
+                    <b-tooltip target="logout-link" triggers="hover">
+                        {{user.name}}
+                    </b-tooltip>
                 </template>
-                <template v-if="userHasRole('shell_operator')">
-                    <b-link @click="currentActivePage='shell'">Shell</b-link> |
+                <template v-else>
+                    | <b-link v-b-modal.modal-login>Login</b-link>
                 </template>
-                <template v-if="userHasRole('administrator')">
-                    <b-link @click="currentActivePage='admin'">Admin</b-link> |
-                </template>
-                <b-link id="logout-link" title="user.roles" @click="jsonLogout">Logout</b-link>
-                <b-tooltip target="logout-link" triggers="hover">
-                    {{user.name}}
-                </b-tooltip>
-            </template>
-            <template v-else>
-                <b-link v-b-modal.modal-login>Login</b-link>
             </template>
         </b-col>
     </b-row>

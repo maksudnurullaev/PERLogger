@@ -24,14 +24,9 @@
   </div>
 </body>
 
-<!-- Custom JS files -->
-% if ($self->stash("action") eq 'test' && $self->stash("controller") eq 'initial') {
-<script src="/test.js"></script>
-% } else {
 <!-- JS - custom components -->
 <script src="/vuejs-component-server-with-log-files.js"></script>
 <!-- JS - main script -->
 <script src="/main.js"></script>
-%}
 
 </html>

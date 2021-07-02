@@ -90,10 +90,7 @@ sub startup ($self) {
     # tyr to detect MS AD authontication/user
     $r->get('/user/msad')->to( controller => 'user', action => 'detectAsMSADUser' );
     # get current user info
-    $r->get('/user/check')->to( controller => 'user', action => 'check' );
-
-    # test page
-    $r->any('/test')->to( controller => 'logs', action => 'test' );
+    $r->get('/whoami')->to( controller => 'user', action => 'check' );
 
     # Run log file listener thread
     start_log_listener();
