@@ -51,14 +51,17 @@ sub get ($self) {
     }
 }
 
-sub configNew ($self) {
+sub configSave ($self) {
     return if !$self->authAs( 'log_operator', 'administrator' );
 
     my $data = decode_json( $self->req->body );
 
     $data->{object_name} = $LOG_CONFIG_OBJECT_NAME;
     $data->{owner}       = $self->session->{'user.name'};
-    my $newId = $self->dbMain->insert($data);
+    my $newId =
+      exists( $data->{id} )
+      ? $self->dbMain->update($data)
+      : $self->dbMain->insert($data);
 
     $self->render(
         json => {
@@ -103,7 +106,7 @@ sub configs ($self) {
     else {
         $self->render(
             json => {
-                status  => 1,
+                status    => 1,
                 error_msg => "Configurations not found!"
             }
         );

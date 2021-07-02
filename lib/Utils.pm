@@ -90,4 +90,13 @@ sub get_date_uuid {
     return($result . get_uuid());
 };
 
+sub trim{
+    my $string = $_[0];
+    if(defined($string) && $string){
+        $string =~ s/^\s+|\s+$//g;
+        return($string);
+    }
+    return(undef);
+};
+
 1;

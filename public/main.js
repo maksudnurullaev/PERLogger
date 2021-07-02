@@ -57,8 +57,8 @@ var app = new Vue({
             this.try2LoginSubmit();
         },
         try2LoginSubmit: function () {
-            if( this.user.MSADUser ){
-                window.location.href ="/user/msad"
+            if (this.user.MSADUser) {
+                window.location.href = "/user/msad"
                 return
             }
             if (this.checkLoginFormValidity()) {
@@ -83,11 +83,15 @@ var app = new Vue({
         },
         jsonSaveLogConfig: function () {
             var data = {
-                name: app.logs.config.selected_text,
                 warning_defs: app.logs.config.warning_defs,
                 error_defs: app.logs.config.error_defs,
             };
-            axios.post('/logs/config/new', data).then(
+            if (app.logs.config.selected != '_new_') {
+                data.id = app.logs.config.selected;
+            } else {
+                data.name = app.logs.config.selected_text;
+            }
+            axios.post('/logs/config/save', data).then(
                 function (response) {
                     if (response.data.status == 0) {
                         app.jsonGetLogConfigs(response.data.id);
@@ -202,7 +206,7 @@ var app = new Vue({
                 msg += ":" + response.status;
             }
             if (response.error_msg) {
-                msg +=  ":" + response.status;
+                msg += ":" + response.status;
             }
             console.error(msg);
         },

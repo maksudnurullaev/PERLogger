@@ -77,7 +77,7 @@ sub startup ($self) {
         }
     );
 
-    $r->post('/logs/config/new')->to( controller => 'logs', action => 'configNew' );
+    $r->post('/logs/config/save')->to( controller => 'logs', action => 'configSave' );
     $r->post('/logs/config/del')->to( controller => 'logs', action => 'configDel' );
     $r->get('/logs/configs')->to( controller => 'logs', action => 'configs' );
 
