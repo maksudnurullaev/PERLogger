@@ -227,12 +227,15 @@ var app = new Vue({
             //TODO
         },
         try2CatchBadResponse: function (response) {
-            var msg = "Error";
+            var msg = "Status: ";
             if (response.status) {
-                msg += ":" + response.status;
+                msg += response.status;
             }
             if (response.error_msg) {
-                msg += ":" + response.status;
+                if (msg.length > 0){
+                    msg += "\n";
+                }
+                msg += response.error_msg;
             }
             console.error(msg);
         },
