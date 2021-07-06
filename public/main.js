@@ -95,7 +95,7 @@ var app = new Vue({
             }
             var fileLogEl = document.getElementById(elId);
             if (fileLogEl) fileLogEl.classList.remove("show-text");
-        },        
+        },
         jsonSaveLogConfig: function () {
             var data = {
                 warning_defs: app.logs.config.warning_defs,
@@ -130,6 +130,20 @@ var app = new Vue({
                 }
             );
         },
+        updateLogsL3LogsToolbar:function(){
+            app.$nextTick(() => {
+                var logs = document.querySelector("#L3_LOGS");
+                if (logs) {
+                    app.logs.errors = logs.querySelectorAll(".alert-danger").length;
+                    app.logs.warnings = logs.querySelectorAll(".alert-warning").length;
+                    app.logs.all = app.logs.errors + app.logs.warnings;
+                } else {
+                    app.logs.all = 0;
+                    app.logs.errors = 0;
+                    app.logs.warnings = 0;
+                }
+            })
+        },
         updateLogConfig: function () {
             if (app.logs.config.selected != '_new_') {
                 app.logs.config.error_defs = app.logs.configs[app.logs.config.selected].error_defs;
@@ -139,6 +153,7 @@ var app = new Vue({
                 app.logs.config.error_defs = "error";
                 app.logs.config.warning_defs = "warning";
             }
+            app.updateLogsL3LogsToolbar();
         },
         jsonGetLogConfigs: function (id) {
             axios.get('/logs/configs').then(
@@ -232,7 +247,7 @@ var app = new Vue({
                 msg += response.status;
             }
             if (response.error_msg) {
-                if (msg.length > 0){
+                if (msg.length > 0) {
                     msg += "\n";
                 }
                 msg += response.error_msg;
@@ -342,18 +357,7 @@ var app = new Vue({
                 function (response) {
                     if (response.data.status == 0) {
                         app.l3_logs = response.data.logs;
-                        app.$nextTick(() => {
-                            var logs = document.querySelector("#L3_LOGS");
-                            if (logs) {
-                                app.logs.errors = logs.querySelectorAll(".alert-danger").length;
-                                app.logs.warnings = logs.querySelectorAll(".alert-warning").length;
-                                app.logs.all = app.logs.errors + app.logs.warnings;
-                            } else {
-                                app.logs.all = 0;
-                                app.logs.errors = 0;
-                                app.logs.warnings = 0;
-                            }
-                        })
+                        app.updateLogsL3LogsToolbar();
                     } else {
                         app.try2CatchBadResponse(response.data);
                     }
