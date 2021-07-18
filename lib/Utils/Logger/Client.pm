@@ -331,7 +331,8 @@ sub helpMe {
     print(
 "             -ehostname      Echo to named host.  Multiple -e options\n"
     );
-    print("             -vlevel         Verbose: generate debug output.\n");
+    print(
+"             -vlevel         Verbose: generate debug output.\n");
     print(
 "             -lport          Listen for echo on port (default $defaultPort),\n"
     );
@@ -500,7 +501,7 @@ sub parseArgs {
 sub addEchoHost {
     my ($rHost,$rPort) = @_;
 
-    print "Echo to (rHost,rPort): ($rHost,$rPort)\n";
+    print "Echo to (rHost:rPort): ($rHost:$rPort)\n";
 
     my $esock = IO::Socket::INET->new(
         PeerHost => $rHost,

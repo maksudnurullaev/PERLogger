@@ -8,6 +8,9 @@ version: 0.0.2a
 path2LogsDb: DATA/Logs/main.db
 path2MainDb: DATA/main.db
 
+# Logging
+path4Logging: var/main.log
+
 # For MS AD Authorization
 MSADServer: TK-DCS011
 
@@ -21,3 +24,8 @@ users:
     mnurullaev: 
       access: 
         - log_operator
+
+hypnotoad:
+  listen: 
+    - 'http://*:7080'
+  workers: 1

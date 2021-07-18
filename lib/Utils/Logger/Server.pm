@@ -18,6 +18,7 @@ use Time::Local;
 use Socket;
 use IO::Socket;
 use Data::Dumper;
+use Utils;
 
 my $version = '0.0.1b';
 my $reldate = '2021 Feb 23';
@@ -27,47 +28,46 @@ my $defaultPort = 9875;
 my $listen      = $defaultPort;    # Port to listen on
 
 #   Internal debugging flags
-my $verbose            = 0;       # Print debug output if true
-my $progress           = 0;       # Show progress if nonzero
-my $tryConver2Hostname = 0;       # Try to convert IP address to hostname
+my $verbose            = 0;        # Print debug output if true
+my $progress           = 0;        # Show progress if nonzero
+my $tryConver2Hostname = 0;        # Try to convert IP address to hostname
 
 my $utime = 0;
 
 #   To detect termination
-my $ctrl_c = 0;                   # CTL+C watcher
+my $ctrl_c = 0;                    # CTL+C watcher
 
 #  Main part to test & run from command line
 main() if not caller();
 
 sub main {
-    parseArgs();                  # Initialize command line args
+    parseArgs();                   # Initialize command line args
 
-    $SIG{INT} = $SIG{TERM} = sub {
-        print "-=Stop signal catched!=-\n";
-        $ctrl_c = 1;
-    };
-
-    print getInfo();
+    Utils::print_info(getInfo()) ;
 
     runServer( \&defaultServerDeliver );
 }
 
 sub testPrint {
     my $message = shift || "No message";
-    print "testPrint: $message";
+    Utils::print_info("testPrint: $message");
 }
 
-sub stopServer { $ctrl_c = 1; }
+sub stopServer { Utils::print_warn("-=STOP=- Server!"); $ctrl_c = 1; $listen = 0; }
 
 sub runServer {
     my $messageHandler = shift || \&defaultServerDeliver;
     my $sock;    # Socket to listen for entries from other hosts
+    $SIG{INT} = $SIG{TERM} = $SIG{QUIT} = sub {
+        $sock->shutdown(SHUT_RDWR) if $sock;
+    };
+
     $listen = $defaultPort if !$listen;
 
     #   If we're to receive messages from other hosts, create
     #   the inbound socket and bind it to the specified port.
 
-    print "Create inboud socket...\n" if $progress;
+    Utils::print_info("Create inboud socket...") if $progress;
     foreach my $dest ( "::", "0.0.0.0" ) {
         if (
             $sock = IO::Socket::INET->new(
@@ -86,8 +86,8 @@ sub runServer {
     }
 
     my ( $name, $msg );
-    print "      LISTEN PORT: $listen\n" if $progress;
-    while ( $listen && $sock->recv( $msg, 65535 ) && !$ctrl_c ) {
+    Utils::print_info("      LISTEN PORT: $listen") if $progress;
+    while ( $listen && !$ctrl_c && $sock->recv( $msg, 65535 ) ) {
         my ( $port, $ipaddr ) = sockaddr_in( $sock->peername );
         my $hostname .= "(" . inet_ntoa($ipaddr) . ")";
         if ($tryConver2Hostname) {
@@ -105,7 +105,7 @@ sub runServer {
 }
 
 sub deliver {
-    print( "$_[0]\n");
+    Utils::print_info($_[0]);
 }
 
 sub helpMe {

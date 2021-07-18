@@ -10,6 +10,9 @@ use Data::UUID;
 
 use Data::Dumper;
 
+my $log;
+sub set_logger { $log = $_[0] if $_[0]; }
+
 sub init_path {
     my $home = Mojo::Home->new;
     $home->detect;
@@ -27,15 +30,15 @@ sub init_path {
 }
 
 sub print_info {
-    _prefix_print( "   INFO", "green", $_[0] );
+    $log ? $log->info($_[0]) : _prefix_print( "   INFO", "green", $_[0] );
 }
 
 sub print_warn {
-    _prefix_print( "WARNING", "yellow", $_[0] );
+    $log ? $log->warn($_[0]) : _prefix_print( "WARNING", "yellow", $_[0] );
 }
 
 sub print_error {
-    _prefix_print( " ERROR", "red", $_[0] );
+    $log ? $log->error($_[0]) : _prefix_print( " ERROR", "red", $_[0] );
 }
 
 sub _prefix_print {
