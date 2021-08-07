@@ -10,13 +10,13 @@ use Data::UUID;
 
 use Data::Dumper;
 
-my $log;
-sub set_logger { $log = $_[0] if $_[0]; }
+my ( $logPrefix, $log );
+sub set_logger { $log = $_[0] if $_[0]; $logPrefix = $_[1] if $_[1]; }
 
 sub init_path {
     my $home = Mojo::Home->new;
     $home->detect;
-    my $path = $home->rel_file( shift );
+    my $path = $home->rel_file(shift);
     my $dir  = $path->dirname();
 
     # ... check database directory existance
@@ -29,16 +29,31 @@ sub init_path {
     return shift ? $dir : $path;
 }
 
+sub print_debug {
+    my $logText = $logPrefix ? ( "$logPrefix: " . $_[0] ) : $_[0];
+    $log ? $log->debug($logText) : _prefix_print( "  DEBUG", "blue", $logText );
+}
+
 sub print_info {
-    $log ? $log->info($_[0]) : _prefix_print( "   INFO", "green", $_[0] );
+    my $logText = $logPrefix ? "$logPrefix: " . $_[0] : $_[0];
+    $log ? $log->info($logText) : _prefix_print( "   INFO", "green", $logText );
 }
 
 sub print_warn {
-    $log ? $log->warn($_[0]) : _prefix_print( "WARNING", "yellow", $_[0] );
+    my $logText = $logPrefix ? "$logPrefix: " . $_[0] : $_[0];
+    $log
+      ? $log->warn($logText)
+      : _prefix_print( "WARNING", "yellow", $logText );
 }
 
 sub print_error {
-    $log ? $log->error($_[0]) : _prefix_print( " ERROR", "red", $_[0] );
+    my $logText = $logPrefix ? "$logPrefix: " . $_[0] : $_[0];
+    $log ? $log->error($logText) : _prefix_print( " ERROR", "red", $logText );
+}
+
+sub print_fatal {
+    my $logText = $logPrefix ? "$logPrefix: " . $_[0] : $_[0];
+    $log ? $log->fatal($logText) : _prefix_print( " FATAL", "red", $logText );
 }
 
 sub _prefix_print {
@@ -67,10 +82,10 @@ sub hashesGroupBy {
         }
     }
 
-    if(@_){
+    if (@_) {
         my $subKey = shift;
-        for (keys %{$result}){
-            $result->{ $_ } = hashesGroupBy($result->{ $_ }, $subKey, @_);
+        for ( keys %{$result} ) {
+            $result->{$_} = hashesGroupBy( $result->{$_}, $subKey, @_ );
         }
     }
 
@@ -82,24 +97,24 @@ sub md5 {
 }
 
 sub get_uuid {
-    my $ug = new Data::UUID;
-    my $uuid = $ug->create;
-    my @result = split('-',$ug->to_string($uuid));
-    return($result[0]);
-};
+    my $ug     = new Data::UUID;
+    my $uuid   = $ug->create;
+    my @result = split( '-', $ug->to_string($uuid) );
+    return ( $result[0] );
+}
 
 sub get_date_uuid {
-    my $result= Time::Piece->new->strftime('%Y.%m.%d %T ');
-    return($result . get_uuid());
-};
+    my $result = Time::Piece->new->strftime('%Y.%m.%d %T ');
+    return ( $result . get_uuid() );
+}
 
-sub trim{
+sub trim {
     my $string = $_[0];
-    if(defined($string) && $string){
+    if ( defined($string) && $string ) {
         $string =~ s/^\s+|\s+$//g;
-        return($string);
+        return ($string);
     }
-    return(undef);
-};
+    return (undef);
+}
 
 1;

@@ -4,7 +4,7 @@
     <p><code>SHELL&gt; wget -O - http://172.30.19.243:3000/client | perl</code></p>
     <p><strong>OR:</strong></p>
     <p><code>SHELL&gt; curl http://172.30.19.243:3000/client | perl</code></p>
-    <p><strong>OR (write script and run with parameters):</strong></p>
+    <p><strong>OR (write local script and run it with some parameters):</strong></p>
     <p><code>SHELL&gt; wget -O Logger.pm http://172.30.19.243:3000/client</code></p>
     <p><code>SHELL&gt; sudo perl Logger.pm -e172.30.19.243 /var/log/httpd/access_log /var/log/httpd/error_log</code></p>
 </b-alert>

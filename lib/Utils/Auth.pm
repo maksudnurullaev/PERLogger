@@ -2,6 +2,7 @@ package Auth;
 
 use Mojo::Base -strict;
 use Digest::MD5 qw(md5_hex);
+use Utils;
 use Data::Dumper;
 
 sub login {
@@ -9,10 +10,13 @@ sub login {
     return { status => 1, error_msg => "No controller!" } if !defined($self);
     return { status => 2, error_msg => "No parameters passed!" }
       if !defined($params);
-    
-    return { status => 32, error_msg => "MSAD integration not implemented yet!" } 
+
+    return {
+        status    => 32,
+        error_msg => "MSAD integration not implemented yet!"
+      }
       if $params->{MSADUser};
-  
+
     return { status => 3, error_msg => "No user.name passed!" }
       if !defined( $params->{'user.name'} );
     return { status => 4, error_msg => "No user.password passed!" }
@@ -73,8 +77,13 @@ sub hasRole {
 sub as {
     my $self = shift;
     return 0 if !@_;
-    say "@_";
-    $self->render( json => { status => 401, error_msg => 'You not authorized!' } )
+    Utils::print_debug( "AUTH: User from IP("
+          . $self->tx->original_remote_address
+          . ") and USER("
+          . $self->session->{'user.name'}
+          . ") registered as: @_" );
+    $self->render(
+        json => { status => 401, error_msg => 'You not authorized!' } )
       and return 0
       if !hasRole( $self, @_ );
     return 1;

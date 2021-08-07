@@ -11,6 +11,10 @@ path2MainDb: DATA/main.db
 # Logging
 path4Logging: var/main.log
 
+# For UDP Server's
+updServerPIDFile: udpServer.pid
+updServerPIDFilePath: ./var
+
 # For MS AD Authorization
 MSADServer: TK-DCS011
 
@@ -28,4 +32,4 @@ users:
 hypnotoad:
   listen: 
     - 'http://*:7080'
-  workers: 1
+  workers: 5

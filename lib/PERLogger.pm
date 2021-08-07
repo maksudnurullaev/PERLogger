@@ -10,12 +10,10 @@ use Mojo::Home;
 use Mojo::IOLoop::Subprocess;
 use DBO;
 
+use Utils::Auth;
+
 use Utils;
 use Utils::DBLogs;
-use Utils::Auth;
-use Utils::Logger::Server;
-
-my $spid = 0;
 
 # This method will run once at server start
 sub startup ($self) {
@@ -26,7 +24,7 @@ sub startup ($self) {
     my $path4Logging = Utils::init_path( $config->{path4Logging} );
     my $log          = Mojo::Log->new( path => $path4Logging );
     $self->app->log($log);
-    Utils::set_logger($log);
+    Utils::set_logger($log => "WEB");
 
     $self->helper(
         'cache_control.no_caching' => sub ($c) {
@@ -102,70 +100,6 @@ sub startup ($self) {
 
     # get current user info
     $r->get('/whoami')->to( controller => 'user', action => 'check' );
-
-    # Run log file listener thread
-    $self->app->hook(
-        before_server_start => sub {
-            $self->app->log->info('Start UPD listener!');
-
-            # START UPD listener
-            start_log_listener( $self->app->log );
-
-            my ( $server, $app ) = @_;
-
-            if ( $server->isa('Mojo::Server::Prefork') ) {
-                $server->on(
-                    finish => sub {
-                        # STOP UDP listener
-                        $self->app->log->info(
-                            "Mojo::Server::Prefork: Stop UDP listener!");
-                    }
-                );
-            }
-            elsif ( $server->isa('Mojo::Server::Daemon') ) {
-                $server->ioloop->on(
-                    finish => sub {
-
-                        # STOP UDP listener
-                        $self->app->log->info(
-                            "Mojo::Server::Daemon: Stop UDP listener!");
-                    }
-                );
-            }
-        }
-    );
-}
-
-sub fix_stop_event4subprocces ( $subprocess, $log ) {
-    $spid = $subprocess->pid;
-    $log->info("Fix stop event for pid: $spid");
-    $SIG{INT} = $SIG{TERM} = $SIG{QUIT} = sub {
-        $log->warn("-=Stop signal catched!=-");
-        $subprocess->ioloop->stop_gracefully;
-        $log->warn("Send kill 'INT' signal to UPD server listener, PID: $spid ...");
-        $log->warn("... killed!") if kill 'INT', $spid;
-    };
-}
-
-sub start_log_listener ($log) {
-    my $subprocess = Mojo::IOLoop::Subprocess->new;
-
-    $subprocess->on(
-        spawn => sub ($subprocess) {
-            fix_stop_event4subprocces( $subprocess, $log );
-        }
-    );
-
-    $subprocess->run(
-        sub ($subprocess) {
-            Server::runServer( \&DBLogs::parse_it );
-        },
-        sub ( $subprocess, $err, @results ) {
-            $log->warn("Subprocess error: $err") and return if $err;
-            $log->warn("I $results[0] $results[1]!");
-        }
-    );
-
 }
 
 1;
