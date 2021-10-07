@@ -7,6 +7,7 @@ version: 0.0.2a
 # Paths to databases
 path2LogsDb: DATA/Logs/main.db
 path2MainDb: DATA/main.db
+path2MinionDb: sqlite:DATA/minion.db
 
 # Logging
 path4Logging: var/main.log

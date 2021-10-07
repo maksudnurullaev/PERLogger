@@ -7,17 +7,17 @@
         <b-button-group>
             <b-button size="sm" variant="primary"
                 :disabled="!(logs.config.selected_text && logs.config.selected_text.trim() != '')"
-                v-on:click="jsonSaveLogConfig">+</b-button>
+                v-on:click="jsonSaveLogConfig">Save</b-button>
         </b-button-group>
     </template>
     <template v-else-if="logs.config.selected && logs.config.selected != '_new_'">
         <b-button-group>
             <b-button size="sm" variant="primary"
-            v-on:click="jsonSaveLogConfig">+</b-button>
+            v-on:click="jsonSaveLogConfig">Save</b-button>
         </b-button-group>
         <b-button-group>
             <b-button size="sm" 
-            v-on:click="jsonDeleteLogConfig">-</b-button>
+            v-on:click="jsonDeleteLogConfig">Delete</b-button>
         </b-button-group>
     </template>
 </div>

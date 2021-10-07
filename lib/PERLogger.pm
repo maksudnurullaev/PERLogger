@@ -26,6 +26,11 @@ sub startup ($self) {
     $self->app->log($log);
     Utils::set_logger($log => "WEB");
 
+    # Add Minion & Minion::Admin plugins
+    $self->plugin('Minion::Admin');    
+    $self->plugin( Minion => { SQLite => $config->{path2MinionDb} } );
+
+    # Add custom helper
     $self->helper(
         'cache_control.no_caching' => sub ($c) {
             $c->res->headers->cache_control('private, max-age=0, no-cache');

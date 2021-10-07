@@ -1,1 +1,11 @@
-Shell page
+<splitpanes class="default-theme">
+    <pane size="20">
+Servers!
+    </pane>
+    <pane>
+Main Output!
+    </pane> <!-- Level #3 -->
+    <pane>
+Tasks!
+    </pane>
+</splitpanes>
