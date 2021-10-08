@@ -72,6 +72,7 @@ var app = new Vue({
                 this.jsonLogin()
             }
         },
+        dummyFunction: function() { },
         checkLoginFormValidity: function () {
             this.user.nameState = this.$refs.loginForm.elements['name-input'].validity.valid
             this.user.passwordState = this.$refs.loginForm.elements['password-input'].validity.valid
@@ -130,7 +131,7 @@ var app = new Vue({
                 }
             );
         },
-        updateLogsL3LogsToolbar:function(){
+        updateLogsL3LogsToolbar: function () {
             app.$nextTick(() => {
                 var logs = document.querySelector("#L3_LOGS");
                 if (logs) {
@@ -311,11 +312,16 @@ var app = new Vue({
                         app.user.logged = true;
                         app.user.roles = response.data.roles;
                         app.jsonGetLogConfigs();
+                        app.quickPageAccess();
                     } else {
                         app.try2CatchBadResponse(response.data);
                     }
                 }
             );
+        },
+        quickPageAccess: function () {
+            //TODO: just for quick access to main page in development stage, could be removed later
+            app.currentActivePage = app.user.roles.indexOf("shell_operator") != -1 ? 'shell' : 'help'
         },
         jsonLogin: function () {
             var data = { MSADUser: (this.user.MSADUser ? 1 : 0) };
@@ -335,6 +341,7 @@ var app = new Vue({
                             app.$bvModal.hide('modal-login')
                         });
                         app.user.lastLoginTime = new Date();
+                        app.quickPageAccess();
                     } else { // FAILED
                         app.user.nameState = false;
                         app.user.passwordState = false;

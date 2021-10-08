@@ -1,6 +1,6 @@
 <splitpanes class="default-theme">
     <pane size="20">
-Servers!
+     %= include 'shell/_l1_tabs'
     </pane>
     <pane>
 Main Output!

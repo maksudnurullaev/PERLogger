@@ -21,3 +21,35 @@
         </b-button>
     </template>
 </b-modal>
+
+
+<b-modal id="modal-shell-new-server" ref="modal" title="New server access" @ok="dummyFunction">
+    <form ref="shellNewServerForm" @submit.stop.prevent="handleSubmit">
+        <b-form-group label="Server name or IP" label-for="form-shell-server-name-input"
+            invalid-feedback="Name or IP is required">
+            <b-form-input id="form-shell-server-name-input" required></b-form-input>
+        </b-form-group>
+        <b-form-group label="User name" label-for="form-shell-server-user-name-input"
+            invalid-feedback="User name is required">
+            <b-form-input id="form-shell-server-user-name-input" required></b-form-input>
+        </b-form-group>
+        <b-form-group label="Password" label-for="form-shell-server-user-password-input"
+            invalid-feedback="Password is required">
+            <b-form-input id="form-shell-server-user-password-input" required type="password"></b-form-input>
+        </b-form-group>
+    </form>
+    <template #modal-footer="{ ok }">
+        <b-button-group class="mb-0 mr-auto"> Test:&nbsp;
+            <b-button size="sm" @click="dummyFunction" disabled>
+                Ping
+            </b-button>
+            <b-button size="sm" @click="dummyFunction" disabled>
+                Login
+            </b-button>
+        </b-button-group>
+
+        <b-button size="sm" variant="success" @click="ok()" disabled>
+            OK
+        </b-button>
+    </template>
+</b-modal>

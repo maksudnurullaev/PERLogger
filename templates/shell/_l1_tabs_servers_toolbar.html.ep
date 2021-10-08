@@ -1,0 +1,12 @@
+<div class="sticky">
+    <b-button-group>
+        <b-button size="sm" variant="success"
+            v-b-modal.modal-shell-new-server>New</b-button>
+        <b-button size="sm" variant="primary"
+            :disabled="!(logs.config.selected_text && logs.config.selected_text.trim() != '')"
+            v-on:click="jsonSaveLogConfig">Save</b-button>
+        <b-button size="sm" variant="danger"
+            :disabled="!(logs.config.selected_text && logs.config.selected_text.trim() != '')"
+            v-on:click="jsonSaveLogConfig">Delete</b-button>
+    </b-button-group>
+</div>

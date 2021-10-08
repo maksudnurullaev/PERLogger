@@ -1,0 +1,3 @@
+%= include 'shell/_l1_tabs_servers_toolbar'
+
+server list
