@@ -14,7 +14,7 @@ sub login ($self) {
 }
 
 sub check ($self){
-    
+    # dummy method for user/check.html.ep file
 }
 
 sub current ($self) {

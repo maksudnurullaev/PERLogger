@@ -105,6 +105,9 @@ sub startup ($self) {
 
     # get current user info
     $r->get('/whoami')->to( controller => 'user', action => 'check' );
+
+    # handle tasks
+    $r->any('/tasks/ping')->to( controller => 'tasks', action => 'ping' );
 }
 
 1;

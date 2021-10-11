@@ -29,6 +29,7 @@ users:
     mnurullaev: 
       access: 
         - log_operator
+        - shell_operator
 
 hypnotoad:
   listen: 

@@ -49,6 +49,13 @@ var app = new Vue({
         disableMainBtnSelAll: false,
         disableMainBtnSelNone: true,
         disableMainBtnSelRev: true,
+        forms: { 
+            server: {
+                nameOrIp: '',
+                userName: '',
+                userPassword: '',
+            }
+        },
     },
     methods: {
         userHasRole: function (role) {
@@ -382,6 +389,18 @@ var app = new Vue({
             }).then(
                 function (response) {
                     server_data.push(response.data);
+                }
+            );
+        },
+        jsonTaskPing: function(taskTimeout) {
+            var data = {};
+            data['taskTimeout'] = taskTimeout;
+            data['nameOrIP'] = this.forms.server.nameOrIp.trim();
+            axios.post('/tasks/ping', data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                    } else {
+                    }
                 }
             );
         },
