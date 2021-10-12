@@ -13,6 +13,8 @@ sub ping ($self) {
 
     $self->render(
         json => { status => 0, servers => 'DBLogs::get_servers_with_stats()' } );
+
+        
 }
 
 1;

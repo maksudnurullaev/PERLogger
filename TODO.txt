@@ -1,0 +1,9 @@
+- Fix:
+
+OR (write local script and run it with some parameters):
+
+SHELL> wget -O Logger.pm http://172.30.19.243:3000/client
+
+SHELL> sudo perl Logger.pm -e172.30.19.243 /var/log/httpd/access_log /var/log/httpd/error_log
+
+IT's not work for -D<directory> part

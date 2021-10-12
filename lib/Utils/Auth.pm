@@ -76,7 +76,7 @@ sub hasRole {
 
 sub as {
     my $self = shift;
-    return 0 if !@_;
+    return 0 if !$self->session->{'user.name'} || !@_;
     Utils::print_debug( "AUTH: User from IP("
           . $self->tx->original_remote_address
           . ") and USER("
