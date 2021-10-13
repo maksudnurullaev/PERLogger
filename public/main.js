@@ -54,6 +54,8 @@ var app = new Vue({
                 nameOrIp: '',
                 userName: '',
                 userPassword: '',
+                btnPingBkgnd: '',
+                err_msg:'',
             }
         },
     },
@@ -399,7 +401,11 @@ var app = new Vue({
             axios.post('/tasks/ping', data).then(
                 function (response) {
                     if (response.data.status == 0) {
+                        app.forms.server.btnPingBkgnd = "success";
+                        app.forms.server.err_msg = "";
                     } else {
+                        app.forms.server.btnPingBkgnd = "";
+                        app.forms.server.err_msg = response.data.err_msg;
                     }
                 }
             );

@@ -23,7 +23,8 @@
 </b-modal>
 
 
-<b-modal id="modal-shell-new-server" ref="modal" title="New server access" @ok="dummyFunction">
+<b-modal id="modal-shell-new-server" ref="modal" title="New server access" @ok="dummyFunction" no-close-on-backdrop>
+    <b-alert v-if="forms.server.err_msg" show variant="danger">{{ forms.server.err_msg }}</b-alert>
     <form ref="shellNewServerForm" @submit.stop.prevent="handleSubmit">
         <b-form-group label="Server name or IP:" label-for="form-shell-server-name-input"
             invalid-feedback="Name or IP is required">
@@ -40,7 +41,7 @@
     </form>
     <template #modal-footer="{ ok }">
         <b-button-group class="mb-0 mr-auto">
-            <b-button size="sm" @click="jsonTaskPing(3)" :disabled="forms.server.nameOrIp.trim().length < 3">
+            <b-button :variant="forms.server.btnPingBkgnd" size="sm" @click="jsonTaskPing(3)" :disabled="forms.server.nameOrIp.trim().length < 3">
                 Test ping
             </b-button>
             <b-button size="sm" @click="dummyFunction" :disabled="forms.server.userName.trim().length < 3 || forms.server.userPassword.trim().length < 3">

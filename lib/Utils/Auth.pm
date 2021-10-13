@@ -60,9 +60,8 @@ sub getPasscode {
     return $users->{$user_name}{'passcode'};
 }
 
-sub hasRole {
+sub _hasRole {
     my $self = shift;
-    return 0 if !$self->session->{'user.name'} or !scalar(@_);
 
     my $roles = getUserRoles( $self, $self->session->{'user.name'} );
     for my $role (@_) {
@@ -76,7 +75,7 @@ sub hasRole {
 
 sub as {
     my $self = shift;
-    return 0 if !$self->session->{'user.name'} || !@_;
+    return 0 if !$self->session->{'user.name'} || !scalar(@_);
     Utils::print_debug( "AUTH: User from IP("
           . $self->tx->original_remote_address
           . ") and USER("
@@ -85,7 +84,7 @@ sub as {
     $self->render(
         json => { status => 401, error_msg => 'You not authorized!' } )
       and return 0
-      if !hasRole( $self, @_ );
+      if !_hasRole( $self, @_ );
     return 1;
 }
 
