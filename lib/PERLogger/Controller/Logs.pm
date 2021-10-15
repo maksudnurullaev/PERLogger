@@ -11,8 +11,14 @@ my $LOG_CONFIG_OBJECT_NAME = 'LOG_CONFIG';
 sub servers ($self) {
     return if !$self->authAs( 'log_operator', 'administrator' );
 
-    $self->render(
-        json => { status => 0, servers => DBLogs::get_servers_with_stats() } );
+    my $results = DBLogs::get_servers_with_stats();
+
+    if ( @{$results} ) {
+        $self->render( json => { status => 0, servers => $results } );
+    }
+    else {
+        $self->render( json => { status => 1, msg => "Servers not found!" } );
+    }
 }
 
 sub serverlfiles ($self) {
@@ -29,11 +35,10 @@ sub get ($self) {
 
     if ( !exists( $params->{where} ) ) {
         $self->render(
-            json => { status => 1, error_msg => "NO WHERE definitions!" } );
+            json => { status => 1, msg => "NO WHERE definitions!" } );
     }
     elsif ( !exists( $params->{top} ) ) {
-        $self->render(
-            json => { status => 0, error_msg => "NO TOP definitions!" } );
+        $self->render( json => { status => 2, msg => "NO TOP definitions!" } );
     }
     else {
         my $where = [];
@@ -107,7 +112,7 @@ sub configs ($self) {
         $self->render(
             json => {
                 status    => 1,
-                error_msg => "Configurations not found!"
+                msg => "Configurations not found!"
             }
         );
     }

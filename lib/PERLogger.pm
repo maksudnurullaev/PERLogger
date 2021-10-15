@@ -17,6 +17,7 @@ use Utils::DBLogs;
 
 # This method will run once at server start
 sub startup ($self) {
+
     # Load configuration from config file
     my $config = $self->plugin('NotYAMLConfig');
 
@@ -24,10 +25,10 @@ sub startup ($self) {
     my $path4Logging = Utils::init_path( $config->{path4Logging} );
     my $log          = Mojo::Log->new( path => $path4Logging );
     $self->app->log($log);
-    Utils::set_logger($log => "WEB");
+    Utils::set_logger( $log => "WEB" );
 
     # Add Minion & Minion::Admin plugins
-    $self->plugin('Minion::Admin');    
+    $self->plugin('Minion::Admin');
     $self->plugin( Minion => { SQLite => $config->{path2MinionDb} } );
 
     # Add custom helper
@@ -108,6 +109,8 @@ sub startup ($self) {
 
     # handle tasks
     $r->any('/tasks/ping')->to( controller => 'tasks', action => 'ping' );
+    $r->any('/tasks/pingSsh')->to( controller => 'tasks', action => 'pingSsh' );
+
 }
 
 1;

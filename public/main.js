@@ -49,13 +49,14 @@ var app = new Vue({
         disableMainBtnSelAll: false,
         disableMainBtnSelNone: true,
         disableMainBtnSelRev: true,
-        forms: { 
+        forms: {
             server: {
                 nameOrIp: '',
                 userName: '',
                 userPassword: '',
                 btnPingBkgnd: '',
-                err_msg:'',
+                btnPingSshBkgnd: '',
+                overlay: false,
             }
         },
     },
@@ -81,7 +82,7 @@ var app = new Vue({
                 this.jsonLogin()
             }
         },
-        dummyFunction: function() { },
+        dummyFunction: function () { },
         checkLoginFormValidity: function () {
             this.user.nameState = this.$refs.loginForm.elements['name-input'].validity.valid
             this.user.passwordState = this.$refs.loginForm.elements['password-input'].validity.valid
@@ -118,11 +119,7 @@ var app = new Vue({
             }
             axios.post('/logs/config/save', data).then(
                 function (response) {
-                    if (response.data.status == 0) {
-                        app.jsonGetLogConfigs(response.data.id);
-                    } else {
-                        app.try2CatchBadResponse(response.data);
-                    }
+                    app.jsonGetLogConfigs(response.data.id);
                 }
             );
         },
@@ -132,11 +129,7 @@ var app = new Vue({
             };
             axios.post('/logs/config/del', data).then(
                 function (response) {
-                    if (response.data.status == 0) {
-                        app.jsonGetLogConfigs();
-                    } else {
-                        app.try2CatchBadResponse(response.data);
-                    }
+                    app.jsonGetLogConfigs();
                 }
             );
         },
@@ -183,7 +176,7 @@ var app = new Vue({
                             app.logs.config.selected = "_new_";
                         }
                     } else {
-                        app.try2CatchBadResponse(response.data);
+                        app.makeToast("danger", response.data.msg);
                         app.logs.config.selected = "_new_";
                     }
                     app.updateLogConfig();
@@ -248,22 +241,6 @@ var app = new Vue({
             this.l2_servers = new Map();
             this.l2_selected = [];
         },
-        jsonGetErrWarnDefs: function () {
-            //TODO
-        },
-        try2CatchBadResponse: function (response) {
-            var msg = "Status: ";
-            if (response.status) {
-                msg += response.status;
-            }
-            if (response.error_msg) {
-                if (msg.length > 0) {
-                    msg += "\n";
-                }
-                msg += response.error_msg;
-            }
-            console.error(msg);
-        },
         jsonRefreshServers: function () {
             var self = this;
             axios.get('/logs/servers').then(
@@ -278,7 +255,9 @@ var app = new Vue({
                             });
                         });
                     } else {
-                        self.try2CatchBadResponse(response.data);
+                        if (response.data.msg) {
+                            app.makeToast("danger", response.data.msg);
+                        }
                     }
                 }
             );
@@ -303,12 +282,11 @@ var app = new Vue({
         jsonLogout: function () {
             axios.get('/user/logout').then(
                 function (response) {
-                    if (response.data.status == 0) { // OK
-                        app.user.logged = false
-                        app.resetModalLogin()
-                        app.currentActivePage = 'help'
-                    } else {
-                        app.try2CatchBadResponse(response.data);
+                    app.user.logged = false
+                    app.resetModalLogin()
+                    app.currentActivePage = 'help'
+                    if (response.data.msg) {
+                        app.makeToast("success", response.data.msg);
                     }
                 }
             );
@@ -323,7 +301,7 @@ var app = new Vue({
                         app.jsonGetLogConfigs();
                         app.quickPageAccess();
                     } else {
-                        app.try2CatchBadResponse(response.data);
+                        app.makeToast("danger", response.data.msg);
                     }
                 }
             );
@@ -354,7 +332,9 @@ var app = new Vue({
                     } else { // FAILED
                         app.user.nameState = false;
                         app.user.passwordState = false;
-                        app.user.loginStatus = response.data.error_msg;
+                        if (response.data.msg) {
+                            app.makeToast("danger", response.data.msg);
+                        }
                     }
                 }
             );
@@ -375,7 +355,9 @@ var app = new Vue({
                         app.l3_logs = response.data.logs;
                         app.updateLogsL3LogsToolbar();
                     } else {
-                        app.try2CatchBadResponse(response.data);
+                        if (response.data.msg) {
+                            app.makeToast("danger", response.data.msg);
+                        }
                     }
                 }
             );
@@ -394,21 +376,41 @@ var app = new Vue({
                 }
             );
         },
-        jsonTaskPing: function(taskTimeout) {
+        jsonTaskPing: function (taskTimeout) {
             var data = {};
             data['taskTimeout'] = taskTimeout;
             data['nameOrIP'] = this.forms.server.nameOrIp.trim();
             axios.post('/tasks/ping', data).then(
                 function (response) {
-                    if (response.data.status == 0) {
-                        app.forms.server.btnPingBkgnd = "success";
-                        app.forms.server.err_msg = "";
-                    } else {
-                        app.forms.server.btnPingBkgnd = "";
-                        app.forms.server.err_msg = response.data.err_msg;
+                    app.forms.server.btnPingBkgnd = (response.data.status == 0 ? "success" : "");
+                    if (response.data.msg) {
+                        app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
                     }
                 }
             );
+        },
+        jsonTaskSSHLoginTest: function () {
+            var data = {};
+            data['nameOrIP'] = this.forms.server.nameOrIp.trim();
+            data['userName'] = this.forms.server.userName.trim();
+            data['userPassword'] = this.forms.server.userPassword.trim();
+            app.forms.server.overlay = true;
+            axios.post('/tasks/pingSsh', data).then(
+                function (response) {
+                    app.forms.server.btnPingSshBkgnd = (response.data.status == 0 ? "success" : "");
+                    if (response.data.msg) {
+                        app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
+                    }
+                    app.forms.server.overlay = false;
+                }
+            );
+        },
+        makeToast: function (tVariant, tContent) {
+            this.$bvToast.toast(tContent, {
+                title: tVariant.toUpperCase(),
+                variant: tVariant,
+                solid: true
+            });
         },
         l1_getMD5ForHost: function (lhost) {
             for (const el of app.l1_servers) {

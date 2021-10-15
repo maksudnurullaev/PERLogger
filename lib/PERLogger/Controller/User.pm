@@ -32,7 +32,7 @@ sub current ($self) {
         $self->render(
             json => {
                 status    => 1,
-                error_msg => "NO authorization!"
+                msg => "NO authorization!"
             }
         );
 
@@ -41,7 +41,7 @@ sub current ($self) {
 
 sub logout ($self) {
     $self->session( expires => 1 );
-    $self->render( json => { status => 0 } );
+    $self->render( json => { status => 0, msg => "You logged out!" } );
 }
 
 my %cCache;

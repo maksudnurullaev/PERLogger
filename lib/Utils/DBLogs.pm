@@ -89,12 +89,8 @@ sub get_servers_with_stats {
     Utils::print_error "Database not initilized!" and return
       if !defined($sqlite);
 
-    my $db = $sqlite->db;
-    my $results =
-      $db->query(
-        'select count(*) as count, lhost, lhost_md5 from logs group by lhost');
-
-    return $results->hashes->TO_JSON;
+    return $sqlite->db->query(
+        'select count(*) as count, lhost, lhost_md5 from logs group by lhost')->hashes->TO_JSON;
 }
 
 sub get_servers_and_log_files {

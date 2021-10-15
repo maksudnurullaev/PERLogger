@@ -24,32 +24,38 @@
 
 
 <b-modal id="modal-shell-new-server" ref="modal" title="New server access" @ok="dummyFunction" no-close-on-backdrop>
-    <b-alert v-if="forms.server.err_msg" show variant="danger">{{ forms.server.err_msg }}</b-alert>
-    <form ref="shellNewServerForm" @submit.stop.prevent="handleSubmit">
-        <b-form-group label="Server name or IP:" label-for="form-shell-server-name-input"
-            invalid-feedback="Name or IP is required">
-            <b-form-input id="form-shell-server-name-input" required v-model="forms.server.nameOrIp"></b-form-input>
-        </b-form-group>
-        <b-form-group label="User name:" label-for="form-shell-server-user-name-input"
-            invalid-feedback="User name is required">
-            <b-form-input id="form-shell-server-user-name-input" required v-model="forms.server.userName"></b-form-input>
-        </b-form-group>
-        <b-form-group label="Password:" label-for="form-shell-server-user-password-input"
-            invalid-feedback="Password is required">
-            <b-form-input id="form-shell-server-user-password-input" required type="password" v-model="forms.server.userPassword"></b-form-input>
-        </b-form-group>
-    </form>
+    <b-overlay :show="forms.server.overlay" rounded="sm">
+        <form ref="shellNewServerForm" @submit.stop.prevent="handleSubmit">
+            <b-form-group label="Server name or IP:" label-for="form-shell-server-name-input"
+                invalid-feedback="Name or IP is required">
+                <b-form-input id="form-shell-server-name-input" required v-model="forms.server.nameOrIp"></b-form-input>
+            </b-form-group>
+            <b-form-group label="User name:" label-for="form-shell-server-user-name-input"
+                invalid-feedback="User name is required">
+                <b-form-input id="form-shell-server-user-name-input" required v-model="forms.server.userName">
+                </b-form-input>
+            </b-form-group>
+            <b-form-group label="Password:" label-for="form-shell-server-user-password-input"
+                invalid-feedback="Password is required">
+                <b-form-input id="form-shell-server-user-password-input" required type="password"
+                    v-model="forms.server.userPassword"></b-form-input>
+            </b-form-group>
+        </form>
+    </b-overlay>
     <template #modal-footer="{ ok }">
         <b-button-group class="mb-0 mr-auto">
-            <b-button :variant="forms.server.btnPingBkgnd" size="sm" @click="jsonTaskPing(3)" :disabled="forms.server.nameOrIp.trim().length < 3">
+            <b-button :variant="forms.server.btnPingBkgnd" size="sm" @click="jsonTaskPing(3)"
+                :disabled="forms.server.nameOrIp.trim().length < 3">
                 Test ping
             </b-button>
-            <b-button size="sm" @click="dummyFunction" :disabled="forms.server.userName.trim().length < 3 || forms.server.userPassword.trim().length < 3">
+            <b-button :variant="forms.server.btnPingSshBkgnd" size="sm" @click="jsonTaskSSHLoginTest()"
+                :disabled="forms.server.userName.trim().length < 3 || forms.server.userPassword.trim().length < 3">
                 Test login
             </b-button>
         </b-button-group>
 
-        <b-button size="sm" variant="success" @click="ok()" disabled :disabled="forms.server.nameOrIp.trim().length < 3">
+        <b-button size="sm" variant="success" @click="ok()" disabled
+            :disabled="forms.server.nameOrIp.trim().length < 3">
             OK
         </b-button>
     </template>
