@@ -284,17 +284,13 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
           if exists( $parameters->{distinct} )
           && $parameters->{distinct};
 
-        if ( exists $parameters->{columns} && $parameters->{columns} ) {
-            $result .= join( ",", @{ $parameters->{columns} } ) . ' ';
-        }
-        else {
-            $result .= '* ';
-        }
-
-        $result .= 'FROM objects ';
+        $result .= ' * FROM objects ';
 
         if ( my $where_part = $self->get_objects_sql_where_part($parameters) ) {
-            $result .= " WHERE $where_part ";
+            $result .= " WHERE id IN(
+                SELECT DISTINCT id
+                    FROM objects
+                    WHERE $where_part) ";
         }
 
         if ( exists( $parameters->{order} ) && $parameters->{order} ) {

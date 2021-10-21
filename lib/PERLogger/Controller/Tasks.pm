@@ -8,7 +8,8 @@ use Net::SSH::Perl;
 use Data::Dumper;
 use Utils::EnDeCrypt;
 
-my $SERVER_INFO_OBJECT_NAME = 'SERVER_INFO';
+my $SERVER_INFO_OBJECT_NAME      = 'SERVER_INFO';
+my $SERVER_USER_INFO_OBJECT_NAME = 'SERVER_USER_INFO';
 
 sub ping ($self) {
     return if !$self->authAs( 'shell_operator', 'administrator' );
@@ -58,28 +59,47 @@ sub saveServer ($self) {
 
     my $data = decode_json( $self->req->body );
 
-    $data->{name} = $SERVER_INFO_OBJECT_NAME;
-    $data->{owner}       = $self->session->{'user.name'};
+    my $_sData = {
+        object_name => $SERVER_INFO_OBJECT_NAME,
+        nameOrIP    => $data->{nameOrIP},
+        owner       => $self->session->{'user.name'}
+    };
+    $_sData->{id} = $data->{id} if exists( $data->{id} ) && $data->{id};
 
-    # encrypt password
-    $data->{userPassword} = EnDeCrypt::encryptMe( $data->{userPassword} )
-      if exists( $data->{userPassword} )
-      and $data->{userPassword};
+    # save server
+    my $sId =
+      exists( $_sData->{id} )
+      ? $self->dbMain->update($_sData)
+      : $self->dbMain->insert($_sData);
 
-    # Utils::print_debug EnDeCrypt::decryptMe($data->{userPassword});
-    my $id =
-      ( exists( $data->{id} ) and $data->{id} )
-      ? $self->dbMain->update($data)
-      : $self->dbMain->insert($data);
+    # save server's user
+    if ( exists( $data->{userName} ) && $data->{userName} ) {
+        my $_uData = {
+            object_name => $SERVER_USER_INFO_OBJECT_NAME,
+            user        => $data->{userName},
+            owner       => $self->session->{'user.name'}
+        };
+        $_uData->{userPassword} = EnDeCrypt::encryptMe( $data->{userPassword} )
+          if exists( $data->{userPassword} ) && $data->{userPassword};
+
+        # save server
+        my $uId = $self->dbMain->insert($_uData);
+        $self->dbMain->set_link( $sId, $uId );
+    }
 
     $self->render(
-        json => { status => 0, msg => "New server [$id] created!" } );
+        json => { status => 0, msg => "New server [$sId] created!" } );
+}
+
+sub _saveUser4Server ( $self, $serverId, $user, $password ) {
+
 }
 
 sub getServersInfo ($self) {
     return if !$self->authAs( 'shell_operator', 'administrator' );
     my $filter = {
-        name  => [$SERVER_INFO_OBJECT_NAME],
+        name => [$SERVER_INFO_OBJECT_NAME],
+
         #owner => $self->session->{'user.name'}
     };
 

@@ -3,12 +3,12 @@
         <b-icon icon="arrow-bar-down"></b-icon>
     </b-button>
     <b-button-group>
-        <b-button size="sm" variant="success" v-b-modal.modal-server-info>New</b-button>
+        <b-button size="sm" variant="success" v-b-modal.modal-server-info><b-icon icon="clipboard-plus"></b-icon></b-button>
         <b-button size="sm" variant="primary"
-            :disabled="!(logs.config.selected_text && logs.config.selected_text.trim() != '')"
-            v-on:click="jsonSaveLogConfig">Save</b-button>
+            :disabled="false"
+            v-on:click="dummyFunction"><b-icon icon="clipboard-check"></b-icon></b-button>
         <b-button size="sm" variant="danger"
-            :disabled="!(logs.config.selected_text && logs.config.selected_text.trim() != '')"
-            v-on:click="jsonSaveLogConfig">Delete</b-button>
+            :disabled="false"
+            v-on:click="dummyFunction"><b-icon icon="clipboard-minus"></b-icon></b-button>
     </b-button-group>
 </div>

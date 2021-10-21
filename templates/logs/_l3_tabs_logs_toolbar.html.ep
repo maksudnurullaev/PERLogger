@@ -1,7 +1,7 @@
 <div class="sticky">
     <b-form inline>
         <b-button size="sm" variant="primary" v-on:click="jsonGetLogs" style="margin-right: 10px;">
-            <b-icon icon="arrow-repeat"></b-icon>
+            <b-icon icon="arrow-bar-down"></b-icon>
         </b-button>
 
         <label for="inline-form-custom-select-pref" style="margin-right: 5px;">Top:</label>
