@@ -3,7 +3,7 @@
     <b-tab title="Config">
       %= include 'logs/_l3_tabs_config'
     </b-tab>
-    <b-tab id="L3_LOGS" title="Logs" v-if="l2_selected.length">
+    <b-tab id="L3_LOGS" title="Logs" v-if="logs_l2_selected.length">
       %= include 'logs/_l3_tabs_logs'
     </b-tab>
   </b-tabs>
