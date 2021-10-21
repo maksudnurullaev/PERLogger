@@ -1,7 +1,9 @@
 <div class="sticky">
+    <b-button size="sm" variant="primary" v-on:click="jsonRefreshServersInfo">
+        <b-icon icon="arrow-bar-down"></b-icon>
+    </b-button>
     <b-button-group>
-        <b-button size="sm" variant="success"
-            v-b-modal.modal-shell-new-server>New</b-button>
+        <b-button size="sm" variant="success" v-b-modal.modal-server-info>New</b-button>
         <b-button size="sm" variant="primary"
             :disabled="!(logs.config.selected_text && logs.config.selected_text.trim() != '')"
             v-on:click="jsonSaveLogConfig">Save</b-button>

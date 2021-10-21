@@ -64,7 +64,7 @@ sub configSave ($self) {
     $data->{object_name} = $LOG_CONFIG_OBJECT_NAME;
     $data->{owner}       = $self->session->{'user.name'};
     my $newId =
-      exists( $data->{id} )
+      ( exists( $data->{id} ) and $data->{id} )
       ? $self->dbMain->update($data)
       : $self->dbMain->insert($data);
 

@@ -23,7 +23,7 @@
 </b-modal>
 
 
-<b-modal id="modal-shell-new-server" ref="modal" title="New server access" @ok="dummyFunction" no-close-on-backdrop>
+<b-modal id="modal-server-info" ref="modal" title="New server access" @ok="jsonServerInfoSave" no-close-on-backdrop>
     <b-overlay :show="forms.server.overlay" rounded="sm">
         <form ref="shellNewServerForm" @submit.stop.prevent="handleSubmit">
             <b-form-group label="Server name or IP:" label-for="form-shell-server-name-input"
@@ -56,7 +56,7 @@
 
         <b-button size="sm" variant="success" @click="ok()" disabled
             :disabled="forms.server.nameOrIp.trim().length < 3">
-            OK
+            Save
         </b-button>
     </template>
 </b-modal>

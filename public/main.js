@@ -27,6 +27,17 @@ var app = new Vue({
                 warnings: false,
             },
         },
+        logs_l1_servers: [],                   // Level#1 servers
+        logs_l1_selected: [],                  // Level#1 selected servers
+        logs_l2_servers: new Map(),
+        logs_l2_selected: [],
+        logs_l2_forceRerenderKey: 0,
+        logs_l2_last_data: new Map(),
+        logs_l3_logs: [],
+        logs_disableMainBtnShowLog: true,
+        logs_disableMainBtnSelAll: false,
+        logs_disableMainBtnSelNone: true,
+        logs_disableMainBtnSelRev: true,                    
         user: {
             name: '',
             nameState: null,
@@ -37,20 +48,9 @@ var app = new Vue({
             roles: [],
             MSADUser: false,
         },
-        l1_servers: [],                   // Level#1 servers
-        l1_selected: [],                  // Level#1 selected servers
-        l2_servers: new Map(),
-        l2_selected: [],
-        l2_forceRerenderKey: 0,
-        l2_last_data: new Map(),
-        l3_logs: [],
-        l3_mouseover_id: "",
-        disableMainBtnShowLog: true,
-        disableMainBtnSelAll: false,
-        disableMainBtnSelNone: true,
-        disableMainBtnSelRev: true,
         forms: {
             server: {
+                _id: '',
                 nameOrIp: '',
                 userName: '',
                 userPassword: '',
@@ -184,7 +184,7 @@ var app = new Vue({
             );
         },
         l2_forceRerender: function () {
-            this.l2_forceRerenderKey += 1;
+            this.logs_l2_forceRerenderKey += 1;
         },
         log2HTML: function (log) {
             var result = log.log.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -222,33 +222,33 @@ var app = new Vue({
             var _selected = [];
             switch (smode) {
                 case 'all':
-                    this.l1_servers.forEach(function (server) {
+                    this.logs_l1_servers.forEach(function (server) {
                         _selected.push(server.value);
                     });
                     break;
                 case 'reverse':
-                    this.l1_servers.forEach(function (server) {
-                        if (!app.l1_selected.includes(server.value)) {
+                    this.logs_l1_servers.forEach(function (server) {
+                        if (!app.logs_l1_selected.includes(server.value)) {
                             _selected.push(server.value);
                         };
                     });
                     this.l2_reset();
             }
             if (_selected.length == 0) { this.l2_reset(); }
-            this.l1_selected = _selected;
+            this.logs_l1_selected = _selected;
         },
         l2_reset: function () {
-            this.l2_servers = new Map();
-            this.l2_selected = [];
+            this.logs_l2_servers = new Map();
+            this.logs_l2_selected = [];
         },
         jsonRefreshServers: function () {
             var self = this;
             axios.get('/logs/servers').then(
                 function (response) {
-                    self.l1_servers = [];
+                    app.logs_l1_servers = [];
                     if (response.data.status == 0) {
                         response.data.servers.map(function (el) {
-                            self.l1_servers.push({
+                            app.logs_l1_servers.push({
                                 value: el.lhost,
                                 lhost_md5: el.lhost_md5,
                                 html: el.lhost + "<sup>" + el.count + "</sup>",
@@ -264,7 +264,7 @@ var app = new Vue({
         },
         getL2SelectedLFilesCount: function () {
             var result = 0;
-            app.l2_servers.forEach((lfiles, server) => {
+            app.logs_l2_servers.forEach((lfiles, server) => {
                 result = lfiles.length;
             });
             return result;
@@ -342,7 +342,7 @@ var app = new Vue({
         jsonGetLogs: function () {
             var data = {};
             data['where'] = [];
-            app.l2_servers.forEach((lfiles, server) => {
+            app.logs_l2_servers.forEach((lfiles, server) => {
                 data['where'].push({
                     lhost_md5: app.l1_getMD5ForHost(server),
                     lfile_md5: lfiles
@@ -352,7 +352,7 @@ var app = new Vue({
             axios.post('/logs/get', data).then(
                 function (response) {
                     if (response.data.status == 0) {
-                        app.l3_logs = response.data.logs;
+                        app.logs_l3_logs = response.data.logs;
                         app.updateLogsL3LogsToolbar();
                     } else {
                         if (response.data.msg) {
@@ -405,6 +405,53 @@ var app = new Vue({
                 }
             );
         },
+        jsonServerInfoSave: function (bvModalEvt) {
+            bvModalEvt.preventDefault();
+            var data = {
+                _id: this.forms.server.ID,
+                nameOrIP: this.forms.server.nameOrIp.trim(),
+            }
+            if (this.forms.server.userName.trim()) {
+                data['userName'] = this.forms.server.userName.trim();
+            }
+            if (this.forms.server.userPassword.trim()) {
+                data['userPassword'] = this.forms.server.userPassword.trim();
+            }
+            axios.post('/tasks/saveServer', data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                        app.$nextTick(() => {
+                            app.$bvModal.hide('modal-server-info')
+                        });
+                    }
+                    if (response.data.msg) {
+                        app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
+                    }
+                }
+            );
+
+        },
+        jsonRefreshServersInfo: function () {
+            var self = this;
+            axios.get('/info/servers').then(
+                function (response) {
+                    app.logs_l1_servers = [];
+                    if (response.data.status == 0) {
+                        response.data.servers.map(function (el) {
+                            app.logs_l1_servers.push({
+                                value: el.lhost,
+                                lhost_md5: el.lhost_md5,
+                                html: el.lhost + "<sup>" + el.count + "</sup>",
+                            });
+                        });
+                    } else {
+                        if (response.data.msg) {
+                            app.makeToast("danger", response.data.msg);
+                        }
+                    }
+                }
+            );
+        },
         makeToast: function (tVariant, tContent) {
             this.$bvToast.toast(tContent, {
                 title: tVariant.toUpperCase(),
@@ -413,35 +460,35 @@ var app = new Vue({
             });
         },
         l1_getMD5ForHost: function (lhost) {
-            for (const el of app.l1_servers) {
+            for (const el of app.logs_l1_servers) {
                 if (el.value == lhost) {
                     return el.lhost_md5;
                 }
             }
         },
         l3_getLogFilesForServer: function (sname) {
-            if (app.l2_servers.size == 0) return [];
-            return Array.from(app.l2_servers.get(sname));
+            if (app.logs_l2_servers.size == 0) return [];
+            return Array.from(app.logs_l2_servers.get(sname));
         },
         l2_updateServerAndFiles: function (server, files) {
-            if (files && files.length > 0) this.l2_servers.set(server, files);
-            else this.l2_servers.delete(server);
+            if (files && files.length > 0) this.logs_l2_servers.set(server, files);
+            else this.logs_l2_servers.delete(server);
 
             //TODO: may be we should change this code for more effective version to update l2_selected
-            this.l2_selected = Array.from(this.l2_servers.keys());
+            this.logs_l2_selected = Array.from(this.logs_l2_servers.keys());
         },
         l2_refreshData: function (oldValues) {
-            if (app.l1_selected.length == 0) {
+            if (app.logs_l1_selected.length == 0) {
                 this.l2_reset();
                 return;
             }
 
             if (oldValues && oldValues.length > 0) {
                 oldValues.map(function (server) {
-                    app.l2_servers.delete(server);
+                    app.logs_l2_servers.delete(server);
                 });
             }
-            app.l2_selected = Array.from(this.l2_servers.keys());
+            app.logs_l2_selected = Array.from(this.logs_l2_servers.keys());
         },
         showLogs: function () {
             var logs = document.querySelector("#L3_LOGS");
@@ -477,14 +524,14 @@ var app = new Vue({
             l1_refreshMainButtons();
             if (values.length < oldValues.length) {
                 this.l2_refreshData(arr_diff(values, oldValues));
-                this.l2_last_data.clear();
+                this.logs_l2_last_data.clear();
             }
         },
         currentActivePage: function (value, oldValue) {
             if (value != oldValue) {
-                this.l1_selected = []
-                this.l2_selected = []
-                this.l3_logs = []
+                this.logs_l1_selected = []
+                this.logs_l2_selected = []
+                this.logs_l3_logs = []
             }
         },
     },
@@ -494,31 +541,31 @@ var app = new Vue({
 });
 
 function l1_refreshMainButtons() {
-    if (app.l1_servers.length == 0) { return; }
+    if (app.logs_l1_servers.length == 0) { return; }
     // Main Btn - Show Log
-    if (app.l1_selected.length == 0) {
-        app.disableMainBtnShowLog = true;
+    if (app.logs_l1_selected.length == 0) {
+        app.logs_disableMainBtnShowLog = true;
     } else {
-        app.disableMainBtnShowLog = false;
+        app.logs_disableMainBtnShowLog = false;
     }
     // Main Btn - Select All
-    if (app.l1_selected.length == app.l1_servers.length) {
-        app.disableMainBtnSelAll = true;
+    if (app.logs_l1_selected.length == app.logs_l1_servers.length) {
+        app.logs_disableMainBtnSelAll = true;
     } else {
-        app.disableMainBtnSelAll = false;
+        app.logs_disableMainBtnSelAll = false;
     }
     // Main Btn - Select None
-    if (app.l1_selected.length == 0) {
-        app.disableMainBtnSelNone = true;
+    if (app.logs_l1_selected.length == 0) {
+        app.logs_disableMainBtnSelNone = true;
     } else {
-        app.disableMainBtnSelNone = false;
+        app.logs_disableMainBtnSelNone = false;
     }
     // Main Btn - Reverse selection
-    if (app.l1_selected.length == 0 ||
-        app.l1_selected.length == app.l1_servers.length) {
-        app.disableMainBtnSelRev = true;
+    if (app.logs_l1_selected.length == 0 ||
+        app.logs_l1_selected.length == app.logs_l1_servers.length) {
+        app.logs_disableMainBtnSelRev = true;
     } else {
-        app.disableMainBtnSelRev = false;
+        app.logs_disableMainBtnSelRev = false;
     }
 };
 

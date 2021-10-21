@@ -3,16 +3,15 @@ use strict;
 use feature 'say';
 use Data::Dumper;
 
-my $test_key = 'sdafsdfasdasdfsf';
-my %test_hm = ( $test_key => { status => 'run' } );
-my $test_v = $test_hm{$test_key} //= { status => 'init' };
+use Digest::MD5 qw(md5_hex);
+use Encode qw(encode_utf8);
 
-say Dumper %test_hm;
-say '============';
-say Dumper $test_v;
+use Crypt::Simple;
+ 
+my $data = encrypt("somePassword!");
+print $data, "\n";
+ 
+my $same_stuff = decrypt($data);
+print "$same_stuff\n";
 
-
-my @array = qw(red blue green);
-my @array2 = qw(green);
-
-say "treu" if @array ~~ @array2;
+print decrypt("U+8DuYRGSsGQEIFUdJ8ad1boYOEhEciRXYMfg3CuG0l3sUknhpxDxPcoKsbv4OD5"), "\n";
