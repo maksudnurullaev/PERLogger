@@ -62,9 +62,10 @@ sub saveServer ($self) {
     my $_sData = {
         object_name => $SERVER_INFO_OBJECT_NAME,
         nameOrIP    => $data->{nameOrIP},
+        description => $data->{description},
         owner       => $self->session->{'user.name'}
     };
-    $_sData->{id} = $data->{id} if exists( $data->{id} ) && $data->{id};
+    $_sData->{id} = $data->{id} if exists( $data->{_id} ) && $data->{_id};
 
     # save server
     my $sId =
@@ -98,16 +99,40 @@ sub _saveUser4Server ( $self, $serverId, $user, $password ) {
 sub getServersInfo ($self) {
     return if !$self->authAs( 'shell_operator', 'administrator' );
     my $filter = {
-        name => [$SERVER_INFO_OBJECT_NAME],
-
-        #owner => $self->session->{'user.name'}
+        name    => [$SERVER_INFO_OBJECT_NAME],
+        field   => ['owner'],
+        value   => [ $self->session->{'user.name'} ],
+        columns => ['nameOrIp']
     };
 
-    my $objects = $self->dbMain->get_objects($filter);
+    my $servers = $self->dbMain->get_objects($filter);
 
-    Utils::print_debug Dumper $objects;
+    if ($servers) {
+        for my $_key ( keys %{$servers} ) {
+            if (
+                my $_users = $self->dbMain->get_links(
+                    $_key, $SERVER_USER_INFO_OBJECT_NAME, ['user','owner']
+                )
+              )
+            {
+                $servers->{$_key}{users} = $_users;
+            }
+        }
+        $self->render(
+            json => {
+                status  => 0,
+                servers => $servers
+            }
+        );
+        return;
+    }
 
-    $self->render( json => { status => 1, msg => "Not impelemented yet!" } );
+    $self->render(
+        json => {
+            status => 1,
+            msg    => "Servers not found!"
+        }
+    );
 
 }
 

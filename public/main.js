@@ -38,6 +38,10 @@ var app = new Vue({
             disableMainBtnSelNone: true,
             disableMainBtnSelRev: true,
         },
+        shells: {
+            l1_servers: [],
+            l1_servers_selected: [],
+        },
         user: {
             name: '',
             nameState: null,
@@ -52,6 +56,7 @@ var app = new Vue({
             server: {
                 _id: '',
                 nameOrIp: '',
+                desription: '',
                 userName: '',
                 userPassword: '',
                 btnPingBkgnd: '',
@@ -241,7 +246,7 @@ var app = new Vue({
             this.logs.l2_servers = new Map();
             this.logs.l2_servers_selected = [];
         },
-        jsonRefreshServers: function () {
+        jsonRefreshLogServers: function () {
             var self = this;
             axios.get('/logs/servers').then(
                 function (response) {
@@ -409,7 +414,8 @@ var app = new Vue({
             bvModalEvt.preventDefault();
             var data = {
                 _id: this.forms.server.ID,
-                nameOrIP: this.forms.server.nameOrIp.trim(),
+                nameOrIp: this.forms.server.nameOrIp.trim(),
+                description: this.forms.server.desription.trim(),
             }
             if (this.forms.server.userName.trim()) {
                 data['userName'] = this.forms.server.userName.trim();
@@ -431,19 +437,13 @@ var app = new Vue({
             );
 
         },
-        jsonRefreshServersInfo: function () {
+        jsonRefreshShellServers: function () {
             var self = this;
-            axios.get('/info/servers').then(
+            axios.get('/shells/servers').then(
                 function (response) {
-                    app.logs.l1_servers = [];
+                    app.shells.l1_servers = [];
                     if (response.data.status == 0) {
-                        response.data.servers.map(function (el) {
-                            app.logs.l1_servers.push({
-                                value: el.lhost,
-                                lhost_md5: el.lhost_md5,
-                                html: el.lhost + "<sup>" + el.count + "</sup>",
-                            });
-                        });
+                        app.shells.l1_servers = response.data.servers;
                     } else {
                         if (response.data.msg) {
                             app.makeToast("danger", response.data.msg);

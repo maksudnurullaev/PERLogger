@@ -1,4 +1,4 @@
-<b-button size="sm" variant="primary" v-on:click="jsonRefreshServers">
+<b-button size="sm" variant="primary" v-on:click="jsonRefreshLogServers">
     <b-icon icon="arrow-bar-down"></b-icon>
 </b-button>
 <b-button-group>

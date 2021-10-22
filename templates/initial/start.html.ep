@@ -7,7 +7,7 @@
     %= include 'logs/start'
 </template>
 <template v-else-if="currentMainActivePage == 'shell'">
-    %= include 'shell/start'
+    %= include 'shells/start'
 </template>
 <template v-else-if="currentMainActivePage == 'admin'">
     %= include 'admin/start'

@@ -26,6 +26,7 @@
 
 <!-- JS - custom components -->
 <script src="/vuejs-component-server-with-log-files.js"></script>
+<script src="/vuejs-component-shell-server-with-users.js"></script>
 <!-- JS - main script -->
 <script src="/main.js"></script>
 

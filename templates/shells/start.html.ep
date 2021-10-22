@@ -1,6 +1,6 @@
 <splitpanes class="default-theme">
     <pane size="20">
-     %= include 'shell/_l1_tabs'
+     %= include 'shells/_l1_tabs'
     </pane>
     <pane>
 Main Output!

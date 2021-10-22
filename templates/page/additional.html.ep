@@ -30,6 +30,10 @@
                 invalid-feedback="Name or IP is required">
                 <b-form-input id="form-shell-server-name-input" required v-model="forms.server.nameOrIp"></b-form-input>
             </b-form-group>
+            <b-form-group label="Description:" label-for="form-shell-server-desc-input">
+                <b-form-textarea id="form-shell-server-desc-input" v-model="forms.server.description" placeholder="" rows="3" max-rows="6">
+                </b-form-textarea>
+            </b-form-group>
             <b-form-group label="User name:" label-for="form-shell-server-user-name-input"
                 invalid-feedback="User name is required">
                 <b-form-input id="form-shell-server-user-name-input" required v-model="forms.server.userName">

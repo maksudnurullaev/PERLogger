@@ -19,16 +19,19 @@ ok($sql_string =~ /field IN/, "Test for multiply parameters");
 my $parameters2 = {
                   name => ['SERVER_INFO'],
                   field => ['owner'],
-                  value => ['Administrator']
+                  value => ['Administrator'],
+                  columns => ['test_column_1', 'test_column_2']
                   };
 
 my $sql_string2 = $db->get_objects_sql($parameters2);
 
 #diag($sql_string2);
 
-ok($sql_string2 =~ /name = 'SERVER_INFO'/, "Test for multiply parameters");
-ok($sql_string2 =~ /field = 'owner'/, "Test for multiply parameters");
-ok($sql_string2 =~ /value = 'Administrator'/, "Test for multiply parameters");
+ok($sql_string2 =~ /name = 'SERVER_INFO'/, "Test for object name");
+ok($sql_string2 =~ /field = 'owner'/, "Test for single filter field parameter");
+ok($sql_string2 =~ /value = 'Administrator'/, "Test for value field parameter");
+ok($sql_string2 =~ /TEST_COLUMN_1/, "Test for columns parameter");
+ok($sql_string2 =~ /TEST_COLUMN_2/, "Test for columns parameter");
 
 
 ### -= FINISH =-

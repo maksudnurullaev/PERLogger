@@ -284,13 +284,27 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
           if exists( $parameters->{distinct} )
           && $parameters->{distinct};
 
-        $result .= ' * FROM objects ';
+        $result .= '* FROM objects ';
 
-        if ( my $where_part = $self->get_objects_sql_where_part($parameters) ) {
-            $result .= " WHERE id IN(
+        my $where_part = $self->get_objects_sql_where_part($parameters);
+        $result .= " WHERE id IN(
                 SELECT DISTINCT id
                     FROM objects
-                    WHERE $where_part) ";
+                    WHERE $where_part) " if $where_part;
+
+        if ( exists( $parameters->{columns} )
+            && $parameters->{columns} )
+        {
+            my $_columns = join( ",",
+                map { uc( $self->get_db_connection()->quote($_) ) }
+                  @{ $parameters->{columns} } );
+
+            if ($where_part) {
+                $result .= "AND UPPER(field) in ($_columns) ";
+            }
+            else {
+                $result .= "AND UPPER(field) in ($_columns) ";
+            }
         }
 
         if ( exists( $parameters->{order} ) && $parameters->{order} ) {
@@ -299,9 +313,11 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
         else {
             $result .= " ORDER BY id DESC ";
         }
+
         if ( exists( $parameters->{limit} ) && $parameters->{limit} ) {
             $result .= " $parameters->{limit} ";
         }
+
         return ("$result ;");
     }
 
@@ -626,7 +642,7 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
                 $object = (
                     $fields
                     ? $self->get_objects(
-                        { id => [$link_id], field => $fields }
+                        { id => [$link_id], columns => $fields }
                       )
                     : $self->get_objects( { id => [$link_id] } )
                 );

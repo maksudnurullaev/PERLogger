@@ -111,7 +111,7 @@ sub startup ($self) {
     $r->any('/tasks/ping')->to( controller => 'tasks', action => 'ping' );
     $r->any('/tasks/pingSsh')->to( controller => 'tasks', action => 'pingSsh' );
     $r->any('/tasks/saveServer')->to( controller => 'tasks', action => 'saveServer' );
-    $r->any('/info/servers')->to( controller => 'tasks', action => 'getServersInfo' );
+    $r->any('/shells/servers')->to( controller => 'tasks', action => 'getServersInfo' );
 
 }
 
