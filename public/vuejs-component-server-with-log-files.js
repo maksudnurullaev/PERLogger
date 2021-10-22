@@ -26,12 +26,12 @@ Vue.component('server-with-log-files', {
       v.map((el) => {
         var key = file_name_from_path(el.lfile);
         key = shrink_me(key,20);
-        if (app.logs_l2_last_data.has(el.di)) {
-          if (app.logs_l2_last_data.get(el.di) != el.count) {
+        if (app.logs.l2_last_data.has(el.di)) {
+          if (app.logs.l2_last_data.get(el.di) != el.count) {
               blink_me(el.di, 10);
           }
         }
-        app.logs_l2_last_data.set(el.di, el.count);
+        app.logs.l2_last_data.set(el.di, el.count);
 
         result.push({ value: el.lfile_md5, html: `<span id="${el.di}" title="${el.lfile}">${key}<sup>${el.count}</sup></span>` });
       });

@@ -1,14 +1,14 @@
 % layout 'default';
 
-<template v-if="currentActivePage == 'help'">
+<template v-if="currentMainActivePage == 'help'">
     %= include 'help/start'
 </template>
-<template v-else-if="currentActivePage == 'logs'">
+<template v-else-if="currentMainActivePage == 'logs'">
     %= include 'logs/start'
 </template>
-<template v-else-if="currentActivePage == 'shell'">
+<template v-else-if="currentMainActivePage == 'shell'">
     %= include 'shell/start'
 </template>
-<template v-else-if="currentActivePage == 'admin'">
+<template v-else-if="currentMainActivePage == 'admin'">
     %= include 'admin/start'
 </template>

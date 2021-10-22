@@ -2,13 +2,13 @@
     <b-icon icon="arrow-bar-down"></b-icon>
 </b-button>
 <b-button-group>
-    <b-button :disabled="logs_disableMainBtnSelAll" size="sm" variant="success" v-on:click="l1_selection('All')">
+    <b-button :disabled="logs.disableMainBtnSelAll" size="sm" variant="success" v-on:click="l1_selection('All')">
         <b-icon icon="list-check"></b-icon>
     </b-button>
-    <b-button :disabled="logs_disableMainBtnSelNone" size="sm" variant="secondary" v-on:click="l1_selection('None')">
+    <b-button :disabled="logs.disableMainBtnSelNone" size="sm" variant="secondary" v-on:click="l1_selection('None')">
         <b-icon icon="list"></b-icon>
     </b-button>
-    <b-button :disabled="logs_disableMainBtnSelRev" size="sm" variant="info" v-on:click="l1_selection('Reverse')">
+    <b-button :disabled="logs.disableMainBtnSelRev" size="sm" variant="info" v-on:click="l1_selection('Reverse')">
         <b-icon icon="arrow-repeat"></b-icon>
     </b-button>
 </b-button-group>

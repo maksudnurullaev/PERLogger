@@ -5,7 +5,7 @@ var app = new Vue({
     el: '#app',
     data: {
         vueVersion: Vue.version,
-        currentActivePage: "help",
+        currentMainActivePage: "help",
         logs: {
             config: {
                 selected: '_new_',
@@ -26,18 +26,18 @@ var app = new Vue({
                 errors: false,
                 warnings: false,
             },
+            l1_servers: [],
+            l1_servers_selected: [],
+            l2_servers: new Map(),
+            l2_servers_selected: [],
+            l2_forceRerenderKey: 0,
+            l2_last_data: new Map(),
+            l3_logs: [],
+            disableMainBtnShowLog: true,
+            disableMainBtnSelAll: false,
+            disableMainBtnSelNone: true,
+            disableMainBtnSelRev: true,
         },
-        logs_l1_servers: [],                   // Level#1 servers
-        logs_l1_selected: [],                  // Level#1 selected servers
-        logs_l2_servers: new Map(),
-        logs_l2_selected: [],
-        logs_l2_forceRerenderKey: 0,
-        logs_l2_last_data: new Map(),
-        logs_l3_logs: [],
-        logs_disableMainBtnShowLog: true,
-        logs_disableMainBtnSelAll: false,
-        logs_disableMainBtnSelNone: true,
-        logs_disableMainBtnSelRev: true,                    
         user: {
             name: '',
             nameState: null,
@@ -184,7 +184,7 @@ var app = new Vue({
             );
         },
         l2_forceRerender: function () {
-            this.logs_l2_forceRerenderKey += 1;
+            this.logs.l2_forceRerenderKey += 1;
         },
         log2HTML: function (log) {
             var result = log.log.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -222,33 +222,33 @@ var app = new Vue({
             var _selected = [];
             switch (smode) {
                 case 'all':
-                    this.logs_l1_servers.forEach(function (server) {
+                    this.logs.l1_servers.forEach(function (server) {
                         _selected.push(server.value);
                     });
                     break;
                 case 'reverse':
-                    this.logs_l1_servers.forEach(function (server) {
-                        if (!app.logs_l1_selected.includes(server.value)) {
+                    this.logs.l1_servers.forEach(function (server) {
+                        if (!app.logs.l1_servers_selected.includes(server.value)) {
                             _selected.push(server.value);
                         };
                     });
                     this.l2_reset();
             }
             if (_selected.length == 0) { this.l2_reset(); }
-            this.logs_l1_selected = _selected;
+            this.logs.l1_servers_selected = _selected;
         },
         l2_reset: function () {
-            this.logs_l2_servers = new Map();
-            this.logs_l2_selected = [];
+            this.logs.l2_servers = new Map();
+            this.logs.l2_servers_selected = [];
         },
         jsonRefreshServers: function () {
             var self = this;
             axios.get('/logs/servers').then(
                 function (response) {
-                    app.logs_l1_servers = [];
+                    app.logs.l1_servers = [];
                     if (response.data.status == 0) {
                         response.data.servers.map(function (el) {
-                            app.logs_l1_servers.push({
+                            app.logs.l1_servers.push({
                                 value: el.lhost,
                                 lhost_md5: el.lhost_md5,
                                 html: el.lhost + "<sup>" + el.count + "</sup>",
@@ -264,7 +264,7 @@ var app = new Vue({
         },
         getL2SelectedLFilesCount: function () {
             var result = 0;
-            app.logs_l2_servers.forEach((lfiles, server) => {
+            app.logs.l2_servers.forEach((lfiles, server) => {
                 result = lfiles.length;
             });
             return result;
@@ -284,7 +284,7 @@ var app = new Vue({
                 function (response) {
                     app.user.logged = false
                     app.resetModalLogin()
-                    app.currentActivePage = 'help'
+                    app.currentMainActivePage = 'help'
                     if (response.data.msg) {
                         app.makeToast("success", response.data.msg);
                     }
@@ -308,7 +308,7 @@ var app = new Vue({
         },
         quickPageAccess: function () {
             //TODO: just for quick access to main page in development stage, could be removed later
-            app.currentActivePage = app.user.roles.indexOf("shell_operator") != -1 ? 'shell' : 'help'
+            app.currentMainActivePage = app.user.roles.indexOf("shell_operator") != -1 ? 'shell' : 'help'
         },
         jsonLogin: function () {
             var data = { MSADUser: (this.user.MSADUser ? 1 : 0) };
@@ -342,7 +342,7 @@ var app = new Vue({
         jsonGetLogs: function () {
             var data = {};
             data['where'] = [];
-            app.logs_l2_servers.forEach((lfiles, server) => {
+            app.logs.l2_servers.forEach((lfiles, server) => {
                 data['where'].push({
                     lhost_md5: app.l1_getMD5ForHost(server),
                     lfile_md5: lfiles
@@ -352,7 +352,7 @@ var app = new Vue({
             axios.post('/logs/get', data).then(
                 function (response) {
                     if (response.data.status == 0) {
-                        app.logs_l3_logs = response.data.logs;
+                        app.logs.l3_logs = response.data.logs;
                         app.updateLogsL3LogsToolbar();
                     } else {
                         if (response.data.msg) {
@@ -435,10 +435,10 @@ var app = new Vue({
             var self = this;
             axios.get('/info/servers').then(
                 function (response) {
-                    app.logs_l1_servers = [];
+                    app.logs.l1_servers = [];
                     if (response.data.status == 0) {
                         response.data.servers.map(function (el) {
-                            app.logs_l1_servers.push({
+                            app.logs.l1_servers.push({
                                 value: el.lhost,
                                 lhost_md5: el.lhost_md5,
                                 html: el.lhost + "<sup>" + el.count + "</sup>",
@@ -460,35 +460,35 @@ var app = new Vue({
             });
         },
         l1_getMD5ForHost: function (lhost) {
-            for (const el of app.logs_l1_servers) {
+            for (const el of app.logs.l1_servers) {
                 if (el.value == lhost) {
                     return el.lhost_md5;
                 }
             }
         },
         l3_getLogFilesForServer: function (sname) {
-            if (app.logs_l2_servers.size == 0) return [];
-            return Array.from(app.logs_l2_servers.get(sname));
+            if (app.logs.l2_servers.size == 0) return [];
+            return Array.from(app.logs.l2_servers.get(sname));
         },
         l2_updateServerAndFiles: function (server, files) {
-            if (files && files.length > 0) this.logs_l2_servers.set(server, files);
-            else this.logs_l2_servers.delete(server);
+            if (files && files.length > 0) this.logs.l2_servers.set(server, files);
+            else this.logs.l2_servers.delete(server);
 
             //TODO: may be we should change this code for more effective version to update l2_selected
-            this.logs_l2_selected = Array.from(this.logs_l2_servers.keys());
+            this.logs.l2_servers_selected = Array.from(this.logs.l2_servers.keys());
         },
         l2_refreshData: function (oldValues) {
-            if (app.logs_l1_selected.length == 0) {
+            if (app.logs.l1_servers_selected.length == 0) {
                 this.l2_reset();
                 return;
             }
 
             if (oldValues && oldValues.length > 0) {
                 oldValues.map(function (server) {
-                    app.logs_l2_servers.delete(server);
+                    app.logs.l2_servers.delete(server);
                 });
             }
-            app.logs_l2_selected = Array.from(this.logs_l2_servers.keys());
+            app.logs.l2_servers_selected = Array.from(this.logs.l2_servers.keys());
         },
         showLogs: function () {
             var logs = document.querySelector("#L3_LOGS");
@@ -520,18 +520,12 @@ var app = new Vue({
     },
     components: { Splitpanes, Pane },
     watch: {
-        l1_selected: function (values, oldValues) {
+        'logs.l1_servers_selected': function (values, oldValues) {
             l1_refreshMainButtons();
             if (values.length < oldValues.length) {
                 this.l2_refreshData(arr_diff(values, oldValues));
-                this.logs_l2_last_data.clear();
-            }
-        },
-        currentActivePage: function (value, oldValue) {
-            if (value != oldValue) {
-                this.logs_l1_selected = []
-                this.logs_l2_selected = []
-                this.logs_l3_logs = []
+                this.logs.l2_last_data.clear();
+                this.logs.l3_logs.clear();
             }
         },
     },
@@ -541,31 +535,31 @@ var app = new Vue({
 });
 
 function l1_refreshMainButtons() {
-    if (app.logs_l1_servers.length == 0) { return; }
+    if (app.logs.l1_servers.length == 0) { return; }
     // Main Btn - Show Log
-    if (app.logs_l1_selected.length == 0) {
-        app.logs_disableMainBtnShowLog = true;
+    if (app.logs.l1_servers_selected.length == 0) {
+        app.logs.disableMainBtnShowLog = true;
     } else {
-        app.logs_disableMainBtnShowLog = false;
+        app.logs.disableMainBtnShowLog = false;
     }
     // Main Btn - Select All
-    if (app.logs_l1_selected.length == app.logs_l1_servers.length) {
-        app.logs_disableMainBtnSelAll = true;
+    if (app.logs.l1_servers_selected.length == app.logs.l1_servers.length) {
+        app.logs.disableMainBtnSelAll = true;
     } else {
-        app.logs_disableMainBtnSelAll = false;
+        app.logs.disableMainBtnSelAll = false;
     }
     // Main Btn - Select None
-    if (app.logs_l1_selected.length == 0) {
-        app.logs_disableMainBtnSelNone = true;
+    if (app.logs.l1_servers_selected.length == 0) {
+        app.logs.disableMainBtnSelNone = true;
     } else {
-        app.logs_disableMainBtnSelNone = false;
+        app.logs.disableMainBtnSelNone = false;
     }
     // Main Btn - Reverse selection
-    if (app.logs_l1_selected.length == 0 ||
-        app.logs_l1_selected.length == app.logs_l1_servers.length) {
-        app.logs_disableMainBtnSelRev = true;
+    if (app.logs.l1_servers_selected.length == 0 ||
+        app.logs.l1_servers_selected.length == app.logs.l1_servers.length) {
+        app.logs.disableMainBtnSelRev = true;
     } else {
-        app.logs_disableMainBtnSelRev = false;
+        app.logs.disableMainBtnSelRev = false;
     }
 };
 

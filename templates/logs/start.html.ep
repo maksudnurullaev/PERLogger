@@ -5,19 +5,19 @@
             %= include 'logs/_l1_head_buttons'
         </div>
         <b-form-group label="Select server(s):" v-slot="{ ariaDescribedby }">
-            <b-form-checkbox-group v-model="logs_l1_selected" :aria-describedby="ariaDescribedby" :options="logs_l1_servers"
-                name="flavour-1" stacked id="logs_l1_servers"></b-form-checkbox-group>
+            <b-form-checkbox-group v-model="logs.l1_servers_selected" :aria-describedby="ariaDescribedby" :options="logs.l1_servers"
+                name="flavour-1" stacked id="logs.l1_servers"></b-form-checkbox-group>
         </b-form-group>
     </pane>
     <pane>
         <!-- Level #2 -->
-        <div v-if="logs_l1_selected.length" :key="logs_l2_forceRerenderKey">
+        <div v-if="logs.l1_servers_selected.length" :key="logs.l2_forceRerenderKey">
             <div class="sticky">
                 <b-button size="sm" variant="primary" v-on:click="l2_forceRerender">
                     <b-icon icon="arrow-counterclockwise"></b-icon>
                 </b-button>
             </div>
-            <server-with-log-files class="slogfilesgroup" v-for="server in logs_l1_selected" v-bind:key="server"
+            <server-with-log-files class="slogfilesgroup" v-for="server in logs.l1_servers_selected" v-bind:key="server"
                 v-bind:server="server">
             </server-with-log-files>
         </div>
