@@ -21,8 +21,10 @@ Vue.component('shell-server-with-users', {
     },
     formatOptions: function () {
       this.options = [];
-      for (const [key, value] of Object.entries(this.server.users)) {
-        this.options.push({ text: value.user, value: key });
+      if (this.server.users) {
+        for (const [key, value] of Object.entries(this.server.users)) {
+          this.options.push({ text: value.user, value: key });
+        }
       }
     },
   },
@@ -54,11 +56,16 @@ Vue.component('shell-server-with-users', {
           aria-controls="logfiles"
           @change="toggleAll"
           >
-          <b>{{ server.nameOrIP }}:</b>
+          <b>{{ server.nameOrIp }}: </b>
+          <b-link href="#dummy" v-b-modal.modal-server-info @click="this.app.try2EditSeverInfo(server)" title="Edit server">E</b-link> |
+          <b-link href="#dummy" @click="this.app.try2DeleteSeverInfo(server)" title="Delete server">D</b-link>
         </b-form-checkbox>
     </template>
   </b-form-group>
-      <b-form-checkbox-group
+    <div class="ml-4">
+     <b-link href="#foo" v-b-modal.modal-server-info @click="this.app.forms.server._current=server">Add new user</b-link>
+    </div>
+    <b-form-checkbox-group
         :id="server.id"
         v-model="selected"
         :options="options"

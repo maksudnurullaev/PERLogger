@@ -56,12 +56,15 @@ var app = new Vue({
             server: {
                 _id: '',
                 nameOrIp: '',
-                desription: '',
+                description: '',
                 userName: '',
                 userPassword: '',
                 btnPingBkgnd: '',
                 btnPingSshBkgnd: '',
                 overlay: false,
+                isAddUserForm: false,
+                isEditServerForm: false,
+                _current: null, 
             }
         },
     },
@@ -384,7 +387,7 @@ var app = new Vue({
         jsonTaskPing: function (taskTimeout) {
             var data = {};
             data['taskTimeout'] = taskTimeout;
-            data['nameOrIP'] = this.forms.server.nameOrIp.trim();
+            data['nameOrIp'] = this.forms.server.nameOrIp.trim();
             axios.post('/tasks/ping', data).then(
                 function (response) {
                     app.forms.server.btnPingBkgnd = (response.data.status == 0 ? "success" : "");
@@ -396,7 +399,7 @@ var app = new Vue({
         },
         jsonTaskSSHLoginTest: function () {
             var data = {};
-            data['nameOrIP'] = this.forms.server.nameOrIp.trim();
+            data['nameOrIp'] = this.forms.server.nameOrIp.trim();
             data['userName'] = this.forms.server.userName.trim();
             data['userPassword'] = this.forms.server.userPassword.trim();
             app.forms.server.overlay = true;
@@ -415,7 +418,7 @@ var app = new Vue({
             var data = {
                 _id: this.forms.server.ID,
                 nameOrIp: this.forms.server.nameOrIp.trim(),
-                description: this.forms.server.desription.trim(),
+                description: this.forms.server.description.trim(),
             }
             if (this.forms.server.userName.trim()) {
                 data['userName'] = this.forms.server.userName.trim();
@@ -428,6 +431,7 @@ var app = new Vue({
                     if (response.data.status == 0) {
                         app.$nextTick(() => {
                             app.$bvModal.hide('modal-server-info')
+                            app.jsonRefreshShellServers()
                         });
                     }
                     if (response.data.msg) {
@@ -451,6 +455,35 @@ var app = new Vue({
                     }
                 }
             );
+        },
+        setupModal4Server: function () {
+            if (this.forms.server._current) {
+                this.forms.server.isAddUserForm = true
+                this.forms.server._id = this.forms.server._current.id
+                this.forms.server.nameOrIp = this.forms.server._current.nameOrIp ? this.forms.server._current.nameOrIp : ""
+                this.forms.server.description = this.forms.server._current.description ? this.forms.server._current.description : ""
+                this.forms.server.userName = ""
+                this.forms.server.userPassword = ""
+            }
+        },
+        try2EditSeverInfo: function(server){
+            if (server) {
+                this.forms.server.isEditServerForm = true
+                this.forms.server._id = server.id
+                this.forms.server.nameOrIp = server.nameOrIp
+                this.forms.server.description = server.description ? this.forms.server._current.description : ""
+            }
+        },
+        setupModal4Server2All: function (server) {
+            if (this.forms.server._current) {
+                this.forms.server.isAddUserForm = false
+                this.forms.server._id = null
+                this.forms.server.nameOrIp = ""
+                this.forms.server.description = ""
+                this.forms.server._current = null
+                this.forms.server.userName = ""
+                this.forms.server.userPassword = ""                
+            }
         },
         makeToast: function (tVariant, tContent) {
             this.$bvToast.toast(tContent, {

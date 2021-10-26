@@ -17,7 +17,7 @@ sub ping ($self) {
     my $data = decode_json( $self->req->body );
 
     my $p = Net::Ping->new();
-    eval { $p->ping( $data->{nameOrIP}, $data->{taskTimeout} ) };
+    eval { $p->ping( $data->{nameOrIp}, $data->{taskTimeout} ) };
     if ( !$@ ) {
         $self->render( json => { status => 0, msg => 'Ping passed!' } );
     }
@@ -35,7 +35,7 @@ sub pingSsh ($self) {
 
     my ( $ssh, $stdout, $stderr, $exit );
     $ssh =
-      Net::SSH::Perl->new( $data->{nameOrIP}, options => ["MACs +hmac-sha1"] );
+      Net::SSH::Perl->new( $data->{nameOrIp}, options => ["MACs +hmac-sha1"] );
     eval {
         $ssh->login( $data->{userName}, $data->{userPassword} );
         ( $stdout, $stderr, $exit ) = $ssh->cmd("uname -a");
@@ -61,11 +61,13 @@ sub saveServer ($self) {
 
     my $_sData = {
         object_name => $SERVER_INFO_OBJECT_NAME,
-        nameOrIP    => $data->{nameOrIP},
+        nameOrIp    => $data->{nameOrIp},
         description => $data->{description},
         owner       => $self->session->{'user.name'}
     };
-    $_sData->{id} = $data->{id} if exists( $data->{_id} ) && $data->{_id};
+
+    Utils::print_debug Dumper $_sData;
+    $_sData->{id} = $data->{_id} if exists( $data->{_id} ) && $data->{_id};
 
     # save server
     my $sId =
@@ -73,23 +75,27 @@ sub saveServer ($self) {
       ? $self->dbMain->update($_sData)
       : $self->dbMain->insert($_sData);
 
-    # save server's user
-    if ( exists( $data->{userName} ) && $data->{userName} ) {
-        my $_uData = {
-            object_name => $SERVER_USER_INFO_OBJECT_NAME,
-            user        => $data->{userName},
-            owner       => $self->session->{'user.name'}
-        };
-        $_uData->{userPassword} = EnDeCrypt::encryptMe( $data->{userPassword} )
-          if exists( $data->{userPassword} ) && $data->{userPassword};
+    # # save server's user
+    # if ( exists( $data->{userName} ) && $data->{userName} ) {
+    #     my $_uData = {
+    #         object_name => $SERVER_USER_INFO_OBJECT_NAME,
+    #         user        => $data->{userName},
+    #         owner       => $self->session->{'user.name'}
+    #     };
+    #     $_uData->{userPassword} = EnDeCrypt::encryptMe( $data->{userPassword} )
+    #       if exists( $data->{userPassword} ) && $data->{userPassword};
 
-        # save server
-        my $uId = $self->dbMain->insert($_uData);
-        $self->dbMain->set_link( $sId, $uId );
-    }
+    #     # save server
+    #     my $uId = $self->dbMain->insert($_uData);
+    #     $self->dbMain->set_link( $sId, $uId );
+    # }
 
     $self->render(
         json => { status => 0, msg => "New server [$sId] created!" } );
+
+    # $self->render(
+    #     json => { status => 1, msg => "Not implemented yet!" } );
+
 }
 
 sub _saveUser4Server ( $self, $serverId, $user, $password ) {
@@ -102,7 +108,7 @@ sub getServersInfo ($self) {
         name    => [$SERVER_INFO_OBJECT_NAME],
         field   => ['owner'],
         value   => [ $self->session->{'user.name'} ],
-        columns => ['nameOrIp']
+        columns => ['nameOrIp','description']
     };
 
     my $servers = $self->dbMain->get_objects($filter);
