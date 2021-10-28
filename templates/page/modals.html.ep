@@ -24,20 +24,20 @@
 
 
 <b-modal id="modal-server-info" ref="modal" title="New server access" @ok="jsonServerInfoSave" no-close-on-backdrop
-    @show="setupModal4Server" @hidden="setupModal4Server2All">
+    @hidden="setupModal4Server2All">
     <b-overlay :show="forms.server.overlay" rounded="sm">
         <form ref="shellNewServerForm" @submit.stop.prevent="handleSubmit">
             <b-form-group label="Server name or IP:" label-for="form-shell-server-name-input"
                 invalid-feedback="Name or IP is required">
                 <b-form-input id="form-shell-server-name-input" required v-model="forms.server.nameOrIp"
-                    :disabled="this.forms.server.isAddUserForm"></b-form-input>
+                    :disabled="isFSMAddUser() || isFSMEditUser()"></b-form-input>
             </b-form-group>
             <b-form-group label="Description:" label-for="form-shell-server-desc-input">
                 <b-form-textarea id="form-shell-server-desc-input" v-model="forms.server.description" placeholder=""
-                    rows="3" max-rows="6" :disabled="this.forms.server.isAddUserForm">
+                    rows="3" max-rows="6" :disabled="isFSMAddUser() || isFSMEditUser()">
                 </b-form-textarea>
             </b-form-group>
-            <template v-if="!this.forms.server.isEditServerForm">
+            <template v-if="!isFSMEditServer()">
                 <b-form-group label="User name:" label-for="form-shell-server-user-name-input"
                     invalid-feedback="User name is required">
                     <b-form-input id="form-shell-server-user-name-input" required v-model="forms.server.userName">
@@ -57,7 +57,7 @@
                 :disabled="forms.server.nameOrIp.trim().length < 3">
                 Test ping
             </b-button>
-            <template v-if="!this.forms.server.isEditServerForm">
+            <template v-if="!isFSMEditServer()">
                 <b-button :variant="forms.server.btnPingSshBkgnd" size="sm" @click="jsonTaskSSHLoginTest()"
                     :disabled="forms.server.userName.trim().length < 3 || forms.server.userPassword.trim().length < 3">
                     Test login

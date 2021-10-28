@@ -7,7 +7,8 @@ Vue.component('shell-server-with-users', {
       options: [],
       server_data: [],
       allSelected: false,
-      indeterminate: false
+      indeterminate: false,
+      configMode:false,
     }
   },
   methods: {
@@ -57,13 +58,17 @@ Vue.component('shell-server-with-users', {
           @change="toggleAll"
           >
           <b>{{ server.nameOrIp }}: </b>
-          <b-link href="#dummy" v-b-modal.modal-server-info @click="this.app.try2EditSeverInfo(server)" title="Edit server">E</b-link> |
-          <b-link href="#dummy" @click="this.app.try2DeleteSeverInfo(server)" title="Delete server">D</b-link>
+          <b-link href="#dummy" @click="configMode=!configMode" title="Configuraation mode">
+          <b-icon :icon="configMode?'folder-minus':'folder-plus'"></b-icon></b-link>
         </b-form-checkbox>
     </template>
   </b-form-group>
     <div class="ml-4">
-     <b-link href="#foo" v-b-modal.modal-server-info @click="this.app.forms.server._current=server">Add new user</b-link>
+    <template v-if="configMode">
+      <b-link href="#dummy" v-b-modal.modal-server-info @click="this.app.try2EditSeverInfo(server)" title="Edit server"><b-icon icon="clipboard"></b-icon></b-link>
+      <b-link href="#dummy" @click="this.app.try2DeleteSeverInfo(server)" title="Delete server"><b-icon icon="clipboard-x"></b-icon></b-link>
+      <b-link href="#foo" v-b-modal.modal-server-info @click="this.app.try2AddUser4Sever(server)"><b-icon icon="file-earmark-plus"></b-icon></b-link>
+    </template>
     </div>
     <b-form-checkbox-group
         :id="server.id"

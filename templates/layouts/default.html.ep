@@ -20,7 +20,7 @@
     <div class="page-footer row flex-shrink-0">
       %= include 'page/footer'
     </div>
-    %= include 'page/additional'
+    %= include 'page/modals'
   </div>
 </body>
 

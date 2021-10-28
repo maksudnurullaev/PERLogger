@@ -54,7 +54,6 @@ var app = new Vue({
         },
         forms: {
             server: {
-                _id: '',
                 nameOrIp: '',
                 description: '',
                 userName: '',
@@ -62,13 +61,23 @@ var app = new Vue({
                 btnPingBkgnd: '',
                 btnPingSshBkgnd: '',
                 overlay: false,
-                isAddUserForm: false,
-                isEditServerForm: false,
-                _current: null, 
+                mode: 0, //FormsServerMode.default,
+                _current: null,
             }
+        },
+        FormsServerMode: {
+            default: 0,
+            editServer: 1,
+            addUser: 2,
+            editUser: 3,
         },
     },
     methods: {
+        // FormsServerMode validators
+        isFSMDefault: function () { return this.forms.server.mode == this.FormsServerMode.default },
+        isFSMEditServer: function () { return this.forms.server.mode == this.FormsServerMode.editServer },
+        isFSMEditUser: function () { return this.forms.server.mode == this.FormsServerMode.editUser },
+        isFSMAddUser: function () { return this.forms.server.mode == this.FormsServerMode.addUser },
         userHasRole: function (role) {
             if (this.user.roles.length == 0) {
                 return false;
@@ -416,15 +425,19 @@ var app = new Vue({
         jsonServerInfoSave: function (bvModalEvt) {
             bvModalEvt.preventDefault();
             var data = {
-                _id: this.forms.server.ID,
                 nameOrIp: this.forms.server.nameOrIp.trim(),
                 description: this.forms.server.description.trim(),
             }
-            if (this.forms.server.userName.trim()) {
-                data['userName'] = this.forms.server.userName.trim();
+            if (this.forms.server._current) {
+                data['id'] = this.forms.server._current.id
             }
-            if (this.forms.server.userPassword.trim()) {
-                data['userPassword'] = this.forms.server.userPassword.trim();
+            if (this.forms.server.mode == this.FormsServerMode.default) {
+                if (this.forms.server.userName.trim()) {
+                    data['userName'] = this.forms.server.userName.trim();
+                }
+                if (this.forms.server.userPassword.trim()) {
+                    data['userPassword'] = this.forms.server.userPassword.trim();
+                }
             }
             axios.post('/tasks/saveServer', data).then(
                 function (response) {
@@ -448,6 +461,7 @@ var app = new Vue({
                     app.shells.l1_servers = [];
                     if (response.data.status == 0) {
                         app.shells.l1_servers = response.data.servers;
+                        app.makeToast("success", "Updated successfully!");
                     } else {
                         if (response.data.msg) {
                             app.makeToast("danger", response.data.msg);
@@ -456,33 +470,32 @@ var app = new Vue({
                 }
             );
         },
-        setupModal4Server: function () {
-            if (this.forms.server._current) {
-                this.forms.server.isAddUserForm = true
-                this.forms.server._id = this.forms.server._current.id
+        try2AddUser4Sever: function (server) {
+            if (server) {
+                this.forms.server._current = server
+                this.forms.server.mode = this.FormsServerMode.addUser
                 this.forms.server.nameOrIp = this.forms.server._current.nameOrIp ? this.forms.server._current.nameOrIp : ""
                 this.forms.server.description = this.forms.server._current.description ? this.forms.server._current.description : ""
                 this.forms.server.userName = ""
                 this.forms.server.userPassword = ""
             }
         },
-        try2EditSeverInfo: function(server){
+        try2EditSeverInfo: function (server) {
             if (server) {
-                this.forms.server.isEditServerForm = true
-                this.forms.server._id = server.id
+                this.forms.server._current = server
+                this.forms.server.mode = this.FormsServerMode.editServer
                 this.forms.server.nameOrIp = server.nameOrIp
                 this.forms.server.description = server.description ? this.forms.server._current.description : ""
             }
         },
-        setupModal4Server2All: function (server) {
+        setupModal4Server2All: function () {
             if (this.forms.server._current) {
-                this.forms.server.isAddUserForm = false
-                this.forms.server._id = null
+                this.forms.server.mode = this.FormsServerMode.default
                 this.forms.server.nameOrIp = ""
                 this.forms.server.description = ""
                 this.forms.server._current = null
                 this.forms.server.userName = ""
-                this.forms.server.userPassword = ""                
+                this.forms.server.userPassword = ""
             }
         },
         makeToast: function (tVariant, tContent) {

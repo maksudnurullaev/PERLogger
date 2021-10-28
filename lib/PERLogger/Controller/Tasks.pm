@@ -56,6 +56,7 @@ sub pingSsh ($self) {
 
 sub saveServer ($self) {
     return if !$self->authAs( 'shell_operator', 'administrator' );
+    my $dryRunMode = 1;
 
     my $data = decode_json( $self->req->body );
 
@@ -63,38 +64,50 @@ sub saveServer ($self) {
         object_name => $SERVER_INFO_OBJECT_NAME,
         nameOrIp    => $data->{nameOrIp},
         description => $data->{description},
-        owner       => $self->session->{'user.name'}
     };
 
-    Utils::print_debug Dumper $_sData;
-    $_sData->{id} = $data->{_id} if exists( $data->{_id} ) && $data->{_id};
+    my $sId;
 
-    # save server
-    my $sId =
-      exists( $_sData->{id} )
-      ? $self->dbMain->update($_sData)
-      : $self->dbMain->insert($_sData);
+    # update server
+    if ( exists( $data->{id} ) && $data->{id} ) {
+        $_sData->{id} = $data->{id};
+        $sId = $self->dbMain->update( $_sData, $dryRunMode );
+        $self->render(
+            json => { status => 0, msg => "Server [$sId] updated!" } );
+    }
+    else {    #insert new server
+        $_sData->{owner} = $self->session->{'user.name'};
+        $sId = $self->dbMain->insert( $_sData, $dryRunMode );
 
-    # # save server's user
-    # if ( exists( $data->{userName} ) && $data->{userName} ) {
-    #     my $_uData = {
-    #         object_name => $SERVER_USER_INFO_OBJECT_NAME,
-    #         user        => $data->{userName},
-    #         owner       => $self->session->{'user.name'}
-    #     };
-    #     $_uData->{userPassword} = EnDeCrypt::encryptMe( $data->{userPassword} )
-    #       if exists( $data->{userPassword} ) && $data->{userPassword};
+        # save server's user
+        if (   exists( $data->{userName} )
+            && $data->{userName}
+            && exists( $data->{userPassword} )
+            && $data->{userPassword} )
+        {
+            my $_uData = {
+                object_name => $SERVER_USER_INFO_OBJECT_NAME,
+                user        => $data->{userName},
+                owner       => $self->session->{'user.name'},
+                password    => EnDeCrypt::encryptMe( $data->{userPassword} ),
+            };
 
-    #     # save server
-    #     my $uId = $self->dbMain->insert($_uData);
-    #     $self->dbMain->set_link( $sId, $uId );
-    # }
+            # save && create link
+            my $uId = $self->dbMain->insert( $_uData, $dryRunMode );
+            $self->dbMain->set_link( $sId, $uId, $dryRunMode );
 
-    $self->render(
-        json => { status => 0, msg => "New server [$sId] created!" } );
+            $self->render(
+                json => { status => 0, msg => "Server [$sId] updated!" } );
+        }
+    }
 
-    # $self->render(
-    #     json => { status => 1, msg => "Not implemented yet!" } );
+    if ($dryRunMode) {
+        $self->render( json => { status => 1, msg => "Dry run mode!" } );
+    }
+    else {
+        $self->render(
+            json => { status => 0, msg => "New server [$sId] created!" } );
+    }
 
 }
 
@@ -108,7 +121,7 @@ sub getServersInfo ($self) {
         name    => [$SERVER_INFO_OBJECT_NAME],
         field   => ['owner'],
         value   => [ $self->session->{'user.name'} ],
-        columns => ['nameOrIp','description']
+        columns => [ 'nameOrIp', 'description' ]
     };
 
     my $servers = $self->dbMain->get_objects($filter);
@@ -117,7 +130,8 @@ sub getServersInfo ($self) {
         for my $_key ( keys %{$servers} ) {
             if (
                 my $_users = $self->dbMain->get_links(
-                    $_key, $SERVER_USER_INFO_OBJECT_NAME, ['user','owner']
+                    $_key, $SERVER_USER_INFO_OBJECT_NAME,
+                    [ 'user', 'owner' ]
                 )
               )
             {

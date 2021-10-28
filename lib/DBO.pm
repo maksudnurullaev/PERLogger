@@ -143,8 +143,16 @@ package DBO;
     }
 
     sub update {
-        my $self = shift;
-        my ( $hashref, $object_name, $id ) = ( shift, undef, undef );
+        my ( $self, $hashref, $dryRunMode, $object_name, $id ) =
+          ( shift, shift, shift, undef, undef );
+
+        # DRY RUN
+        if ($dryRunMode) {
+            Utils::print_debug( "DRY RUN UPDATE: $hashref->{id}\n" . Dumper($hashref) );
+            return $hashref->{id};
+        }
+
+        # UPDATE    
         if (   defined($hashref)
             && defined( $hashref->{object_name} )
             && defined( $hashref->{id} ) )
@@ -184,8 +192,16 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
     }
 
     sub insert {
-        my $self = shift;
-        my ( $hashref, $object_name ) = ( shift, undef );
+        my ( $self, $hashref, $dryRunMode, $object_name ) =
+          ( shift, shift, shift, undef );
+
+        # DRY RUN
+        if ($dryRunMode) {
+            Utils::print_debug( "DRY RUN INSERT: " . Dumper($hashref) );
+            return 'DryRun_' . Utils::get_date_uuid();
+        }
+
+        # INSERT DATA
         if ( defined($hashref) && defined( $hashref->{object_name} ) ) {
             $object_name = $hashref->{object_name};
             delete $hashref->{object_name};
@@ -587,7 +603,15 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
     }
 
     sub set_link {
-        my ( $self, $id1, $id2 ) = @_;
+        my ( $self, $id1, $id2, $dryRunMode ) = @_;
+
+        # DRY RUN MODE
+        if($dryRunMode){
+            Utils::print_debug("DRY RUN SET_LINK($id1, $id2)");
+            return(1);
+        }
+
+        # set link
         return (0) if ( !$self || !$id1 || !$id2 );
         return (1) if exists_link( $id1, $id2 );
 
