@@ -61,15 +61,15 @@ var app = new Vue({
                 btnPingBkgnd: '',
                 btnPingSshBkgnd: '',
                 overlay: false,
-                mode: 0, //FormsServerMode.default,
+                mode: 'default', //FormsServerMode.default,
                 _current: null,
             }
         },
         FormsServerMode: {
-            default: 0,
-            editServer: 1,
-            addUser: 2,
-            editUser: 3,
+            default: 'default',
+            editServer: 'editServer',
+            addUser: 'addUser',
+            editUser: 'editUser',
         },
     },
     methods: {
@@ -422,24 +422,53 @@ var app = new Vue({
                 }
             );
         },
-        jsonServerInfoSave: function (bvModalEvt) {
-            bvModalEvt.preventDefault();
-            var data = {
-                nameOrIp: this.forms.server.nameOrIp.trim(),
-                description: this.forms.server.description.trim(),
+        makeData2AddUser4Server: function () {
+            var result = {
+                link: '/tasks/saveUser4Server',
+                data: {
+                    userName: this.forms.server.userName.trim(),
+                    userPassword: this.forms.server.userPassword.trim(),
+                }
             }
             if (this.forms.server._current) {
-                data['id'] = this.forms.server._current.id
+                result.data['_sid'] = this.forms.server._current.id;
+            }            
+            return result;
+        },
+        makeData2AddServer: function () {
+            var result = {
+                link: '/tasks/saveServer',
+                data: {
+                    nameOrIp: this.forms.server.nameOrIp.trim(),
+                    description: this.forms.server.description.trim(),
+                }
             }
-            if (this.forms.server.mode == this.FormsServerMode.default) {
+            if (this.forms.server._current) {
+                result.data['id'] = this.forms.server._current.id;
+            }
+            if (this.isFSMDefault()) {
                 if (this.forms.server.userName.trim()) {
-                    data['userName'] = this.forms.server.userName.trim();
+                    result.data['userName'] = this.forms.server.userName.trim();
                 }
                 if (this.forms.server.userPassword.trim()) {
-                    data['userPassword'] = this.forms.server.userPassword.trim();
+                    result.data['userPassword'] = this.forms.server.userPassword.trim();
                 }
             }
-            axios.post('/tasks/saveServer', data).then(
+            return result;
+        },
+        jsonServerInfoSave: function (bvModalEvt) {
+            bvModalEvt.preventDefault();
+
+            var result;
+            if (this.isFSMDefault() || this.isFSMEditServer()){
+                result = this.makeData2AddServer();
+            } else if (this.isFSMAddUser() || this.isFSMEditUser()){
+                result = this.makeData2AddUser4Server();
+            } else {
+                app.makeToast("danger",'Other cases not implemented yet!' );
+                return;
+            }
+            axios.post(result.link, result.data).then(
                 function (response) {
                     if (response.data.status == 0) {
                         app.$nextTick(() => {
@@ -535,6 +564,45 @@ var app = new Vue({
                 });
             }
             app.logs.l2_servers_selected = Array.from(this.logs.l2_servers.keys());
+        },
+        try2DeleteSeverInfo: function(sid){
+            if(!confirm("Do you really want to delete server?")){ return ;}
+
+            var data = {
+                server: sid,
+            };
+            axios.post('/tasks/delServer', data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                        app.$nextTick(() => {
+                            app.jsonRefreshShellServers()
+                        });
+                    }
+                    if (response.data.msg) {
+                        app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
+                    }
+                }
+            );
+        },
+        try2DelUsers4Server: function(sid,uids){
+            if(!confirm("Do you really want to delete " + uids.length + " user(s)?")){ return ;}
+
+            var data = {
+                server: sid,
+                users: uids,
+            };
+            axios.post('/tasks/delUsers', data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                        app.$nextTick(() => {
+                            uids = [];
+                        });
+                    }
+                    if (response.data.msg) {
+                        app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
+                    }
+                }
+            );
         },
         showLogs: function () {
             var logs = document.querySelector("#L3_LOGS");

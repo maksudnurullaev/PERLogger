@@ -64,10 +64,17 @@
                 </b-button>
             </template>
         </b-button-group>
-
-        <b-button size="sm" variant="success" @click="ok()" disabled
-            :disabled="forms.server.nameOrIp.trim().length < 3">
-            Save
-        </b-button>
+        <template v-if="isFSMAddUser() || isFSMEditUser()">
+            <b-button size="sm" variant="success" @click="ok()" disabled
+                :disabled="forms.server.userName.trim().length < 3">
+                Save
+            </b-button>
+        </template>
+        <template v-else>
+            <b-button size="sm" variant="success" @click="ok()" disabled
+                :disabled="forms.server.nameOrIp.trim().length < 3">
+                Save
+            </b-button>
+        </template>
     </template>
 </b-modal>

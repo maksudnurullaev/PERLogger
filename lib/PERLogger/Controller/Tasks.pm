@@ -11,6 +11,8 @@ use Utils::EnDeCrypt;
 my $SERVER_INFO_OBJECT_NAME      = 'SERVER_INFO';
 my $SERVER_USER_INFO_OBJECT_NAME = 'SERVER_USER_INFO';
 
+my $dryRunMode = 0;
+
 sub ping ($self) {
     return if !$self->authAs( 'shell_operator', 'administrator' );
 
@@ -54,9 +56,71 @@ sub pingSsh ($self) {
     }
 }
 
+sub delServer ($self) {
+    return if !$self->authAs( 'shell_operator', 'administrator' );
+    my $data = decode_json( $self->req->body );
+
+    my $sql_string = qq{
+DELETE
+FROM objects
+WHERE ID in
+    (SELECT DISTINCT ID
+     FROM objects
+     WHERE ? in (ID, VALUE) ); 
+    };
+
+    my $dbh = $self->dbMain->get_db_connection();
+    my $sth = $dbh->prepare($sql_string);
+    $sth->execute( $data->{server} );
+
+    $self->render( json => { status => 0, msg => "Server deleted!" } );
+}
+
+sub delUsers ($self) {
+    return if !$self->authAs( 'shell_operator', 'administrator' );
+    my $data = decode_json( $self->req->body );
+
+    for my $uid ( @{ $data->{users} } ) {
+        $self->dbMain->del_link( $data->{server}, $uid );
+        $self->dbMain->del($uid);
+    }
+    $self->render( json => { status => 0, msg => "Updated!" } );
+
+}
+
+sub saveUser4Server ($self) {
+    return if !$self->authAs( 'shell_operator', 'administrator' );
+    my $data = decode_json( $self->req->body );
+
+    if ( exists( $data->{_sid} ) && $data->{_sid} ) {
+        my $_uData = {
+            object_name => $SERVER_USER_INFO_OBJECT_NAME,
+            user        => $data->{userName},
+            owner       => $self->session->{'user.name'},
+            password    => EnDeCrypt::encryptMe( $data->{userPassword} ),
+        };
+
+        # save && create link
+        my $uId = $self->dbMain->insert( $_uData, $dryRunMode );
+        $self->dbMain->set_link( $data->{_sid}, $uId, $dryRunMode );
+
+        if ($dryRunMode) {
+            $self->render( json => { status => 1, msg => "Dry run mode!" } );
+        }
+        else {
+            $self->render(
+                json => { status => 0, msg => "New user created!" } );
+        }
+    }
+    else {
+        $self->render(
+            json => { status => 1, msg => "Server not defined to add user!" } );
+    }
+
+}
+
 sub saveServer ($self) {
     return if !$self->authAs( 'shell_operator', 'administrator' );
-    my $dryRunMode = 1;
 
     my $data = decode_json( $self->req->body );
 
@@ -95,23 +159,14 @@ sub saveServer ($self) {
             # save && create link
             my $uId = $self->dbMain->insert( $_uData, $dryRunMode );
             $self->dbMain->set_link( $sId, $uId, $dryRunMode );
-
-            $self->render(
-                json => { status => 0, msg => "Server [$sId] updated!" } );
         }
+        $self->render(
+            json => { status => 0, msg => "New server [$sId] created!" } );
     }
 
     if ($dryRunMode) {
         $self->render( json => { status => 1, msg => "Dry run mode!" } );
     }
-    else {
-        $self->render(
-            json => { status => 0, msg => "New server [$sId] created!" } );
-    }
-
-}
-
-sub _saveUser4Server ( $self, $serverId, $user, $password ) {
 
 }
 

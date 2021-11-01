@@ -2,13 +2,12 @@ Vue.component('shell-server-with-users', {
   props: ['server'],
   data: function () {
     return {
-      total_files: 0,
       selected: [],
       options: [],
       server_data: [],
       allSelected: false,
       indeterminate: false,
-      configMode:false,
+      configMode: false,
     }
   },
   methods: {
@@ -42,6 +41,9 @@ Vue.component('shell-server-with-users', {
         this.allSelected = false
       }
     },
+    server(newValue, oldValue) {
+      this.formatOptions();      
+    },
   },
   beforeMount() {
     this.formatOptions();
@@ -59,15 +61,16 @@ Vue.component('shell-server-with-users', {
           >
           <b>{{ server.nameOrIp }}: </b>
           <b-link href="#dummy" @click="configMode=!configMode" title="Configuraation mode">
-          <b-icon :icon="configMode?'folder-minus':'folder-plus'"></b-icon></b-link>
+          <b-icon :icon="configMode?'folder2-open':'folder'"></b-icon></b-link>
         </b-form-checkbox>
     </template>
   </b-form-group>
     <div class="ml-4">
     <template v-if="configMode">
-      <b-link href="#dummy" v-b-modal.modal-server-info @click="this.app.try2EditSeverInfo(server)" title="Edit server"><b-icon icon="clipboard"></b-icon></b-link>
-      <b-link href="#dummy" @click="this.app.try2DeleteSeverInfo(server)" title="Delete server"><b-icon icon="clipboard-x"></b-icon></b-link>
+      <b-link href="#dummy" v-b-modal.modal-server-info @click="this.app.try2EditSeverInfo(server)" title="Edit server"><b-icon icon="clipboard-data"></b-icon></b-link>
+      <b-link href="#dummy" @click="this.app.try2DeleteSeverInfo(server.id)" title="Delete server"><b-icon icon="clipboard-x"></b-icon></b-link>
       <b-link href="#foo" v-b-modal.modal-server-info @click="this.app.try2AddUser4Sever(server)"><b-icon icon="file-earmark-plus"></b-icon></b-link>
+      <b-link href="#foo" v-if="selected.length" @click="this.app.try2DelUsers4Server(server.id,selected)"><b-icon icon="file-earmark-x"></b-icon></b-link>
     </template>
     </div>
     <b-form-checkbox-group
