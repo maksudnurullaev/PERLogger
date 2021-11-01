@@ -148,7 +148,7 @@ package DBO;
 
         # DRY RUN
         if ($dryRunMode) {
-            Utils::print_debug( "DRY RUN UPDATE: $hashref->{id}\n" . Dumper($hashref) );
+            Utils::print_debug( "DRY RUN UPDATE: $hashref->{id}\n" . Dumper($hashref) . "ID: " . $hashref->{id});
             return $hashref->{id};
         }
 
@@ -194,11 +194,11 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
     sub insert {
         my ( $self, $hashref, $dryRunMode, $object_name ) =
           ( shift, shift, shift, undef );
-
+        my $id  = $hashref->{id}             || Utils::get_date_uuid();
         # DRY RUN
         if ($dryRunMode) {
-            Utils::print_debug( "DRY RUN INSERT: " . Dumper($hashref) );
-            return 'DryRun_' . Utils::get_date_uuid();
+            Utils::print_debug( "DRY RUN INSERT: " . Dumper($hashref) . "ID: $id" );
+            return ($id);
         }
 
         # INSERT DATA
@@ -214,7 +214,7 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
             warn "Error:Db:Insert: No data!";
             return (undef);
         }
-        my $id  = $hashref->{id}             || Utils::get_date_uuid();
+        
         my $dbh = $self->get_db_connection() || return;
         my $sth = $dbh->prepare(
             "INSERT INTO objects (name,id,field,value) values(?,?,?,?);");

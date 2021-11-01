@@ -110,8 +110,16 @@ sub startup ($self) {
     # handle tasks
     $r->any('/tasks/ping')->to( controller => 'tasks', action => 'ping' );
     $r->any('/tasks/pingSsh')->to( controller => 'tasks', action => 'pingSsh' );
-    $r->any('/tasks/saveServer')->to( controller => 'tasks', action => 'saveServer' );
-    $r->any('/shells/servers')->to( controller => 'tasks', action => 'getServersInfo' );
+    $r->any('/tasks/saveServer')
+      ->to( controller => 'tasks', action => 'saveServer' );
+    $r->any('/shells/servers')
+      ->to( controller => 'tasks', action => 'getServersInfo' );
+    $r->any('/tasks/saveUser4Server')
+      ->to( controller => 'tasks', action => 'saveUser4Server' );
+    $r->any('/tasks/delUsers')
+      ->to( controller => 'tasks', action => 'delUsers' );
+    $r->any('/tasks/delServer')
+      ->to( controller => 'tasks', action => 'delServer' );
 
 }
 
