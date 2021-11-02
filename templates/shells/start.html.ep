@@ -6,6 +6,6 @@
 Main Output!
     </pane> <!-- Level #3 -->
     <pane>
-Tasks!
+     %= include 'shells/_l3_tabs'
     </pane>
 </splitpanes>

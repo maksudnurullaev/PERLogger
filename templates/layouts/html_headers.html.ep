@@ -28,6 +28,9 @@
 <script src="https://unpkg.com/splitpanes"></script>
 <link href="//unpkg.com/splitpanes/dist/splitpanes.css" rel="stylesheet">
 
+<!-- Marked -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 <link rel="stylesheet" type="text/css" href="/style.css">

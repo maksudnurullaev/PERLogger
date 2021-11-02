@@ -61,9 +61,15 @@ var app = new Vue({
                 btnPingBkgnd: '',
                 btnPingSshBkgnd: '',
                 overlay: false,
-                mode: 'default', //FormsServerMode.default,
+                mode: 'default',
                 _current: null,
-            }
+            },
+            program: {
+                name: "",
+                commands: "",
+                description: "",
+                overlay: false,
+            },
         },
         FormsServerMode: {
             default: 'default',
@@ -83,6 +89,9 @@ var app = new Vue({
                 return false;
             }
             return this.user.roles.indexOf(role) != -1;
+        },
+        text2Html: function(textString){
+            return textString ? marked(textString) : "No description";
         },
         try2Login: function (bvModalEvt) {
             // Prevent modal from closing

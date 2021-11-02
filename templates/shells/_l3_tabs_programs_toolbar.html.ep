@@ -1,0 +1,8 @@
+<div class="sticky">
+    <b-button size="sm" variant="primary" v-on:click="dummyFunction">
+        <b-icon icon="arrow-bar-down"></b-icon>
+    </b-button>
+    <b-button-group>
+        <b-button size="sm" variant="success" v-b-modal.modal-program-info><b-icon icon="clipboard-plus"></b-icon></b-button>
+    </b-button-group>
+</div>
