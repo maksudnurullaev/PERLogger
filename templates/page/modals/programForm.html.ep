@@ -1,25 +1,25 @@
-<b-modal id="modal-program-info" ref="modal" title="New program" @ok="dummyFunction" no-close-on-backdrop
+<b-modal id="modal-program-info" ref="modal" title="New program" @ok="jsonProgramSave" no-close-on-backdrop
     @hidden="dummyFunction" size="xl">
     <b-overlay :show="forms.program.overlay" rounded="sm">
         <form ref="programProgramForm" @submit.stop.prevent="handleSubmit">
             <b-form-group label="Name:" label-for="form-program-program-name-input" invalid-feedback="Name is required">
-                <b-form-input id="form-program-name-input" required v-model="forms.program.name"></b-form-input>
+                <b-form-input id="form-program-name-input" required v-model="forms.program.data.name"></b-form-input>
             </b-form-group>
             <b-form-group label="Commands:" label-for="form-program-desc-input">
-                <b-form-textarea id="form-program-desc-input" v-model="forms.program.commands" placeholder=""
+                <b-form-textarea id="form-program-desc-input" v-model="forms.program.data.commands" placeholder=""
                     rows="3" max-rows="6">
                 </b-form-textarea>
             </b-form-group>
             <b-form-group label="Description:" label-for="form-program-desc-input">
-                <b-form-textarea id="form-program-desc-input" v-model="forms.program.description" placeholder=""
+                <b-form-textarea id="form-program-desc-input" v-model="forms.program.data.description" placeholder=""
                     rows="3" max-rows="6">
                 </b-form-textarea>
             </b-form-group>
         </form>
-            <div v-html="text2Html(forms.program.description)" style="position:relative; height:150px; overflow-y:scroll;"></div>
+            <div v-html="text2Html(forms.program.data.description)" style="position:relative; height:150px; overflow-y:scroll;"></div>
     </b-overlay>
     <template #modal-footer="{ ok }">
-        <b-button size="sm" variant="success" @click="ok()" disabled :disabled="forms.program.name.trim().length < 3">
+        <b-button size="sm" variant="success" @click="ok()" disabled :disabled="forms.program.data.name.trim().length < 3">
             Save
         </b-button>
     </template>

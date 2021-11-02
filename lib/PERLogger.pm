@@ -107,19 +107,27 @@ sub startup ($self) {
     # get current user info
     $r->get('/whoami')->to( controller => 'user', action => 'check' );
 
-    # handle tasks
-    $r->any('/tasks/ping')->to( controller => 'tasks', action => 'ping' );
-    $r->any('/tasks/pingSsh')->to( controller => 'tasks', action => 'pingSsh' );
+    # handle server & users tasks
+    $r->any('/tasks/ping')->to( controller => 'server', action => 'ping' );
+    $r->any('/tasks/pingSsh')->to( controller => 'server', action => 'pingSsh' );
     $r->any('/tasks/saveServer')
-      ->to( controller => 'tasks', action => 'saveServer' );
+      ->to( controller => 'server', action => 'saveServer' );
     $r->any('/shells/servers')
-      ->to( controller => 'tasks', action => 'getServersInfo' );
+      ->to( controller => 'server', action => 'getServersInfo' );
     $r->any('/tasks/saveUser4Server')
-      ->to( controller => 'tasks', action => 'saveUser4Server' );
+      ->to( controller => 'server', action => 'saveUser4Server' );
     $r->any('/tasks/delUsers')
-      ->to( controller => 'tasks', action => 'delUsers' );
+      ->to( controller => 'server', action => 'delUsers' );
     $r->any('/tasks/delServer')
-      ->to( controller => 'tasks', action => 'delServer' );
+      ->to( controller => 'server', action => 'delServer' );
+
+    # handle programs
+    $r->any('/program/save')
+      ->to( controller => 'program', action => 'save' );
+    $r->get('/program/all')
+      ->to( controller => 'program', action => 'all' );
+
+
 
 }
 

@@ -1,5 +1,5 @@
 <div class="sticky">
-    <b-button size="sm" variant="primary" v-on:click="dummyFunction">
+    <b-button size="sm" variant="primary" v-on:click="jsonRefreshShellCommands">
         <b-icon icon="arrow-bar-down"></b-icon>
     </b-button>
     <b-button-group>

@@ -41,6 +41,8 @@ var app = new Vue({
         shells: {
             l1_servers: [],
             l1_servers_selected: [],
+            l3_programs: [],
+            l3_programs_selected: [],
         },
         user: {
             name: '',
@@ -65,9 +67,12 @@ var app = new Vue({
                 _current: null,
             },
             program: {
-                name: "",
-                commands: "",
-                description: "",
+                data: {
+                    name: "",
+                    commands: "",
+                    description: "",
+                    id: "",
+                },
                 overlay: false,
             },
         },
@@ -90,7 +95,7 @@ var app = new Vue({
             }
             return this.user.roles.indexOf(role) != -1;
         },
-        text2Html: function(textString){
+        text2Html: function (textString) {
             return textString ? marked(textString) : "No description";
         },
         try2Login: function (bvModalEvt) {
@@ -267,8 +272,27 @@ var app = new Vue({
             this.logs.l2_servers = new Map();
             this.logs.l2_servers_selected = [];
         },
+        jsonRefreshShellCommands: function () {
+            axios.get('/program/all').then(
+                function (response) {
+                    app.shells.l3_programs = [];
+                    if (response.data.status == 0) {
+                        Object.keys(response.data.commands).forEach(key => {
+                            app.shells.l3_programs.push({
+                                value: key,
+                                text: response.data.commands[key].name,
+                            });
+                        });
+                    } else {
+                        if (response.data.msg) {
+                            app.makeToast("danger", response.data.msg);
+                        }
+                    }
+                }
+            );
+
+        },
         jsonRefreshLogServers: function () {
-            var self = this;
             axios.get('/logs/servers').then(
                 function (response) {
                     app.logs.l1_servers = [];
@@ -388,9 +412,6 @@ var app = new Vue({
                 }
             );
         },
-        showWarningLogs: function () {
-
-        },
         jsonGetServerLFiles: function (server, server_data) {
             axios.get('/logs/serverlfiles', {
                 params: {
@@ -465,6 +486,23 @@ var app = new Vue({
             }
             return result;
         },
+        jsonProgramSave: function (bvModalEvt) {
+            bvModalEvt.preventDefault();
+
+            axios.post('/program/save', this.forms.program.data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                        app.$nextTick(() => {
+                            app.$bvModal.hide('modal-program-info')
+                            //app.jsonRefreshShellServers()
+                        });
+                    }
+                    if (response.data.msg) {
+                        app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
+                    }
+                }
+            );
+        },
         jsonServerInfoSave: function (bvModalEvt) {
             bvModalEvt.preventDefault();
 
@@ -490,7 +528,6 @@ var app = new Vue({
                     }
                 }
             );
-
         },
         jsonRefreshShellServers: function () {
             var self = this;
