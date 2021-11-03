@@ -60,4 +60,40 @@ sub all ($self) {
     }
 }
 
+sub info ($self) {
+    return if !$self->authAs( 'shell_operator', 'administrator' );
+    my $data = decode_json( $self->req->body );
+
+    my $filter = {
+        name    => [$PROGRAM_INFO_OBJECT_NAME],
+        field   => ['owner'],
+        value   => [ $self->session->{'user.name'} ],
+        id      => $data->{ids},
+        columns => [ 'name', 'description' ],
+    };
+
+    # Utils::print_debug Dumper $data;
+    # Utils::print_debug Dumper $self->dbMain->get_objects_sql_where_part(
+    #     $filter);
+
+    my $commands = $self->dbMain->get_objects($filter);
+    if ($commands) {
+        $self->render(
+            json => {
+                status   => 0,
+                commands => $commands
+            }
+        );
+    }
+    else {
+        $self->render(
+            json => {
+                status => 1,
+                msg    => "Commands not found!"
+            }
+        );
+
+    }
+}
+
 1;

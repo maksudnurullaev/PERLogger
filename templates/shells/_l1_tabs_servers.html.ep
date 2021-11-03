@@ -1,4 +1,4 @@
 %= include 'shells/_l1_tabs_servers_toolbar'
 
-<shell-server-with-users class="_NONE_" v-for="(v,k) in shells.l1_servers" v-bind:key="k" v-bind:server="v">
+<shell-server-with-users v-for="(v,k) in shells.l1_servers" v-bind:key="k" v-bind:server="v">
 </shell-server-with-users>

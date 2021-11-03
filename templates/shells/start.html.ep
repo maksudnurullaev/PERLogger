@@ -3,7 +3,7 @@
      %= include 'shells/_l1_tabs'
     </pane>
     <pane>
-Main Output!
+        %= include 'shells/_l2_content'
     </pane> <!-- Level #3 -->
     <pane>
      %= include 'shells/_l3_tabs'

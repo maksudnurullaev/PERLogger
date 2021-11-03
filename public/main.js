@@ -43,6 +43,9 @@ var app = new Vue({
             l1_servers_selected: [],
             l3_programs: [],
             l3_programs_selected: [],
+            l2_output: [],
+            runBatch: { servers: [], commands: [] },
+            disableShellRunBatchButton: true,
         },
         user: {
             name: '',
@@ -95,8 +98,8 @@ var app = new Vue({
             }
             return this.user.roles.indexOf(role) != -1;
         },
-        text2Html: function (textString) {
-            return textString ? marked(textString) : "No description";
+        markedText2Html: function (textString) {
+            return textString ? marked.parse(textString) : "";
         },
         try2Login: function (bvModalEvt) {
             // Prevent modal from closing
@@ -113,7 +116,9 @@ var app = new Vue({
                 this.jsonLogin()
             }
         },
-        dummyFunction: function () { },
+        dummyFunction: function () { 
+            console.info("Dummy function!");
+        },
         checkLoginFormValidity: function () {
             this.user.nameState = this.$refs.loginForm.elements['name-input'].validity.valid
             this.user.passwordState = this.$refs.loginForm.elements['password-input'].validity.valid
@@ -217,7 +222,7 @@ var app = new Vue({
         l2_forceRerender: function () {
             this.logs.l2_forceRerenderKey += 1;
         },
-        log2HTML: function (log) {
+        log2Html: function (log) {
             var result = log.log.replace(/(?:\r\n|\r|\n)/g, '<br />');
             result += `<hr /><small>${log.ltime} | ${shrink_me(file_name_from_path(log.lfile), 20)}</small>`;
             return result;
@@ -272,6 +277,18 @@ var app = new Vue({
             this.logs.l2_servers = new Map();
             this.logs.l2_servers_selected = [];
         },
+        jsonGetCommandInfo: function () {
+            var data = {
+                ids: app.shells.l3_programs_selected,
+            };
+            axios.post('/program/info', data).then(
+                function (response) {
+                    Object.keys(response.data.commands).forEach(key => {
+                        app.shells.l2_output.push(response.data.commands[key]);
+                    });
+                }
+            );
+        },
         jsonRefreshShellCommands: function () {
             axios.get('/program/all').then(
                 function (response) {
@@ -290,7 +307,6 @@ var app = new Vue({
                     }
                 }
             );
-
         },
         jsonRefreshLogServers: function () {
             axios.get('/logs/servers').then(
@@ -598,6 +614,19 @@ var app = new Vue({
             //TODO: may be we should change this code for more effective version to update l2_selected
             this.logs.l2_servers_selected = Array.from(this.logs.l2_servers.keys());
         },
+        updateRunBanchServers: function (server, selected) {
+            if (selected && selected.length) {
+                app.shells.runBatch.servers[server] = selected;
+            } else {
+                delete app.shells.runBatch.servers[server];
+            }
+            this.updateDiableShellRunBatchButton();
+        },
+        updateDiableShellRunBatchButton: function () {
+            app.shells.disableShellRunBatchButton =
+                Object.keys(app.shells.runBatch.servers).length == 0 ||
+                app.shells.l3_programs_selected.length == 0;
+        },
         l2_refreshData: function (oldValues) {
             if (app.logs.l1_servers_selected.length == 0) {
                 this.l2_reset();
@@ -688,6 +717,9 @@ var app = new Vue({
                 this.logs.l2_last_data.clear();
                 this.logs.l3_logs.clear();
             }
+        },
+        'shells.l3_programs_selected': function(values, oldValues){
+            this.updateDiableShellRunBatchButton();
         },
     },
     beforeMount() {

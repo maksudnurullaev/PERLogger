@@ -1,0 +1,5 @@
+%= include 'shells/_l2_content_toolbar';
+
+<template v-for="_d in shells.l2_output">
+    <b-alert  show v-html="markedText2Html(_d.description)"></b-alert>
+</template>

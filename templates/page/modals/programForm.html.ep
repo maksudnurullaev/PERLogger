@@ -16,10 +16,12 @@
                 </b-form-textarea>
             </b-form-group>
         </form>
-            <div v-html="text2Html(forms.program.data.description)" style="position:relative; height:150px; overflow-y:scroll;"></div>
+        <div v-html="markedText2Html(forms.program.data.description)"
+            style="position:relative; height:150px; overflow-y:scroll;"></div>
     </b-overlay>
     <template #modal-footer="{ ok }">
-        <b-button size="sm" variant="success" @click="ok()" disabled :disabled="forms.program.data.name.trim().length < 3">
+        <b-button size="sm" variant="success" @click="ok()" disabled
+            :disabled="forms.program.data.name.trim().length < 3">
             Save
         </b-button>
     </template>

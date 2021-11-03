@@ -5,4 +5,7 @@
     <b-button-group>
         <b-button size="sm" variant="success" v-b-modal.modal-program-info><b-icon icon="clipboard-plus"></b-icon></b-button>
     </b-button-group>
+    <b-button-group v-if="shells.l3_programs_selected.length">
+        <b-button size="sm" variant="success" v-on:click="jsonGetCommandInfo"><b-icon icon="info-square"></b-icon></b-button>
+    </b-button-group>
 </div>

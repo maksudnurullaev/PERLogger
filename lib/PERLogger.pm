@@ -126,6 +126,8 @@ sub startup ($self) {
       ->to( controller => 'program', action => 'save' );
     $r->get('/program/all')
       ->to( controller => 'program', action => 'all' );
+    $r->post('/program/info')
+      ->to( controller => 'program', action => 'info' );
 
 
 

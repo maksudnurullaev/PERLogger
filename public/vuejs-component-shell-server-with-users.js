@@ -40,6 +40,7 @@ Vue.component('shell-server-with-users', {
         this.indeterminate = true
         this.allSelected = false
       }
+      app.updateRunBanchServers(this.server.id, this.selected);
     },
     server(newValue, oldValue) {
       this.formatOptions();      

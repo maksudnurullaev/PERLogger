@@ -1,8 +1,6 @@
 %= include 'shells/_l3_tabs_programs_toolbar'
 
-<b-form-group label="Programs:" v-slot="{ ariaDescribedby }">
+<b-form-group v-slot="{ ariaDescribedby }">
     <b-form-checkbox-group v-model="shells.l3_programs_selected" :aria-describedby="ariaDescribedby" :options="shells.l3_programs"
         name="flavour-1" stacked id="shells.l3_programs"></b-form-checkbox-group>
 </b-form-group>
-
-{{ shells.l3_programs_selected }}
