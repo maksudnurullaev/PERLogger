@@ -129,6 +129,9 @@ sub startup ($self) {
     $r->post('/program/info')
       ->to( controller => 'program', action => 'info' );
 
+    # tasks
+    $r->post('/tasks/runbatch')
+      ->to( controller => 'tasks', action => 'runbatch' );
 
 
 }

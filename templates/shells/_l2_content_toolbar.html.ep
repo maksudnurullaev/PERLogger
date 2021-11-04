@@ -1,6 +1,6 @@
 <div class="sticky">
   <b-button-group>
-    <b-button size="sm" variant="primary" disabled v-on:click="dummyFunction"
+    <b-button size="sm" variant="primary" disabled v-on:click="runBatch()"
       :disabled="shells.disableShellRunBatchButton">
       <b-icon icon="collection-play"></b-icon>
     </b-button>

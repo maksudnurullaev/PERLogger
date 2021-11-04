@@ -44,7 +44,7 @@ var app = new Vue({
             l3_programs: [],
             l3_programs_selected: [],
             l2_output: [],
-            runBatch: { servers: [], commands: [] },
+            runBatchData: { servers: [] },
             disableShellRunBatchButton: true,
         },
         user: {
@@ -116,7 +116,24 @@ var app = new Vue({
                 this.jsonLogin()
             }
         },
-        dummyFunction: function () { 
+        runBatch: function () {
+            var data = {
+                commands: this.shells.l3_programs_selected,
+                servers: [],
+            };
+            Object.keys(this.shells.runBatchData.servers).forEach(key => {
+                data.servers.push({ server: key, users: this.shells.runBatchData.servers[key] });
+            });
+            axios.post('/tasks/runbatch', data).then(
+                function (response) {
+                    if (response.data.status == 0) {
+                    } else {
+                        app.makeToast("danger", response.data.msg);
+                    }
+                }
+            );
+        },
+        dummyFunction: function () {
             console.info("Dummy function!");
         },
         checkLoginFormValidity: function () {
@@ -616,15 +633,15 @@ var app = new Vue({
         },
         updateRunBanchServers: function (server, selected) {
             if (selected && selected.length) {
-                app.shells.runBatch.servers[server] = selected;
+                app.shells.runBatchData.servers[server] = selected;
             } else {
-                delete app.shells.runBatch.servers[server];
+                delete app.shells.runBatchData.servers[server];
             }
             this.updateDiableShellRunBatchButton();
         },
         updateDiableShellRunBatchButton: function () {
             app.shells.disableShellRunBatchButton =
-                Object.keys(app.shells.runBatch.servers).length == 0 ||
+                Object.keys(app.shells.runBatchData.servers).length == 0 ||
                 app.shells.l3_programs_selected.length == 0;
         },
         l2_refreshData: function (oldValues) {
@@ -718,7 +735,7 @@ var app = new Vue({
                 this.logs.l3_logs.clear();
             }
         },
-        'shells.l3_programs_selected': function(values, oldValues){
+        'shells.l3_programs_selected': function (values, oldValues) {
             this.updateDiableShellRunBatchButton();
         },
     },
