@@ -9,7 +9,7 @@ use Data::Dumper;
 sub runbatch ($self) {
     return if !$self->authAs( 'shell_operator', 'administrator' );
 
-    my $data = decode_json( $self->req->body );
+    my ( $data, $results ) = ( decode_json( $self->req->body ), [] );
 
     Utils::print_debug Dumper $data;
 
@@ -44,25 +44,48 @@ sub runbatch ($self) {
             );
 
             for my $cid ( @{ $data->{commands} } ) {
-                my $command = $self->dbMain->get_objects(
-                    { id => [$cid], columns => ['commands'] } );
+                my $prog = $self->dbMain->get_objects(
+                    { id => [$cid], columns => [ 'commands', 'name' ] } );
 
-                if ( !$command || !exists( $command->{$cid}{commands} ) ) {
+                if ( !$prog || !exists( $prog->{$cid}{commands} ) ) {
                     Utils::print_error(
-                        "Proper commands found for ID: " . $cid );
+                        "Proper commands not found for ID: " . $cid );
                     next;
                 }
-                my $commands = $command->{$cid}{commands};
-                Utils::print_debug(
-"\n(server,user,passwod,commands): ($server_nameOrIp,$user_name, $user_password,$commands)"
+                my ( $prog_commands, $prog_name ) =
+                  ( $prog->{$cid}{commands}, $prog->{$cid}{name} );
+
+#                 Utils::print_debug(
+# "\n(server,user,passwod,commands): ($server_nameOrIp,$user_name, $user_password,$commands)"
+#                 );
+                my ( $err_code, $result ) = SSH::_doCmd(
+                    {
+                        nameOrIp     => $server_nameOrIp,
+                        userName     => $user_name,
+                        userPassword => $user_password,
+                        commands     => $prog_commands,
+                    }
                 );
+                push @{$results},
+                  {
+                    errCode    => $err_code,
+                    serverPath => "$server_nameOrIp/$user_name/$prog_name",
+                    result     => $result,
+                  };
+                if ( !$err_code ) {
+                    Utils::print_debug("OK: $result");
+                }
+                else {
+                    Utils::print_error("Failed($err_code): $result");
+                }
+
             }
         }
     }
 
-    $self->render( json => { status => 1, msg => "Not implemented yet!" } );
+    $self->render(
+        json => { status => 0, msg => "Updated!", results => $results } );
 
 }
-
 
 1;

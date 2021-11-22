@@ -1,10 +1,11 @@
 package PERLogger::Controller::Server;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use Utils;
+use Utils::SSH;
 use Utils::DBLogs;
 use Mojo::JSON qw(decode_json encode_json);
 use Net::Ping;
-use Net::SSH::Perl;
+# use Net::SSH::Perl;
 use Data::Dumper;
 use Utils::EnDeCrypt;
 
@@ -35,25 +36,15 @@ sub pingSsh ($self) {
 
     my $data = decode_json( $self->req->body );
 
-    my ( $ssh, $stdout, $stderr, $exit );
-    $ssh =
-      Net::SSH::Perl->new( $data->{nameOrIp}, options => ["MACs +hmac-sha1"] );
-    eval {
-        $ssh->login( $data->{userName}, $data->{userPassword} );
-        ( $stdout, $stderr, $exit ) = $ssh->cmd("uname -a");
-    };
-
-    if ($@) {
-        $self->render( json => { status => 1, msg => 'Permission denied!' } );
-        Utils::print_error $@;
-    }
-    elsif ($exit) {
-        $self->render( json => { status => $exit, msg => $stderr } );
-        Utils::print_error $stderr;
-    }
-    else {
-        $self->render( json => { status => 0, msg => "OK: $stdout" } );
-    }
+    my ( $status, $msg ) = SSH::_doCmd(
+        {
+            nameOrIp     => $data->{nameOrIp},
+            userName     => $data->{userName},
+            userPassword => $data->{userPassword},
+            commands     => "uname -a"
+        }
+    );
+    $self->render( json => { status => $status, msg => $msg } );
 }
 
 sub delServer ($self) {
