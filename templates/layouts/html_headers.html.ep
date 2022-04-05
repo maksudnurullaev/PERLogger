@@ -9,23 +9,24 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
 
 <!-- Load Vue followed by BootstrapVue -->
-<!-- script src="//unpkg.com/vue@latest/dist/vue.min.js"></script -->
 % if ( app->mode eq 'development' ) {
-    <script src="//unpkg.com/vue@latest/dist/vue.js"></script>
+    <script src="//unpkg.com/vue@2.6.12/dist/vue.js"></script>
     <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
 % } else {
-    <script src="//unpkg.com/vue@latest/dist/vue.min.js"></script>
+    <script src="//unpkg.com/vue@2.6.12/dist/vue.min.js"></script>
     <script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
 % }
 
 <!-- Load the following for BootstrapVueIcons support -->
-<script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue-icons.min.js"></script>
+<!-- Load polyfills to support older browsers -->
+<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
 
 <!-- XMLHttpRequests JS library -->
 %= javascript 'https://unpkg.com/axios/dist/axios.min.js'
 
 <!-- Sliptpanes -->
-<script src="https://unpkg.com/splitpanes"></script>
+<script src="//unpkg.com/splitpanes@legacy"></script>
 <link href="//unpkg.com/splitpanes/dist/splitpanes.css" rel="stylesheet">
 
 <!-- Marked -->
