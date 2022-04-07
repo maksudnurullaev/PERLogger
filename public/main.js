@@ -126,9 +126,9 @@ var app = new Vue({
             });
             axios.post('/tasks/runbatch', data).then(
                 function (response) {
-                    if (response.data.status == 0) {
-                    } else {
-                        app.makeToast("danger", response.data.msg);
+                    app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
+                    if (response.data.status == 0 && response.data.results) {
+                        app.shells.l2_output = response.data.results;
                     }
                 }
             );
@@ -300,6 +300,7 @@ var app = new Vue({
             };
             axios.post('/program/info', data).then(
                 function (response) {
+                    app.shells.l2_output = [];
                     Object.keys(response.data.commands).forEach(key => {
                         app.shells.l2_output.push(response.data.commands[key]);
                     });

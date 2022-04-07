@@ -1,24 +1,26 @@
 <div class="-h-1 col-12 border">
     <b-row>
         <b-col>
-            <b-link href="/"><span class="h3">PERLogger</span></b-link>
+            <b-link href="/">
+                <span class="h3">PERLogger</span>
+            </b-link>        
             % if (app->mode eq 'development') {
             <sup>Development</sup>
             % }
         </b-col>
         <b-col align="right">
-            <b-link @click="currentMainActivePage='help'">Help</b-link>
+            <b-link @click="currentMainActivePage='help'" v-bind:class="{ activePage: currentMainActivePage=='help' }">Help</b-link>
             <template v-if="user">
                 <template v-if="user.logged">
                     <template v-if="userHasRole('log_operator')">
                         <!-- TODO: May be we should find more optimized version of this 'userHasRole' logic! -->
-                        | <b-link @click="currentMainActivePage='logs'">Logs</b-link>
+                        | <b-link @click="currentMainActivePage='logs'" v-bind:class="{ activePage: currentMainActivePage=='logs' }">Logs</b-link>
                     </template>
                     <template v-if="userHasRole('shell_operator')">
-                        | <b-link @click="currentMainActivePage='shell'">Shell</b-link>
+                        | <b-link @click="currentMainActivePage='shell'" v-bind:class="{ activePage: currentMainActivePage=='shell' }">Shell</b-link>
                     </template>
                     <template v-if="userHasRole('administrator')">
-                        | <b-link @click="currentMainActivePage='admin'">Admin</b-link>
+                        | <b-link @click="currentMainActivePage='admin'" v-bind:class="{ activePage: currentMainActivePage=='admin' }">Admin</b-link>
                     </template>
                     | <b-link id="logout-link" title="user.roles" @click="jsonLogout">Logout</b-link>
                     <sup>(<a href="/whoami">?</a>)</sup>

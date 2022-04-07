@@ -1,6 +1,7 @@
 package SSH;
 
 use Mojo::Base -strict;
+
 # use Net::SSH::Perl;
 use Net::OpenSSH;
 use Utils;
@@ -15,10 +16,14 @@ sub _doCmd {
       || !exists( $server->{userPassword} )
       || !exists( $server->{commands} );
 
-    my $ssh = Net::OpenSSH->new($server->{userName}. ':' . $server->{userPassword} . '@' . $server->{nameOrIp});
-    my ($out,$error) = $ssh->capture($server->{commands});
-    return (1,$ssh->error)  if $ssh->error;
-    return (0,$out);
-};
+    my $ssh =
+      Net::OpenSSH->new( $server->{userName} . ':'
+          . $server->{userPassword} . '@'
+          . $server->{nameOrIp} );
+    my @out = $ssh->capture( $server->{commands} );
+
+    return ( 1, $ssh->error ) if $ssh->error;
+    return ( 0, "@out");
+}
 
 1;

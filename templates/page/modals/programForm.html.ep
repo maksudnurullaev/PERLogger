@@ -11,6 +11,11 @@
                 </b-form-textarea>
             </b-form-group>
             <b-form-group label="Description:" label-for="form-program-desc-input">
+                <template slot="label">
+                 <div>
+                    Description: <sup><b-link href="https://marked.js.org/demo/" target="_blank">Demo</b-link><sup>
+                 </div>
+                </template>
                 <b-form-textarea id="form-program-desc-input" v-model="forms.program.data.description" placeholder=""
                     rows="3" max-rows="6">
                 </b-form-textarea>

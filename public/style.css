@@ -44,3 +44,12 @@ div.sticky {
 .show-text {
     font-weight: bold;
 }
+
+pre.console {
+    background: black;
+    color: white;
+}
+
+.activePage {
+    font-weight: bold;
+}

@@ -11,7 +11,7 @@ sub runbatch ($self) {
 
     my ( $data, $results ) = ( decode_json( $self->req->body ), [] );
 
-    Utils::print_debug Dumper $data;
+    # Utils::print_debug Dumper $data;
 
     for my $su ( @{ $data->{servers} } ) {
         my $server = $self->dbMain->get_objects(
@@ -23,6 +23,7 @@ sub runbatch ($self) {
 
         # 1. Get server
         my $server_nameOrIp = $server->{ $su->{server} }{nameOrIp};
+        Utils::print_debug "server_nameOrIp: $server_nameOrIp";
 
         for my $u ( @{ $su->{users} } ) {
 
@@ -36,6 +37,7 @@ sub runbatch ($self) {
                 Utils::print_error( "Proper user not found for ID: " . $u );
                 next;
             }
+            Utils::print_debug "User: " . $user->{$u}{user};
 
             # 2. Get user name & password
             my ( $user_name, $user_password ) = (
@@ -56,7 +58,7 @@ sub runbatch ($self) {
                   ( $prog->{$cid}{commands}, $prog->{$cid}{name} );
 
 #                 Utils::print_debug(
-# "\n(server,user,passwod,commands): ($server_nameOrIp,$user_name, $user_password,$commands)"
+# "\n(server,user,passwod,commands): ($server_nameOrIp,$user_name, $user_password,$prog_commands)"
 #                 );
                 my ( $err_code, $result ) = SSH::_doCmd(
                     {
@@ -66,12 +68,12 @@ sub runbatch ($self) {
                         commands     => $prog_commands,
                     }
                 );
-                push @{$results},
-                  {
-                    errCode    => $err_code,
-                    serverPath => "$server_nameOrIp/$user_name/$prog_name",
-                    result     => $result,
-                  };
+                push @{$results}, {
+                    errCode     => $err_code,
+                    name        => "$server_nameOrIp/$user_name/$prog_name",
+                    description => $result,
+                    console     => 1    # preformated text
+                };
                 if ( !$err_code ) {
                     Utils::print_debug("OK: $result");
                 }
@@ -84,7 +86,7 @@ sub runbatch ($self) {
     }
 
     $self->render(
-        json => { status => 0, msg => "Updated!", results => $results } );
+        json => { status => 0, msg => "Done!", results => $results } );
 
 }
 
