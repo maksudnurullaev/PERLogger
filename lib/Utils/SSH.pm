@@ -1,8 +1,10 @@
 package SSH;
 
 use Mojo::Base -strict;
-use Net::SSH::Perl;
+# use Net::SSH::Perl;
+use Net::OpenSSH;
 use Utils;
+use Data::Dumper;
 
 sub _doCmd {
     my $server = shift;
@@ -12,25 +14,11 @@ sub _doCmd {
       || !exists( $server->{userName} )
       || !exists( $server->{userPassword} )
       || !exists( $server->{commands} );
-    my ( $ssh, $stdout, $stderr, $exit );
-    $ssh =
-      Net::SSH::Perl->new( $server->{nameOrIp},
-        options => ["MACs +hmac-sha1"] );
-    eval {
-        $ssh->login( $server->{userName}, $server->{userPassword} );
-        ( $stdout, $stderr, $exit ) = $ssh->cmd( $server->{commands} );
-    };
 
-    if ($@) {
-        Utils::print_error $@;
-        return ( 1, 'Internal error!' );
-    }
-    elsif ($exit) {
-        Utils::print_error $stderr;
-        return ( $exit, $stderr );
-    }
-
-    return ( 0, $stdout );
-}
+    my $ssh = Net::OpenSSH->new($server->{userName}. ':' . $server->{userPassword} . '@' . $server->{nameOrIp});
+    my ($out,$error) = $ssh->capture($server->{commands});
+    return (1,$ssh->error)  if $ssh->error;
+    return (0,$out);
+};
 
 1;

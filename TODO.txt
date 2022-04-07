@@ -1,1 +1,2 @@
 - Add global "Wait..." screen for long operations
+- Reset server login form elements
