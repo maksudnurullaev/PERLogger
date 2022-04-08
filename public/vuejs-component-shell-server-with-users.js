@@ -70,8 +70,8 @@ Vue.component('shell-server-with-users', {
     <template v-if="configMode">
       <b-link href="#dummy" v-b-modal.modal-server-info @click="this.app.try2EditSeverInfo(server)" title="Edit server"><b-icon icon="clipboard-data"></b-icon></b-link>
       <b-link href="#dummy" @click="this.app.try2DeleteSeverInfo(server.id)" title="Delete server"><b-icon icon="clipboard-x"></b-icon></b-link>
-      <b-link href="#foo" v-b-modal.modal-server-info @click="this.app.try2AddUser4Sever(server)"><b-icon icon="file-earmark-plus"></b-icon></b-link>
-      <b-link href="#foo" v-if="selected.length" @click="this.app.try2DelUsers4Server(server.id,selected)"><b-icon icon="file-earmark-x"></b-icon></b-link>
+      <b-link href="#dummy" v-b-modal.modal-server-info @click="this.app.try2AddUser4Sever(server)"><b-icon icon="file-earmark-plus"></b-icon></b-link>
+      <b-link href="#dummy" v-if="selected.length" @click="this.app.try2DelUsers4Server(server.id,selected)"><b-icon icon="file-earmark-x"></b-icon></b-link>
     </template>
     </div>
     <b-form-checkbox-group
