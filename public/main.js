@@ -300,10 +300,16 @@ var app = new Vue({
             };
             axios.post('/program/info', data).then(
                 function (response) {
-                    app.shells.l2_output = [];
-                    Object.keys(response.data.commands).forEach(key => {
-                        app.shells.l2_output.push(response.data.commands[key]);
-                    });
+                    if (response.data.status == 0) {
+                        app.shells.l2_output = [];
+                        Object.keys(response.data.commands).forEach(key => {
+                            app.shells.l2_output.push(response.data.commands[key]);
+                        });
+                    } else {
+                        if (response.data.msg) {
+                            app.makeToast("danger", response.data.msg);
+                        }
+                    }
                 }
             );
         },
