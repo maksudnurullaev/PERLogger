@@ -69,7 +69,7 @@ sub info ($self) {
         field   => ['owner'],
         value   => [ $self->session->{'user.name'} ],
         id      => $data->{ids},
-        columns => [ 'name', 'description' ],
+        columns => [ 'name', 'commands', 'description' ],
     };
 
     # Utils::print_debug Dumper $data;

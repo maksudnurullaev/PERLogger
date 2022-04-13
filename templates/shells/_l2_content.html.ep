@@ -1,11 +1,21 @@
 %= include 'shells/_l2_content_toolbar';
-
-<template v-for="_d in shells.l2_output">
+<div>
+<template v-for="(_d, _index) in shells.l2_output">
+    <template v-if="_index > 0"><hr /></template>
     <template v-if="_d.console">
         <div v-if="_d.name" class="command_name" v-html="_d.name"></div>
         <pre class="console" v-html="_d.description"></pre>
     </template>
-    <template v-else>
+    <template v-else-if="_d.commands">
+        <div v-if="_d.name" class="command_name" v-html="_d.name"></div>
+        <pre class="console" v-html="_d.commands"></pre>
+        <b-alert v-if="_d.description" show v-html="markedText2Html(_d.description)"></b-alert>
+    </template>
+    <template v-else-if="_d.description">
         <b-alert  show v-html="markedText2Html(_d.description)"></b-alert>
     </template>
+    <template v-else>
+        <b-alert  show variant="danger">UNKNOWN FORMAT!</b-alert>
+    </template>
 </template>
+</div>
