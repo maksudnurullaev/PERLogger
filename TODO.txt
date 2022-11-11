@@ -1,3 +1,10 @@
 - Add global "Wait..." screen for long operations
 - Reset server login form elements
 - Update command or command descrtions
+
+
+[INSTALL CPANM MODULES FOR PROJECT]
+> cpanm Mojo::SQLite Data::UUID Minion::Admin \
+    Minion Minion::Backend::SQLite Net::OpenSSH \
+    Crypt::Simple Net::LDAP::SPNEGO CPAN::Uploader \
+    Net::LDAP::SPNEGO
