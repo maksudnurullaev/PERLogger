@@ -7,4 +7,4 @@
 > cpanm Mojo::SQLite Data::UUID Minion::Admin \
     Minion Minion::Backend::SQLite Net::OpenSSH \
     Crypt::Simple Net::LDAP::SPNEGO CPAN::Uploader \
-    Net::LDAP::SPNEGO
+    Net::LDAP::SPNEGO IO::Pty
