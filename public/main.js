@@ -124,13 +124,14 @@ var app = new Vue({
             Object.keys(this.shells.runBatchData.servers).forEach(key => {
                 data.servers.push({ server: key, users: this.shells.runBatchData.servers[key] });
             });
-            axios.post('/tasks/runbatch', data).then(
+            axios.post('/tasks/runbatch', data).then( 
                 function (response) {
                     app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
                     if (response.data.status == 0 && response.data.results) {
                         Object.keys(response.data.results).forEach(idx => {
                             app.shells.l2_output.unshift(response.data.results[idx]);
                         });
+                    }
                 }
             );
         },
