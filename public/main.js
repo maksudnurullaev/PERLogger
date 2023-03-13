@@ -128,8 +128,9 @@ var app = new Vue({
                 function (response) {
                     app.makeToast((response.data.status == 0 ? "success" : "danger"), response.data.msg);
                     if (response.data.status == 0 && response.data.results) {
-                        app.shells.l2_output = response.data.results;
-                    }
+                        Object.keys(response.data.results).forEach(idx => {
+                            app.shells.l2_output.unshift(response.data.results[idx]);
+                        });
                 }
             );
         },
@@ -244,8 +245,8 @@ var app = new Vue({
             result += `<hr /><small>${log.ltime} | ${shrink_me(file_name_from_path(log.lfile), 20)}</small>`;
             return result;
         },
-        checkLogAlertVariant: function (logText) { // TODO: find more optimized version of this search
-            // danger
+        checkLogAlertVariant: function (logText) { 
+            // TODO: find more optimized version of this search
             var words = app.logs.config.error_defs.trim();
             if (words.length) {
                 var wordsArray = words.split(/[\s+|\n]/);
@@ -301,9 +302,8 @@ var app = new Vue({
             axios.post('/program/info', data).then(
                 function (response) {
                     if (response.data.status == 0) {
-                        app.shells.l2_output = [];
                         Object.keys(response.data.commands).forEach(key => {
-                            app.shells.l2_output.push(response.data.commands[key]);
+                            app.shells.l2_output.unshift(response.data.commands[key]);
                         });
                     } else {
                         if (response.data.msg) {

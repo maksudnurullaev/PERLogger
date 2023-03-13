@@ -103,9 +103,12 @@ sub get_uuid {
     return ( $result[0] );
 }
 
-sub get_date_uuid {
-    my $result = Time::Piece->new->strftime('%Y.%m.%d %T ');
-    return ( $result . get_uuid() );
+sub get_date_formated {
+    return Time::Piece->new->strftime(shift || '%Y.%m.%d %T');
+}
+
+sub get_date_vs_uuid {
+    return ( get_date_formated('%Y.%m.%d %T ') . get_uuid() );
 }
 
 sub trim {

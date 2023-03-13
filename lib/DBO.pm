@@ -196,7 +196,7 @@ qq{ UPDATE objects SET value = ? WHERE name = ? AND id = ? AND field = ?; }
     sub insert {
         my ( $self, $hashref, $dryRunMode, $object_name ) =
           ( shift, shift, shift, undef );
-        my $id = $hashref->{id} || Utils::get_date_uuid();
+        my $id = $hashref->{id} || Utils::get_date_vs_uuid();
 
         # DRY RUN
         if ($dryRunMode) {

@@ -70,8 +70,9 @@ sub runbatch ($self) {
                 );
                 push @{$results}, {
                     errCode     => $err_code,
-                    name        => "$server_nameOrIp/$user_name/$prog_name",
+                    name        => "[$server_nameOrIp/$user_name/$prog_name]",
                     description => $result,
+                    created     => Utils::get_date_formated(),
                     console     => 1    # preformated text
                 };
                 if ( !$err_code ) {

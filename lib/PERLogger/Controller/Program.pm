@@ -72,10 +72,6 @@ sub info ($self) {
         columns => [ 'name', 'commands', 'description' ],
     };
 
-    # Utils::print_debug Dumper $data;
-    # Utils::print_debug Dumper $self->dbMain->get_objects_sql_where_part(
-    #     $filter);
-
     my $commands = $self->dbMain->get_objects($filter);
     if ($commands) {
         $self->render(

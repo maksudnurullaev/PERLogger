@@ -17,5 +17,6 @@
     <template v-else>
         <b-alert  show variant="danger">UNKNOWN FORMAT!</b-alert>
     </template>
+    <sup v-if="_d.created" v-html="_d.created" />
 </template>
 </div>

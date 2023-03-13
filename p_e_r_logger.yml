@@ -17,7 +17,7 @@ updServerPIDFile: udpServer.pid
 updServerPIDFilePath: ./var
 
 # For MS AD Authorization
-MSADServer: TK-DCS011
+MSADServer: aloqabank.local
 
 users: 
     administrator: 
@@ -26,7 +26,7 @@ users:
         - log_operator
         - shell_operator
         - administrator
-    mnurullaev: 
+    nurullayev: 
       access: 
         - log_operator
         - shell_operator
